@@ -11,13 +11,13 @@ export default function CookieContainer() {
         >
           <div className="cookieDesc">
             <p>
-              In order to provide you a personalized shopping experience, our
-              site uses cookies. By continuing to use this site, you are
-              agreeing to our cookie policy.
+              Afin de vous offrir une expérience d’achat personnalisée, notre
+              site utilise des cookies. En poursuivant votre navigation, vous
+              acceptez notre politique de cookies.
             </p>
           </div>
           <div className="cookieButton">
-            <a onClick={() => setShow(false)}>Accept</a>
+            <a onClick={() => setShow(false)}>Accepter</a>
           </div>
         </div>
       )}

@@ -53,10 +53,10 @@ export default function NewsLetter() {
             </div>
             <div className="col-md-6 p-0 d-flex align-items-center">
               <div className="block-newsletter w-100">
-                <h3 className="block__title">Sign Up to Our Newsletter</h3>
+                <h3 className="block__title">Inscrivez-vous à notre newsletter</h3>
                 <p>
-                  Be the first to get the latest news about trends, promotions,
-                  and much more!
+                  Soyez les premiers informés des tendances, des promotions
+                  et bien plus encore !
                 </p>
                 <form
                   onSubmit={(e) => e.preventDefault()}
@@ -66,12 +66,12 @@ export default function NewsLetter() {
                     className="form-control border-2"
                     type="email"
                     name="email"
-                    placeholder="Your email address"
+                    placeholder="Votre adresse e-mail"
                   />
                   <input
                     className="btn-link fw-medium bg-transparent position-absolute top-0 end-0 h-100"
                     type="submit"
-                    defaultValue="JOIN"
+                    defaultValue="S'INSCRIRE"
                   />
                 </form>
               </div>

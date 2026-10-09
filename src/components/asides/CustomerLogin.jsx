@@ -21,7 +21,7 @@ export default function CustomerLogin() {
       <div className="customer-forms__wrapper d-flex position-relative">
         <div className="customer__login">
           <div className="aside-header d-flex align-items-center">
-            <h3 className="text-uppercase fs-6 mb-0">Login</h3>
+            <h3 className="text-uppercase fs-6 mb-0">Connexion</h3>
             <button
               onClick={() => closeModalUserlogin()}
               className="btn-close-lg js-close-aside ms-auto"
@@ -35,11 +35,11 @@ export default function CustomerLogin() {
                 className="form-control form-control_gray"
                 placeholder="name@example.com"
               />
-              <label>Username or email address *</label>
+              <label>Nom d’utilisateur ou e-mail *</label>
             </div>
             <div className="pb-3" />
             <div className="form-label-fixed mb-3">
-              <label className="form-label">Password *</label>
+              <label className="form-label">Mot de passe *</label>
               <input
                 name="password"
                 className="form-control form-control_gray"
@@ -56,33 +56,33 @@ export default function CustomerLogin() {
                   defaultValue
                 />
                 <label className="form-check-label text-secondary">
-                  Remember me
+                  Se souvenir de moi
                 </label>
               </div>
               <Link to="/reset_password" className="btn-text ms-auto">
-                Lost password?
+                Mot de passe oublié ?
               </Link>
             </div>
             <button
               className="btn btn-primary w-100 text-uppercase"
               type="submit"
             >
-              Log In
+              Se connecter
             </button>
             <div className="customer-option mt-4 text-center">
-              <span className="text-secondary">No account yet?</span>{" "}
+              <span className="text-secondary">Pas encore de compte ?</span>{" "}
               <Link
                 to="/login_register#register-tab"
                 className="btn-text js-show-register"
               >
-                Create Account
+                Créer un compte
               </Link>
             </div>
           </form>
         </div>
         <div className="customer__register">
           <div className="aside-header d-flex align-items-center">
-            <h3 className="text-uppercase fs-6 mb-0">Create an account</h3>
+            <h3 className="text-uppercase fs-6 mb-0">Créer un compte</h3>
             <button className="btn-close-lg js-close-aside btn-close-aside ms-auto" />
           </div>
           <form onSubmit={(e) => e.preventDefault()} className="aside-content">
@@ -91,9 +91,9 @@ export default function CustomerLogin() {
                 name="username"
                 type="text"
                 className="form-control form-control_gray"
-                placeholder="Username"
+                placeholder="Nom d'utilisateur"
               />
-              <label>Username</label>
+              <label>Nom d’utilisateur</label>
             </div>
             <div className="pb-1" />
             <div className="form-floating mb-4">
@@ -103,11 +103,11 @@ export default function CustomerLogin() {
                 className="form-control form-control_gray"
                 placeholder="user@company.com"
               />
-              <label>Email address *</label>
+              <label>Adresse e-mail *</label>
             </div>
             <div className="pb-1" />
             <div className="form-label-fixed mb-4">
-              <label className="form-label">Password *</label>
+              <label className="form-label">Mot de passe *</label>
               <input
                 name="password"
                 className="form-control form-control_gray"
@@ -116,20 +116,20 @@ export default function CustomerLogin() {
               />
             </div>
             <p className="text-secondary mb-4">
-              Your personal data will be used to support your experience
-              throughout this website, to manage access to your account, and for
-              other purposes described in our privacy policy.
+              Vos données personnelles seront utilisées pour améliorer votre
+              expérience sur ce site, gérer l’accès à votre compte et à d’autres
+              fins décrites dans notre politique de confidentialité.
             </p>
             <button
               className="btn btn-primary w-100 text-uppercase"
               type="submit"
             >
-              Register
+              S’inscrire
             </button>
             <div className="customer-option mt-4 text-center">
-              <span className="text-secondary">Already have account?</span>
+              <span className="text-secondary">Vous avez déjà un compte ?</span>
               <a href="#" className="btn-text js-show-login">
-                Login
+                Se connecter
               </a>
             </div>
           </form>

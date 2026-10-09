@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import CountDownComponent from "@/components/common/CountDownComponent";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function HotDeals() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -102,9 +103,9 @@ export default function HotDeals() {
                       <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                     </h6>
                     <div className="product-card__price d-flex align-items-center">
-                      <span className="money price-old">${elm.oldPrice}</span>
+                      <span className="money price-old">{formatPrice(elm.oldPrice)}</span>
                       <span className="money price text-secondary">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
 

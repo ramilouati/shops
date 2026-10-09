@@ -1,6 +1,7 @@
 import { products14 } from "@/data/products/fashion";
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function ProductsGrid() {
   return (
     <section className="products-grid-with-banner container">
@@ -52,7 +53,7 @@ export default function ProductsGrid() {
                         </Link>
                       </h6>
                       <div className="product-card__price d-flex">
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       </div>
                     </div>
                   </div>

@@ -12,7 +12,7 @@ export default function SiteMap() {
               style={{ height: "fit-content" }}
               loading="lazy"
               src="/assets/images/nav-bg.jpg"
-              alt="Site map"
+              alt="Menu"
               className="sitemap__bg"
             />
           </div>
@@ -31,7 +31,7 @@ export default function SiteMap() {
                       aria-controls="pills-item-1"
                       aria-selected="true"
                     >
-                      WOMEN
+                      FEMME
                     </a>
                   </li>
                   <li className="nav-item" role="presentation">
@@ -44,7 +44,7 @@ export default function SiteMap() {
                       aria-controls="pills-item-2"
                       aria-selected="false"
                     >
-                      MEN
+                      HOMME
                     </a>
                   </li>
                   <li className="nav-item" role="presentation">
@@ -57,7 +57,7 @@ export default function SiteMap() {
                       aria-controls="pills-item-3"
                       aria-selected="false"
                     >
-                      KIDS
+                      ENFANT
                     </a>
                   </li>
                 </ul>
@@ -96,7 +96,7 @@ export default function SiteMap() {
                             aria-controls="tab-item-1"
                             aria-selected="true"
                           >
-                            <span className="rline-content">WOMEN</span>
+                            <span className="rline-content">FEMME</span>
                           </a>
                         </li>
                         <li
@@ -112,7 +112,7 @@ export default function SiteMap() {
                             aria-controls="tab-item-2"
                             aria-selected="false"
                           >
-                            <span className="rline-content">MAN</span>
+                            <span className="rline-content">HOMME</span>
                           </a>
                         </li>
                         <li
@@ -128,7 +128,7 @@ export default function SiteMap() {
                             aria-controls="tab-item-3"
                             aria-selected="false"
                           >
-                            <span className="rline-content">KIDS</span>
+                            <span className="rline-content">ENFANT</span>
                           </a>
                         </li>
                         <li
@@ -136,7 +136,7 @@ export default function SiteMap() {
                           role="presentation"
                         >
                           <a className="nav-link nav-link_rline" href="#">
-                            <span className="rline-content">HOME</span>
+                            <span className="rline-content">MAISON</span>
                           </a>
                         </li>
                         <li
@@ -155,7 +155,7 @@ export default function SiteMap() {
                             className="nav-link nav-link_rline text-red"
                             href="#"
                           >
-                            SALE UP TO 50% OFF
+                            SOLDES JUSQU’À -50 %
                           </a>
                         </li>
                         <li
@@ -163,7 +163,7 @@ export default function SiteMap() {
                           role="presentation"
                         >
                           <a className="nav-link nav-link_rline" href="#">
-                            <span className="rline-content">NEW</span>
+                            <span className="rline-content">NOUVEAUTÉS</span>
                           </a>
                         </li>
                         <li
@@ -171,7 +171,7 @@ export default function SiteMap() {
                           role="presentation"
                         >
                           <a className="nav-link nav-link_rline" href="#">
-                            <span className="rline-content">SHOES</span>
+                            <span className="rline-content">CHAUSSURES</span>
                           </a>
                         </li>
                         <li
@@ -179,7 +179,7 @@ export default function SiteMap() {
                           role="presentation"
                         >
                           <a className="nav-link nav-link_rline" href="#">
-                            <span className="rline-content">ACCESSORIES</span>
+                            <span className="rline-content">ACCESSOIRES</span>
                           </a>
                         </li>
                         <li
@@ -187,7 +187,7 @@ export default function SiteMap() {
                           role="presentation"
                         >
                           <a className="nav-link nav-link_rline" href="#">
-                            <span className="rline-content">JOIN LIFE</span>
+                            <span className="rline-content">MODE RESPONSABLE</span>
                           </a>
                         </li>
                         <li
@@ -210,12 +210,12 @@ export default function SiteMap() {
                           <ul className="sub-menu list-unstyled">
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                New
+                                Nouveautés
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Best Sellers
+                                Meilleures ventes
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -225,7 +225,7 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Sets
+                                Ensembles
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -235,17 +235,17 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Jackets & Coats
+                                Vestes et manteaux
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Overshirts
+                                Surchemises
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Trousers
+                                Pantalons
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -255,32 +255,32 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Dresses
+                                Robes
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Sweatshirts and Hoodies
+                                Sweats et hoodies
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                T-shirts & Tops
+                                T-shirts et tops
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shirts & Blouses
+                                Chemises et blouses
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shorts and Bermudas
+                                Shorts et bermudas
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shoes
+                                Chaussures
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -288,12 +288,12 @@ export default function SiteMap() {
                                 to="/shop3"
                                 className="menu-link menu-link_us-s"
                               >
-                                Accessories
+                                Accessoires
                               </Link>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Bags
+                                Sacs
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -301,7 +301,7 @@ export default function SiteMap() {
                                 to="/about"
                                 className="menu-link menu-link_us-s"
                               >
-                                Gift Card
+                                Carte cadeau
                               </Link>
                             </li>
                           </ul>
@@ -316,17 +316,17 @@ export default function SiteMap() {
                           <ul className="sub-menu list-unstyled">
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Best Sellers
+                                Meilleures ventes
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                New
+                                Nouveautés
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Sets
+                                Ensembles
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -341,22 +341,22 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Trousers
+                                Pantalons
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Jackets & Coats
+                                Vestes et manteaux
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Overshirts
+                                Surchemises
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Dresses
+                                Robes
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -366,7 +366,7 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Sweatshirts and Hoodies
+                                Sweats et hoodies
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -374,22 +374,22 @@ export default function SiteMap() {
                                 to="/about"
                                 className="menu-link menu-link_us-s"
                               >
-                                Gift Card
+                                Carte cadeau
                               </Link>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shirts & Blouses
+                                Chemises et blouses
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                T-shirts & Tops
+                                T-shirts et tops
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shorts and Bermudas
+                                Shorts et bermudas
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -397,17 +397,17 @@ export default function SiteMap() {
                                 to="/shop3"
                                 className="menu-link menu-link_us-s"
                               >
-                                Accessories
+                                Accessoires
                               </Link>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shoes
+                                Chaussures
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Bags
+                                Sacs
                               </a>
                             </li>
                           </ul>
@@ -425,7 +425,7 @@ export default function SiteMap() {
                                 to="/about"
                                 className="menu-link menu-link_us-s"
                               >
-                                Gift Card
+                                Carte cadeau
                               </Link>
                             </li>
                             <li className="sub-menu__item">
@@ -435,7 +435,7 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Sets
+                                Ensembles
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -445,22 +445,22 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                New
+                                Nouveautés
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Best Sellers
+                                Meilleures ventes
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Overshirts
+                                Surchemises
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Jackets & Coats
+                                Vestes et manteaux
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -470,17 +470,17 @@ export default function SiteMap() {
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Trousers
+                                Pantalons
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shorts and Bermudas
+                                Shorts et bermudas
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Shoes
+                                Chaussures
                               </a>
                             </li>
                             <li className="sub-menu__item">
@@ -488,17 +488,17 @@ export default function SiteMap() {
                                 to="/shop3"
                                 className="menu-link menu-link_us-s"
                               >
-                                Accessories
+                                Accessoires
                               </Link>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Dresses
+                                Robes
                               </a>
                             </li>
                             <li className="sub-menu__item">
                               <a href="#" className="menu-link menu-link_us-s">
-                                Bags
+                                Sacs
                               </a>
                             </li>
                           </ul>
@@ -515,15 +515,9 @@ export default function SiteMap() {
                     aria-labelledby="pills-item-2-tab"
                   >
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur.
+                      Découvrez notre collection Homme : des pièces modernes et
+                      intemporelles pour toutes les occasions.
                     </p>
-                    Elementum lectus a porta commodo suspendisse arcu, aliquam
-                    lectus faucibus.
                   </div>
                   <div
                     className="tab-pane fade"
@@ -532,17 +526,9 @@ export default function SiteMap() {
                     aria-labelledby="pills-item-3-tab"
                   >
                     <p>
-                      Sed ut perspiciatis unde omnis iste natus error sit
-                      voluptatem accusantium doloremque laudantium, totam rem
-                      aperiam, eaque ipsa quae ab illo inventore veritatis et
-                      quasi architecto beatae vitae dicta sunt explicabo. Nemo
-                      enim ipsam voluptatem quia voluptas sit aspernatur aut
-                      odit aut fugit, sed quia consequuntur magni dolores eos
-                      qui ratione voluptatem sequi nesciunt.
+                      Découvrez notre collection Enfant : confort et style pour
+                      les plus petits.
                     </p>
-                    Ut enim ad minima veniam, quis nostrum exercitationem ullam
-                    corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
-                    consequatur?
                   </div>
                 </div>
               </div>

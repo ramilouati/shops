@@ -1,5 +1,6 @@
 import { useContextElement } from "@/context/Context";
-import { products10 } from "@/data/products/fashion";
+import { bestSellerProducts } from "@/data/home5";
+import { formatPrice } from "@/utlis/formatPrice";
 import { Link } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -46,7 +47,7 @@ export default function BestSeller() {
 
       <section className="products-carousel container">
         <h2 className="section-title fw-normal text-center mb-3 pb-xl-3 mb-xl-3">
-          Best Sellers
+          Meilleures ventes
         </h2>
 
         <div id="best-sellers" className="position-relative">
@@ -54,7 +55,7 @@ export default function BestSeller() {
             {...swiperOptions}
             className="swiper-container js-swiper-slider"
           >
-            {products10.map((elm, i) => (
+            {bestSellerProducts.map((elm, i) => (
               <SwiperSlide key={i} className="swiper-slide product-card">
                 <div className="pc__img-wrapper">
                   <Link to={`/product1_simple/${elm.id}`}>
@@ -63,7 +64,7 @@ export default function BestSeller() {
                       src={elm.imgSrc}
                       width="330"
                       height="400"
-                      alt="Cropped Faux leather Jacket"
+                      alt={elm.title}
                       className="pc__img"
                     />
                   </Link>
@@ -72,13 +73,13 @@ export default function BestSeller() {
                     onClick={() => addProductToCart(elm.id)}
                     title={
                       isAddedToCartProducts(elm.id)
-                        ? "Already Added"
-                        : "Add to Cart"
+                        ? "Déjà ajouté"
+                        : "Ajouter au panier"
                     }
                   >
                     {isAddedToCartProducts(elm.id)
-                      ? "Already Added"
-                      : "Add To Cart"}
+                      ? "Déjà ajouté"
+                      : "Ajouter au panier"}
                   </button>
                   <div className="anim_appear-right position-absolute top-0 mt-2 me-2">
                     <button
@@ -86,7 +87,7 @@ export default function BestSeller() {
                       data-bs-toggle="modal"
                       data-bs-target="#quickView"
                       onClick={() => setQuickViewItem(elm)}
-                      title="Quick view"
+                      title="Aperçu rapide"
                     >
                       <svg
                         className="d-inline-block"
@@ -103,7 +104,7 @@ export default function BestSeller() {
                         isAddedtoWishlist(elm.id) ? "active" : ""
                       }`}
                       onClick={() => toggleWishlist(elm.id)}
-                      title="Add To Wishlist"
+                      title="Ajouter aux favoris"
                     >
                       <svg
                         width="14"
@@ -127,15 +128,15 @@ export default function BestSeller() {
                     {elm.priceOld && (
                       <>
                         <span className="money price price-old">
-                          ${elm.priceOld}
+                          {formatPrice(elm.priceOld)}
                         </span>
                         <span className="money price price-sale">
-                          ${elm.price}
+                          {formatPrice(elm.price)}
                         </span>
                       </>
                     )}
                     {!elm.priceOld && (
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     )}
                   </div>
                 </div>

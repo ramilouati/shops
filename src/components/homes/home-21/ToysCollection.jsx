@@ -4,6 +4,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function ToysCollection() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -186,7 +187,7 @@ export default function ToysCollection() {
                     </h6>
                     <div className="product-card__price d-flex align-items-center justify-content-center">
                       <span className="money price theme-color-secondary fw-bold font-heading">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
                   </div>

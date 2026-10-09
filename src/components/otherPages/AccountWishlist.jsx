@@ -5,6 +5,7 @@ import { Navigation } from "swiper/modules";
 import { useEffect, useState } from "react";
 import { allProducts } from "@/data/products";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function AccountWishlist() {
   const { wishList, toggleWishlist } = useContextElement();
   const [wishlistProducts, setWishlistProducts] = useState(
@@ -97,7 +98,7 @@ export default function AccountWishlist() {
                     <p className="pc__category">{elm.category}</p>
                     <h6 className="pc__title">{elm.title}</h6>
                     <div className="product-card__price d-flex">
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     </div>
 
                     <button

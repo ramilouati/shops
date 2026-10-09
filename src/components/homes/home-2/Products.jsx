@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["Jeans", "Bags", "Accessories"];
 
 export default function Products() {
@@ -169,9 +170,9 @@ export default function Products() {
                     </h6>
                     <div className="product-card__price d-flex align-items-center">
                       {elm.priceOld && (
-                        <span className="money price-old">${elm.priceOld}</span>
+                        <span className="money price-old">{formatPrice(elm.priceOld)}</span>
                       )}
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     </div>
                   </div>
                 </SwiperSlide>

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["Women", "One Sale", "New"];
 
 export default function TrendyItems() {
@@ -192,7 +193,7 @@ export default function TrendyItems() {
                     </h6>
                     <div className="product-card__price d-flex">
                       <span className="money price theme-color fw-bold font-heading">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
                   </div>

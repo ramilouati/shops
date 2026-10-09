@@ -4,6 +4,7 @@ import { Navigation } from "swiper/modules";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function ProductsSlider() {
   const swiperOptions = {
     slidesPerView: 1,
@@ -53,7 +54,7 @@ export default function ProductsSlider() {
                           </Link>
                         </h6>
                         <div className="product-card__price d-flex">
-                          <span className="money price">${elm.price}</span>
+                          <span className="money price">{formatPrice(elm.price)}</span>
                         </div>
                       </div>
                     </SwiperSlide>

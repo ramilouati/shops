@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 const filterCategories = ["All", "Top New", "Featured"];
 
 import CountDownComponent2 from "@/components/common/CountDownComponent2";
+import { formatPrice } from "@/utlis/formatPrice";
 export default function SpecialOffers() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -95,7 +96,7 @@ export default function SpecialOffers() {
                       </div>
 
                       <div className="product-card__price d-flex mb-2">
-                        <span className="money price fs-5">${elm.price}</span>
+                        <span className="money price fs-5">{formatPrice(elm.price)}</span>
                       </div>
 
                       <div className="product-card__countdown mb-3">
@@ -222,7 +223,7 @@ export default function SpecialOffers() {
 
                           <div className="product-card__price d-flex mb-2">
                             <span className="money price fs-5">
-                              ${elm.price}
+                              {formatPrice(elm.price)}
                             </span>
                           </div>
 

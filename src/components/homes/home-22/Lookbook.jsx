@@ -7,6 +7,7 @@ import { Tooltip } from "react-tooltip";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Lookbook() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
@@ -68,7 +69,7 @@ export default function Lookbook() {
                         <p className="fw-medium mb-0">
                           <Link to={`/product1_simple/${id}`}>{title}</Link>
                         </p>
-                        <p className="mb-0">${price}</p>
+                        <p className="mb-0">{formatPrice(price)}</p>
                       </div>
                     )}
                     openOnClick
@@ -128,7 +129,7 @@ export default function Lookbook() {
                             </h6>
                             <div className="product-card__price d-flex">
                               <span className="money price theme-color fs-15 fw-semi-bold">
-                                ${elm.price}
+                                {formatPrice(elm.price)}
                               </span>
                             </div>
 

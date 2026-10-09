@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import CountDownComponent2 from "@/components/common/CountDownComponent2";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function TopDeals() {
   const swiperOptions = {
     autoplay: {
@@ -95,7 +96,7 @@ export default function TopDeals() {
                 </div>
 
                 <div className="product-card__price d-flex mb-2">
-                  <span className="money price fs-5">${elm.price}</span>
+                  <span className="money price fs-5">{formatPrice(elm.price)}</span>
                 </div>
 
                 <div className="product-card__countdown">

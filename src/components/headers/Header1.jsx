@@ -111,23 +111,6 @@ export default function Header1() {
                 <CartLength />
               </span>
             </a>
-
-            <a
-              className="header-tools__item"
-              href="#"
-              data-bs-toggle="modal"
-              data-bs-target="#siteMap"
-            >
-              <svg
-                className="nav-icon"
-                width="25"
-                height="18"
-                viewBox="0 0 25 18"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <use href="#icon_nav" />
-              </svg>
-            </a>
           </div>
           {/* <!-- /.header__tools --> */}
         </div>

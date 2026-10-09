@@ -53,14 +53,14 @@ export default function SearchPopup() {
           className="search-field container"
         >
           <p className="text-uppercase text-secondary fw-medium mb-4">
-            What are you looking for?
+            Que recherchez-vous ?
           </p>
           <div className="position-relative">
             <input
               className="search-field__input search-popup__input w-100 fw-medium"
               type="text"
               name="search-keyword"
-              placeholder="Search products"
+              placeholder="Rechercher un produit"
             />
             <button className="btn-icon search-popup__submit" type="submit">
               <svg
@@ -82,31 +82,31 @@ export default function SearchPopup() {
 
           <div className="search-popup__results">
             <div className="sub-menu search-suggestion">
-              <h6 className="sub-menu__title fs-base">Quicklinks</h6>
+              <h6 className="sub-menu__title fs-base">Liens rapides</h6>
               <ul className="sub-menu__list list-unstyled">
                 <li className="sub-menu__item">
                   <Link to="/shop-2" className="menu-link menu-link_us-s">
-                    New Arrivals
+                    Nouveautés
                   </Link>
                 </li>
                 <li className="sub-menu__item">
                   <a href="#" className="menu-link menu-link_us-s">
-                    Dresses
+                    Robes
                   </a>
                 </li>
                 <li className="sub-menu__item">
                   <Link to="/shop-3" className="menu-link menu-link_us-s">
-                    Accessories
+                    Accessoires
                   </Link>
                 </li>
                 <li className="sub-menu__item">
                   <a href="#" className="menu-link menu-link_us-s">
-                    Footwear
+                    Chaussures
                   </a>
                 </li>
                 <li className="sub-menu__item">
                   <a href="#" className="menu-link menu-link_us-s">
-                    Sweatshirt
+                    Sweat-shirts
                   </a>
                 </li>
               </ul>

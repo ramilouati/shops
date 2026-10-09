@@ -40,6 +40,7 @@ import { products42 } from "./jewelry";
 import { products29, products30, products31, products32 } from "./medical";
 import { products47, products48, products49 } from "./tools";
 import { products41 } from "./watches";
+import { home5Products } from "../home5";
 
 export const allProducts = [
   ...products1,
@@ -101,4 +102,5 @@ export const allProducts = [
   ...products57,
   ...products58,
   ...products59,
+  ...home5Products,
 ];

@@ -7,6 +7,7 @@ import { Autoplay } from "swiper/modules";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Equipments() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -144,7 +145,7 @@ export default function Equipments() {
                 </h6>
                 <div className="product-card__price d-flex">
                   <span className="money price theme-color fw-bold fs-18">
-                    ${elm.price}
+                    {formatPrice(elm.price)}
                   </span>
                 </div>
               </div>

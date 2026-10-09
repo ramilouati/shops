@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function BestSelling() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
@@ -149,7 +150,7 @@ export default function BestSelling() {
                       <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                     </h6>
                     <div className="product-card__price d-flex">
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     </div>
 
                     <button

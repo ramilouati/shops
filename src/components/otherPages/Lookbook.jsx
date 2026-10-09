@@ -23,7 +23,7 @@ export default function Lookbook() {
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
                   <p className="text-uppercase mb-1 white-color">
-                    STARTING AT $19
+                    STARTING AT 19 TND
                   </p>
                   <h3 className="white-color">Women’s T-Shirts</h3>
                 </div>
@@ -42,7 +42,7 @@ export default function Lookbook() {
                   />
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                  <p className="text-uppercase mb-1">STARTING AT $21</p>
+                  <p className="text-uppercase mb-1">STARTING AT 21 TND</p>
                   <h3>Slim Fit Cotton Shorts</h3>
                 </div>
               </a>
@@ -62,7 +62,7 @@ export default function Lookbook() {
                   />
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                  <p className="text-uppercase mb-1">STARTİNG AT $39</p>
+                  <p className="text-uppercase mb-1">STARTİNG AT 39 TND</p>
                   <h3>Men’s Sportswear</h3>
                 </div>
               </a>
@@ -83,7 +83,7 @@ export default function Lookbook() {
                   />
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                  <p className="text-uppercase mb-1">STARTİNG AT $39</p>
+                  <p className="text-uppercase mb-1">STARTİNG AT 39 TND</p>
                   <h3>Knee-length Cotton Shorts</h3>
                 </div>
               </a>
@@ -104,7 +104,7 @@ export default function Lookbook() {
                   />
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                  <p className="text-uppercase mb-1">STARTING AT $19</p>
+                  <p className="text-uppercase mb-1">STARTING AT 19 TND</p>
                   <h3>Canvas Trainers</h3>
                 </div>
               </a>
@@ -122,7 +122,7 @@ export default function Lookbook() {
                   />
                 </div>
                 <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                  <p className="text-uppercase mb-1">STARTING AT $21</p>
+                  <p className="text-uppercase mb-1">STARTING AT 21 TND</p>
                   <h3>Slim Fit Cotton Shorts</h3>
                 </div>
               </a>

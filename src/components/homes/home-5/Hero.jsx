@@ -1,4 +1,4 @@
-import { slides6 } from "@/data/heroslides";
+import { heroSlides } from "@/data/home5";
 import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
@@ -29,7 +29,7 @@ export default function Hero() {
       className="swiper-container js-swiper-slider slideshow minh-100 swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events"
       {...swiperOptions}
     >
-      {slides6.map((elm, i) => (
+      {heroSlides.map((elm, i) => (
         <SwiperSlide key={i} className="swiper-slide">
           <div className="overflow-hidden position-relative h-100">
             <div
@@ -56,13 +56,13 @@ export default function Hero() {
                   to="/shop-1"
                   className="btn-link btn-link_lg color-white fw-medium animate animate_fade animate_btt animate_delay-7"
                 >
-                  Shop Women
+                  Collection Femme
                 </Link>
                 <Link
                   to="/shop-1"
                   className="btn-link btn-link_lg color-white fw-medium animate animate_fade animate_btt animate_delay-7"
                 >
-                  Shop Men
+                  Collection Homme
                 </Link>
               </div>
             </div>

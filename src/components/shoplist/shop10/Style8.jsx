@@ -4,6 +4,7 @@ import { products58 } from "@/data/products/fashion";
 import { Link } from "react-router-dom";
 import { useContextElement } from "@/context/Context";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Style8() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -43,7 +44,7 @@ export default function Style8() {
                 </span>
               </div>
               <div className="product-card__price d-flex">
-                <span className="money price fs-5">${elm.price}</span>
+                <span className="money price fs-5">{formatPrice(elm.price)}</span>
               </div>
 
               <div className="anim_appear-bottom position-absolute bottom-0 start-0 end-0 d-none d-sm-flex align-items-center bg-body">

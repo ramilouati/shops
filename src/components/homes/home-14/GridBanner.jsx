@@ -1,5 +1,6 @@
 import { gridBannerItems } from "@/data/banner";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function GridBanner() {
   return (
     <section className="grid-banner container">
@@ -21,7 +22,7 @@ export default function GridBanner() {
                   <br />
                   {elm.title.split(" ").slice(1).join(" ")}
                 </h3>
-                <p className="theme-color fs-20 fw-medium mb-4">${elm.price}</p>
+                <p className="theme-color fs-20 fw-medium mb-4">{formatPrice(elm.price)}</p>
                 <button className="btn btn-outline-primary border-0 fs-12 btn-40 border-circle text-uppercase theme-bg-color text-white px-4 py-2 fw-semi-bold">
                   <span>Shop Now</span>
                 </button>

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Autoplay, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Trending() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -81,7 +82,7 @@ export default function Trending() {
                   </h6>
                   <div className="product-card__price d-flex mb-1">
                     <span className="money price fs-base fw-semi-bold">
-                      ${elm.price}
+                      {formatPrice(elm.price)}
                     </span>
                   </div>
 

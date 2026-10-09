@@ -7,6 +7,7 @@ import { products28 } from "@/data/products/glasses";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function NewArrival() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const swiperOptions = {
@@ -99,7 +100,7 @@ export default function NewArrival() {
                   <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                 </h6>
                 <div className="product-card__price d-flex text-secondary mb-2">
-                  <span className="money price">${elm.price}</span>
+                  <span className="money price">{formatPrice(elm.price)}</span>
                 </div>
                 <div className="d-flex align-items-center">
                   <ColorSelection />

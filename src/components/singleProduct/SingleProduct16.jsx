@@ -62,7 +62,7 @@ export default function SingleProduct16({ product }) {
             </span>
           </div>
           <div className="product-single__price">
-            <span className="current-price">$130 - $170</span>
+            <span className="current-price">130 TND - 170 TND</span>
           </div>
           <div className="product-single__short-desc">
             <p>

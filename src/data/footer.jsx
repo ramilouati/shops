@@ -22,11 +22,7 @@ export const footerLinks3 = [
 ];
 
 export const languageOptions = [
-  { value: "", text: "United Kingdom | English", selected: true },
-  { value: "1", text: "United States | English" },
-  { value: "2", text: "German" },
-  { value: "3", text: "French" },
-  { value: "4", text: "Swedish" },
+  { value: "fr", text: "Tunisie | Français", selected: true },
 ];
 
 export const languageOptions2 = [
@@ -37,9 +33,7 @@ export const languageOptions2 = [
 ];
 
 export const currencyOptions = [
-  { value: "", text: "$ USD", selected: true },
-  { value: "1", text: "£ GBP" },
-  { value: "2", text: "€ EURO" },
+  { value: "TND", text: "TND | Dinar tunisien", selected: true },
 ];
 
 export const socialLinks = [

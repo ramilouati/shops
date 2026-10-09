@@ -1,6 +1,7 @@
 import Slider from "rc-slider";
 import { useEffect, useRef, useState } from "react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Price() {
   const [price, setPrice] = useState([20, 70987]);
 
@@ -58,11 +59,11 @@ export default function Price() {
         <div className="price-range__info d-flex align-items-center mt-2">
           <div className="me-auto">
             <span className="text-secondary">Min Price: </span>
-            <span className="price-range__min">${price[0]}</span>
+            <span className="price-range__min">{formatPrice(price[0])}</span>
           </div>
           <div>
             <span className="text-secondary">Max Price: </span>
-            <span className="price-range__max">${price[1]}</span>
+            <span className="price-range__max">{formatPrice(price[1])}</span>
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
   menuCategories,
   sortingOptions,
 } from "@/data/products/productCategories";
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop1() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(4);
@@ -229,14 +230,14 @@ export default function Shop1() {
                       <>
                         {" "}
                         <span className="money price price-old">
-                          ${elm.priceOld}
+                          {formatPrice(elm.priceOld)}
                         </span>
                         <span className="money price price-sale">
-                          ${elm.price}
+                          {formatPrice(elm.price)}
                         </span>
                       </>
                     ) : (
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     )}
                   </div>
                   {elm.colors && (

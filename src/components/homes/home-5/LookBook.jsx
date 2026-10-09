@@ -1,4 +1,4 @@
-import { lookbookItems } from "@/data/products/fashion";
+import { lookbookItems } from "@/data/home5";
 
 export default function LookBook() {
   return (
@@ -17,7 +17,7 @@ export default function LookBook() {
                   src={elm.imgSrc}
                   width="330"
                   height="430"
-                  alt="image"
+                  alt={elm.title}
                 />
                 <div className="position-absolute left-0 bottom-0 width-100 px-3 mx-3 mb-3 pb-2">
                   <p className="mb-1 text-uppercase text-white">

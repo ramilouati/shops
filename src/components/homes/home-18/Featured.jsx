@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import { products40 } from "@/data/products/car";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["All", "Bestsellers", "Most Viewed"];
 
 export default function Featured() {
@@ -151,7 +152,7 @@ export default function Featured() {
                     </div>
                     <div className="product-card__price d-flex">
                       <span className="money price fs-16 fw-semi-bold">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
                   </div>

@@ -1,4 +1,4 @@
-import { servicePromotions } from "@/data/features";
+import { servicePromotions } from "@/data/home5";
 
 export default function Features() {
   return (

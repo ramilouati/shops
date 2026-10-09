@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
   autoplay: {
@@ -90,7 +91,7 @@ export default function Products5() {
                   <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                 </h6>
                 <div className="product-card__price d-flex">
-                  <span className="money price">${elm.price}</span>
+                  <span className="money price">{formatPrice(elm.price)}</span>
                 </div>
                 {elm.reviews && (
                   <div className="product-card__review d-flex align-items-center">

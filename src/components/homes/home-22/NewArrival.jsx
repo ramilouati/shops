@@ -2,6 +2,7 @@ import { useContextElement } from "@/context/Context";
 import { products48 } from "@/data/products/tools";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["All", "New", "On Sale"];
 
 export default function NewArrival() {
@@ -115,7 +116,7 @@ export default function NewArrival() {
                           </h6>
                           <div className="product-card__price d-flex">
                             <span className="money price theme-color fs-15 fw-semi-bold">
-                              ${elm.price}
+                              {formatPrice(elm.price)}
                             </span>
                           </div>
 

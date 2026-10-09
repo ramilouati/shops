@@ -43,11 +43,11 @@ export default function Price() {
           <div className="price-range__info d-flex align-items-center mt-2">
             <div className="me-auto">
               <span className="text-secondary">Min Price: </span>
-              <span className="price-range__min">$250</span>
+              <span className="price-range__min">250 TND</span>
             </div>
             <div>
               <span className="text-secondary">Max Price: </span>
-              <span className="price-range__max">$450</span>
+              <span className="price-range__max">450 TND</span>
             </div>
           </div>
         </div>

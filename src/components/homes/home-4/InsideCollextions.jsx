@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import ColorSelection from "@/components/common/ColorSelection";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function InsideCollextions() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -158,15 +159,15 @@ export default function InsideCollextions() {
                   {elm.oldPrice && (
                     <>
                       <span className="money price price-old">
-                        ${elm.oldPrice}
+                        {formatPrice(elm.oldPrice)}
                       </span>
                       <span className="money price price-sale">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </>
                   )}
                   {!elm.oldPrice && (
-                    <span className="money price">${elm.price}</span>
+                    <span className="money price">{formatPrice(elm.price)}</span>
                   )}
                 </div>
                 {elm.hasColorVariety && (

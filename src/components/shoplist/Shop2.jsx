@@ -17,6 +17,7 @@ import {
   sortingOptions,
 } from "@/data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop2() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
 
@@ -245,14 +246,14 @@ export default function Shop2() {
                         <>
                           {" "}
                           <span className="money price price-old">
-                            ${elm.priceOld}
+                            {formatPrice(elm.priceOld)}
                           </span>
                           <span className="money price price-sale">
-                            ${elm.price}
+                            {formatPrice(elm.price)}
                           </span>
                         </>
                       ) : (
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       )}
                     </div>
                     {elm.colors && (

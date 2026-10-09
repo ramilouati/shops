@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useContextElement } from "@/context/Context";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Style7() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -81,7 +82,7 @@ export default function Style7() {
                 <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
               </h6>
               <div className="product-card__price d-flex mb-1">
-                <span className="money price">${elm.price}</span>
+                <span className="money price">{formatPrice(elm.price)}</span>
               </div>
 
               <button

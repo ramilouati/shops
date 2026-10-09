@@ -31,7 +31,7 @@ export default function MobileFooter1() {
             >
               <use href="#icon_home" />
             </svg>
-            <span>Home</span>
+            <span>Accueil</span>
           </Link>
         </div>
         {/* <!-- /.col-3 --> */}
@@ -51,7 +51,7 @@ export default function MobileFooter1() {
             >
               <use href="#icon_hanger" />
             </svg>
-            <span>Shop</span>
+            <span>Boutique</span>
           </Link>
         </div>
         {/* <!-- /.col-3 --> */}
@@ -76,7 +76,7 @@ export default function MobileFooter1() {
                 {wishList.length}
               </span>
             </div>
-            <span>Wishlist</span>
+            <span>Favoris</span>
           </Link>
         </div>
         {/* <!-- /.col-3 --> */}

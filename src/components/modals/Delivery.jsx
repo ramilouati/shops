@@ -27,7 +27,7 @@ export default function Delivery() {
               <p>Buy before 6pm to receive your order next day.</p>
               <div className="d-flex align-items-center justify-content-between">
                 <h6>Next day delivery</h6>
-                <span>4 USD</span>
+                <span>4 TND</span>
               </div>
               <p>
                 Orders before 6pm from Monday to Saturday (or before 1pm on
@@ -39,7 +39,7 @@ export default function Delivery() {
               </p>
               <div className="d-flex align-items-center justify-content-between">
                 <h6>Drop Point</h6>
-                <span>8 USD</span>
+                <span>8 TND</span>
               </div>
               <p>
                 In 2-3 working days. Pick up your parcel in one of the many
@@ -48,7 +48,7 @@ export default function Delivery() {
               </p>
               <div className="d-flex align-items-center justify-content-between">
                 <h6>Same day delivery in London:</h6>
-                <span>9 USD</span>
+                <span>9 TND</span>
               </div>
               <p>
                 Place your order before 13:00 to get it today!.

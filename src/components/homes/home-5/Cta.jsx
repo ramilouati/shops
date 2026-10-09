@@ -8,7 +8,7 @@ export default function Cta() {
           <div className="row">
             <div className="col-lg-6 text-center px-lg-5 d-flex align-items-center justify-content-center">
               <div className="pt-4 pb-4">
-                <h5 className="mb-3">Stay In Touch</h5>
+                <h5 className="mb-3">Restons connectés</h5>
 
                 <ul className="social-links list-unstyled d-flex flex-wrap mb-0 align-items-center justify-content-center">
                   {socialLinks.map((link, index) => (
@@ -35,10 +35,10 @@ export default function Cta() {
             <div className="col-lg-6 text-center px-lg-5 border-left-0 border-left-lg-1 border-top-1 border-top-lg-0">
               <div className="pt-3 pb-3 pt-xl-5 pb-xl-5"></div>
               <div className="block-newsletter">
-                <h3 className="block__title">Sign up now & get 10% off</h3>
+                <h3 className="block__title">Inscrivez-vous et profitez de -10 %</h3>
                 <p>
-                  Be the first to get the latest news about trends, promotions,
-                  and much more!
+                  Soyez les premiers informés des tendances, des promotions
+                  et bien plus encore !
                 </p>
                 <form
                   onSubmit={(e) => e.preventDefault()}
@@ -48,10 +48,10 @@ export default function Cta() {
                     className="form-control"
                     type="email"
                     name="email"
-                    placeholder="Your email address"
+                    placeholder="Votre adresse e-mail"
                   />
                   <button className="btn btn-secondary" type="submit">
-                    JOIN
+                    S’INSCRIRE
                   </button>
                 </form>
               </div>

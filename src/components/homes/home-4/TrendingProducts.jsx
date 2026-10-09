@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import ColorSelection from "@/components/common/ColorSelection";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function TrendingProducts() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -155,7 +156,7 @@ export default function TrendingProducts() {
                       <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                     </h6>
                     <div className="product-card__price d-flex">
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     </div>
                     {elm.hasColorVariety && (
                       <div className="d-flex align-items-center mt-1">

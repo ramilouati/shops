@@ -64,7 +64,7 @@ export default function SingleProduct14({ product }) {
             </span>
           </div>
           <div className="product-single__price">
-            <span className="current-price">$130 - $170</span>
+            <span className="current-price">130 TND - 170 TND</span>
           </div>
           <div className="product-single__short-desc">
             <p>
@@ -103,7 +103,7 @@ export default function SingleProduct14({ product }) {
 
                 <div className="grouped-item__name">The Cotton Crew White</div>
                 <div className="grouped-item__price">
-                  <span className="regular-price">$62.00</span>
+                  <span className="regular-price">62 TND</span>
                 </div>
               </div>
               <div className="grouped-item flex-wrap ">
@@ -137,7 +137,7 @@ export default function SingleProduct14({ product }) {
                   The ReCashmere Crew - Green
                 </div>
                 <div className="grouped-item__price mt-sm-0">
-                  <span className="regular-price">$62.00</span>
+                  <span className="regular-price">62 TND</span>
                 </div>
               </div>
               <div>

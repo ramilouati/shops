@@ -1,5 +1,6 @@
 import { useContextElement } from "@/context/Context";
-import { products11 } from "@/data/products/fashion";
+import { weekDealProducts } from "@/data/home5";
+import { formatPrice } from "@/utlis/formatPrice";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
@@ -55,24 +56,24 @@ export default function WeekDeals() {
           src="/assets/images/home/demo5/deal_bg.jpg"
           width="1903"
           height="699"
-          alt="image"
+          alt="Offres de la semaine"
         />
       </div>
       <div className="container position-relative">
         <div className="mb-4 mb-xl-5 pt-1 pb-5"></div>
 
         <h2 className="section-title fw-normal text-center mb-3 pb-xl-3 mb-xl-3 text-white">
-          Deal Of The Week
+          Offres de la semaine
         </h2>
 
         <div className="row">
           <div className="col-md-6 col-lg-4 col-xl-20per d-flex align-items-center flex-column justify-content-center py-4 align-items-md-start">
-            <h2 className="text-white">Summer Sale</h2>
-            <h2 className="fw-bold text-white">Up to 60% Off</h2>
+            <h2 className="text-white">Soldes d’été</h2>
+            <h2 className="fw-bold text-white">Jusqu’à -60 %</h2>
 
             <div className="position-relative d-flex align-items-center text-center text-white pt-xxl-4 js-countdown mb-3">
               <CountDownComponent
-                labelParentclassName={"countdown-word text-uppercase"}
+                labelParentClass={"countdown-word text-uppercase"}
               />
             </div>
 
@@ -80,7 +81,7 @@ export default function WeekDeals() {
               to="/shop-1"
               className="btn-link default-underline text-uppercase text-white fw-medium mt-3"
             >
-              View All
+              Voir tout
             </Link>
           </div>
           <div className="col-md-6 col-lg-8 col-xl-80per">
@@ -89,7 +90,7 @@ export default function WeekDeals() {
                 className="swiper-container js-swiper-slider"
                 {...swiperOptions}
               >
-                {products11.map((elm, i) => (
+                {weekDealProducts.map((elm, i) => (
                   <SwiperSlide key={i} className="swiper-slide product-card">
                     <div className="pc__img-wrapper">
                       <Link to={`/product1_simple/${elm.id}`}>
@@ -98,7 +99,7 @@ export default function WeekDeals() {
                           src={elm.imgSrc}
                           width="258"
                           height="313"
-                          alt="Cropped Faux leather Jacket"
+                          alt={elm.title}
                           className="pc__img"
                         />
                       </Link>
@@ -107,13 +108,13 @@ export default function WeekDeals() {
                         onClick={() => addProductToCart(elm.id)}
                         title={
                           isAddedToCartProducts(elm.id)
-                            ? "Already Added"
-                            : "Add to Cart"
+                            ? "Déjà ajouté"
+                            : "Ajouter au panier"
                         }
                       >
                         {isAddedToCartProducts(elm.id)
-                          ? "Already Added"
-                          : "Add To Cart"}
+                          ? "Déjà ajouté"
+                          : "Ajouter au panier"}
                       </button>
                       <div className="anim_appear-right position-absolute top-0 mt-2 me-2">
                         <button
@@ -121,7 +122,7 @@ export default function WeekDeals() {
                           data-bs-toggle="modal"
                           data-bs-target="#quickView"
                           onClick={() => setQuickViewItem(elm)}
-                          title="Quick view"
+                          title="Aperçu rapide"
                         >
                           <svg
                             className="d-inline-block"
@@ -138,7 +139,7 @@ export default function WeekDeals() {
                             isAddedtoWishlist(elm.id) ? "active" : ""
                           }`}
                           onClick={() => toggleWishlist(elm.id)}
-                          title="Add To Wishlist"
+                          title="Ajouter aux favoris"
                         >
                           <svg
                             width="14"
@@ -163,7 +164,7 @@ export default function WeekDeals() {
                         </Link>
                       </h6>
                       <div className="product-card__price d-flex">
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       </div>
                     </div>
                   </SwiperSlide>

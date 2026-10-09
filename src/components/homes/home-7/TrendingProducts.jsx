@@ -4,6 +4,7 @@ import { products13 } from "@/data/products/fashion";
 
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function TrendingProducts() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -49,14 +50,14 @@ export default function TrendingProducts() {
                     {elm.priceOld ? (
                       <>
                         <span className="money price price-old">
-                          ${elm.priceOld}
+                          {formatPrice(elm.priceOld)}
                         </span>
                         <span className="money price price-sale">
-                          ${elm.price}
+                          {formatPrice(elm.price)}
                         </span>
                       </>
                     ) : (
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     )}
                   </div>
 

@@ -4,6 +4,7 @@ import React from "react";
 
 import { Tooltip } from "react-tooltip";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Lookbook() {
   return (
     <section className="lookbook-products position-relative container">
@@ -47,7 +48,7 @@ export default function Lookbook() {
                 <p className="fw-medium mb-0">
                   <Link to={`/product1_simple/${id}`}>{title}</Link>
                 </p>
-                <p className="mb-0">${price}</p>
+                <p className="mb-0">{formatPrice(price)}</p>
               </div>
             )}
             openOnClick

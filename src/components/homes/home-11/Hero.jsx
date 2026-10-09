@@ -3,6 +3,7 @@ import { slideData6 } from "@/data/heroslides";
 import { Autoplay, EffectFade, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Hero() {
   const swiperOptions = {
     autoplay: {
@@ -49,7 +50,7 @@ export default function Hero() {
                     {elm.feature2}
                   </h2>
                   <h2 className="fs-3 fw-normal mb-3 animate animate_fade animate_btt animate_delay-5">
-                    From ${elm.price}
+                    From {formatPrice(elm.price)}
                   </h2>
                   <Link
                     to="/shop-1"

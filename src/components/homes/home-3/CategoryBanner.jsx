@@ -2,6 +2,7 @@ import { categoryBanners } from "@/data/categories";
 
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function CategoryBanner() {
   return (
     <section className="category-banner container">
@@ -18,7 +19,7 @@ export default function CategoryBanner() {
                 alt="image"
               />
               <div className="category-banner__item-mark">
-                Starting at ${elm.price}
+                Starting at {formatPrice(elm.price)}
               </div>
               <div className="category-banner__item-content">
                 <h3 className="mb-0">{elm.category}</h3>

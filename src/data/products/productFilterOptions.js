@@ -37,6 +37,6 @@ export const brands = [
 
 export const filters = [
   { id: 1, label: "Blues" },
-  { id: 2, label: "Max Price: $493" },
+  { id: 2, label: "Max Price: 493 TND" },
   { id: 3, label: "Zara" },
 ];

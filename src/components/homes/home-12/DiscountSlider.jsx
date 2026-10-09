@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function DiscountSlider() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -165,7 +166,7 @@ export default function DiscountSlider() {
                       </span>
                     </div>
                     <div className="product-card__price d-flex">
-                      <span className="money price fs-5">${elm.price}</span>
+                      <span className="money price fs-5">{formatPrice(elm.price)}</span>
                     </div>
                   </div>
                 </SwiperSlide>

@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import ShareComponent from "../common/ShareComponent";
 import { useContextElement } from "@/context/Context";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function SingleProduct1({ product }) {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
@@ -91,7 +92,7 @@ export default function SingleProduct1({ product }) {
             </span>
           </div>
           <div className="product-single__price">
-            <span className="current-price">${product.price}</span>
+            <span className="current-price">{formatPrice(product.price)}</span>
           </div>
           <div className="product-single__short-desc">
             <p>

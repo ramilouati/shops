@@ -3,6 +3,7 @@ import { useContextElement } from "@/context/Context";
 import { products41 } from "@/data/products/watches";
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Populer() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -42,7 +43,7 @@ export default function Populer() {
                     </h6>
                     <div className="product-card__price d-flex mb-1">
                       <span className="money price fs-base fw-semi-bold">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
 

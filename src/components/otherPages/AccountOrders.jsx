@@ -17,7 +17,7 @@ export default function AccountOrders() {
               <td>#2416</td>
               <td>October 1, 2023</td>
               <td>On hold</td>
-              <td>$1,200.65 for 3 items</td>
+              <td>1 200,650 TND for 3 items</td>
               <td>
                 <button className="btn btn-primary">VIEW</button>
               </td>
@@ -26,7 +26,7 @@ export default function AccountOrders() {
               <td>#2417</td>
               <td>October 2, 2023</td>
               <td>On hold</td>
-              <td>$1,200.65 for 3 items</td>
+              <td>1 200,650 TND for 3 items</td>
               <td>
                 <button className="btn btn-primary">VIEW</button>
               </td>
@@ -35,7 +35,7 @@ export default function AccountOrders() {
               <td>#2418</td>
               <td>October 3, 2023</td>
               <td>On hold</td>
-              <td>$1,200.65 for 3 items</td>
+              <td>1 200,650 TND for 3 items</td>
               <td>
                 <button className="btn btn-primary">VIEW</button>
               </td>
@@ -44,7 +44,7 @@ export default function AccountOrders() {
               <td>#2419</td>
               <td>October 4, 2023</td>
               <td>On hold</td>
-              <td>$1,200.65 for 3 items</td>
+              <td>1 200,650 TND for 3 items</td>
               <td>
                 <button className="btn btn-primary">VIEW</button>
               </td>

@@ -4,6 +4,7 @@ import { useContextElement } from "@/context/Context";
 import { products35 } from "@/data/products/bikes";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["All", "Bestsellers", "Most Viewed"];
 
 export default function MostPopuler() {
@@ -147,7 +148,7 @@ export default function MostPopuler() {
                     </h6>
                     <div className="product-card__price d-flex">
                       <span className="money price theme-color fw-bold fs-18">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
                   </div>

@@ -8,6 +8,7 @@ import { useContextElement } from "@/context/Context";
 import { openModalShopFilter } from "@/utlis/aside";
 import { sortingOptions } from "@/data/products/productCategories";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop9() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -77,14 +78,14 @@ export default function Shop9() {
                       {elm.priceOld ? (
                         <>
                           <span className="money price price-old">
-                            ${elm.priceOld}
+                            {formatPrice(elm.priceOld)}
                           </span>
                           <span className="money price price-sale">
-                            ${elm.price}
+                            {formatPrice(elm.price)}
                           </span>
                         </>
                       ) : (
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       )}
                     </div>
                     {elm.reviews && (
@@ -146,14 +147,14 @@ export default function Shop9() {
                           {elm.priceOld ? (
                             <>
                               <span className="money price price-old">
-                                ${elm.priceOld}
+                                {formatPrice(elm.priceOld)}
                               </span>
                               <span className="money price price-sale">
-                                ${elm.price}
+                                {formatPrice(elm.price)}
                               </span>
                             </>
                           ) : (
-                            <span className="money price">${elm.price}</span>
+                            <span className="money price">{formatPrice(elm.price)}</span>
                           )}
                         </div>
                         {elm.reviews && (
@@ -215,14 +216,14 @@ export default function Shop9() {
                         {elm.priceOld ? (
                           <>
                             <span className="money price price-old">
-                              ${elm.priceOld}
+                              {formatPrice(elm.priceOld)}
                             </span>
                             <span className="money price price-sale">
-                              ${elm.price}
+                              {formatPrice(elm.price)}
                             </span>
                           </>
                         ) : (
-                          <span className="money price">${elm.price}</span>
+                          <span className="money price">{formatPrice(elm.price)}</span>
                         )}
                       </div>
                       {elm.reviews && (
@@ -292,14 +293,14 @@ export default function Shop9() {
                             {elm.priceOld ? (
                               <>
                                 <span className="money price price-old">
-                                  ${elm.priceOld}
+                                  {formatPrice(elm.priceOld)}
                                 </span>
                                 <span className="money price price-sale">
-                                  ${elm.price}
+                                  {formatPrice(elm.price)}
                                 </span>
                               </>
                             ) : (
-                              <span className="money price">${elm.price}</span>
+                              <span className="money price">{formatPrice(elm.price)}</span>
                             )}
                           </div>
                           {elm.reviews && (
@@ -363,14 +364,14 @@ export default function Shop9() {
                           {elm.priceOld ? (
                             <>
                               <span className="money price price-old">
-                                ${elm.priceOld}
+                                {formatPrice(elm.priceOld)}
                               </span>
                               <span className="money price price-sale">
-                                ${elm.price}
+                                {formatPrice(elm.price)}
                               </span>
                             </>
                           ) : (
-                            <span className="money price">${elm.price}</span>
+                            <span className="money price">{formatPrice(elm.price)}</span>
                           )}
                         </div>
                         {elm.reviews && (
@@ -431,14 +432,14 @@ export default function Shop9() {
                       {elm.priceOld ? (
                         <>
                           <span className="money price price-old">
-                            ${elm.priceOld}
+                            {formatPrice(elm.priceOld)}
                           </span>
                           <span className="money price price-sale">
-                            ${elm.price}
+                            {formatPrice(elm.price)}
                           </span>
                         </>
                       ) : (
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       )}
                     </div>
                     {elm.reviews && (
@@ -499,14 +500,14 @@ export default function Shop9() {
                       {elm.priceOld ? (
                         <>
                           <span className="money price price-old">
-                            ${elm.priceOld}
+                            {formatPrice(elm.priceOld)}
                           </span>
                           <span className="money price price-sale">
-                            ${elm.price}
+                            {formatPrice(elm.price)}
                           </span>
                         </>
                       ) : (
-                        <span className="money price">${elm.price}</span>
+                        <span className="money price">{formatPrice(elm.price)}</span>
                       )}
                     </div>
                     {elm.reviews && (

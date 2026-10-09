@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function BestSelling() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
@@ -94,7 +95,7 @@ export default function BestSelling() {
                 </h6>
                 <div className="product-card__price d-flex">
                   <span className="money price theme-color fs-15 fw-semi-bold">
-                    ${elm.price}
+                    {formatPrice(elm.price)}
                   </span>
                 </div>
 

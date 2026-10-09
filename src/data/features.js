@@ -3,7 +3,7 @@ export const servicePromotions = [
     id: 1,
     icon: "#icon_shipping",
     title: "Fast And Free Delivery",
-    content: "Free delivery for all orders over $140",
+    content: "Free delivery for all orders over 140 TND",
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ export const servicesData = [
     id: 1,
     icon: "#icon_shipping",
     title: "Fast And Free Delivery",
-    content: "Free delivery for all orders over $140",
+    content: "Free delivery for all orders over 140 TND",
   },
   {
     id: 2,
@@ -50,7 +50,7 @@ export const servicePromotions2 = [
     id: 1,
     icon: "icon_shipping",
     title: "Fast And Free Delivery",
-    content: "Free delivery for all orders over $140",
+    content: "Free delivery for all orders over 140 TND",
   },
   {
     id: 2,
@@ -76,7 +76,7 @@ export const servicePromotionsData3 = [
   {
     id: 1,
     title: "Fast And Free Delivery",
-    content: "Free delivery for all orders over $140",
+    content: "Free delivery for all orders over 140 TND",
     color: "#e3766a",
     icon: "#icon_shipping",
   },

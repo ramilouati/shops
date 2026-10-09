@@ -3,6 +3,7 @@ import { currencyOptions, languageOptions } from "@/data/footer";
 import { socialLinks } from "@/data/socials";
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import CartLength from "./components/CartLength";
 import { openCart } from "@/utlis/openCart";
 import MobileNav from "./components/MobileNav";
@@ -62,7 +63,7 @@ export default function MobileHeader() {
         </a>
 
         <div className="logo">
-          <a to="/">
+          <Link to="/">
             <img
               src="/assets/images/logo.png"
               width={112}
@@ -70,7 +71,7 @@ export default function MobileHeader() {
               alt="Uomo"
               className="logo__image d-block"
             />
-          </a>
+          </Link>
         </div>
         {/* <!-- /.logo --> */}
 
@@ -106,7 +107,7 @@ export default function MobileHeader() {
                 className="search-field__input w-100 border rounded-1"
                 type="text"
                 name="search-keyword"
-                placeholder="Search products"
+                placeholder="Rechercher un produit"
               />
               <button
                 className="btn-icon search-popup__submit pb-0 me-2"
@@ -161,12 +162,12 @@ export default function MobileHeader() {
               <use href="#icon_user" />
             </svg>
             <span className="d-inline-block ms-2 text-uppercase align-middle fw-medium">
-              My Account
+              Mon compte
             </span>
           </div>
 
           <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Language</label>
+            <label className="me-2 text-secondary">Langue</label>
             <select
               className="form-select form-select-sm bg-transparent border-0"
               aria-label="Default select example"
@@ -185,13 +186,12 @@ export default function MobileHeader() {
           </div>
 
           <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Currency</label>
+            <label className="me-2 text-secondary">Devise</label>
             <select
               className="form-select form-select-sm bg-transparent border-0"
               aria-label="Default select example"
               name="store-language"
-              defaultValue={"fghgjhgj"}
-            >
+                          >
               {currencyOptions.map((option, index) => (
                 <option
                   key={index}

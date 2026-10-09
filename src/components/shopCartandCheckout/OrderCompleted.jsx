@@ -1,6 +1,7 @@
 import { useContextElement } from "@/context/Context";
 import { useEffect, useState } from "react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function OrderCompleted() {
   const { cartProducts, totalPrice } = useContextElement();
   const [showDate, setShowDate] = useState(false);
@@ -39,7 +40,7 @@ export default function OrderCompleted() {
         <div className="order-info__item">
           <label>Total</label>
 
-          <span>${totalPrice && totalPrice + 19}</span>
+          <span>{formatPrice(totalPrice && totalPrice + 19)}</span>
         </div>
         <div className="order-info__item">
           <label>Paymetn Method</label>
@@ -62,7 +63,7 @@ export default function OrderCompleted() {
                   <td>
                     {elm.title} x {elm.quantity}
                   </td>
-                  <td>${elm.price}</td>
+                  <td>{formatPrice(elm.price)}</td>
                 </tr>
               ))}
             </tbody>
@@ -71,7 +72,7 @@ export default function OrderCompleted() {
             <tbody>
               <tr>
                 <th>SUBTOTAL</th>
-                <td>${totalPrice}</td>
+                <td>{formatPrice(totalPrice)}</td>
               </tr>
               <tr>
                 <th>SHIPPING</th>
@@ -79,11 +80,11 @@ export default function OrderCompleted() {
               </tr>
               <tr>
                 <th>VAT</th>
-                <td>${totalPrice && 19}</td>
+                <td>{formatPrice(totalPrice && 19)}</td>
               </tr>
               <tr>
                 <th>TOTAL</th>
-                <td>${totalPrice && totalPrice + 19}</td>
+                <td>{formatPrice(totalPrice && totalPrice + 19)}</td>
               </tr>
             </tbody>
           </table>

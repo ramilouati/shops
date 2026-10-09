@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Countdown from "react-countdown";
 
 // Random component
-const Completionist = () => <span>You are good to go!</span>;
+const Completionist = () => <span>Offre terminée !</span>;
 
 // Renderer callback with condition
 
@@ -40,17 +40,17 @@ export default function CountDownComponent({
             <>
               <div className="day countdown-unit">
                 <span className="countdown-num d-block">{days}</span>
-                {isLabel && <span className={labelParentClass}>Days</span>}
+                {isLabel && <span className={labelParentClass}>Jours</span>}
               </div>
 
               <div className="hour countdown-unit">
                 <span className="countdown-num d-block">{hours}</span>
-                {isLabel && <span className={labelParentClass}>Hours</span>}
+                {isLabel && <span className={labelParentClass}>Heures</span>}
               </div>
 
               <div className="min countdown-unit">
                 <span className="countdown-num d-block">{minutes}</span>
-                {isLabel && <span className={labelParentClass}>Mins</span>}
+                {isLabel && <span className={labelParentClass}>Min</span>}
               </div>
 
               <div className="sec countdown-unit">

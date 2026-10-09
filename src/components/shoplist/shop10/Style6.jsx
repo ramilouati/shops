@@ -6,6 +6,7 @@ import { useContextElement } from "@/context/Context";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Style6() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -84,7 +85,7 @@ export default function Style6() {
                   <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                 </h6>
                 <div className="product-card__price d-flex">
-                  <span className="money price">${elm.price}</span>
+                  <span className="money price">{formatPrice(elm.price)}</span>
                 </div>
 
                 <div className="hover__content d-flex align-items-center top-0 end-0 bg-body w-auto">

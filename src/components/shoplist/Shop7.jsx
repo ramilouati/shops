@@ -12,6 +12,7 @@ import { useContextElement } from "@/context/Context";
 const itemPerRow = [2, 3, 4];
 
 import { sortingOptions } from "@/data/products/productCategories";
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop7() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
 
@@ -145,14 +146,14 @@ export default function Shop7() {
                     <>
                       {" "}
                       <span className="money price price-old">
-                        ${elm.priceOld}
+                        {formatPrice(elm.priceOld)}
                       </span>
                       <span className="money price price-sale">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </>
                   ) : (
-                    <span className="money price">${elm.price}</span>
+                    <span className="money price">{formatPrice(elm.price)}</span>
                   )}
                 </div>
                 {elm.colors && (

@@ -1,6 +1,6 @@
-const filterCategories3 = ["Featured", "Popular", "Best Rated"];
 import { useContextElement } from "@/context/Context";
-import { products9 } from "@/data/products/fashion";
+import { collectionFilters, topCollectionProducts } from "@/data/home5";
+import { formatPrice } from "@/utlis/formatPrice";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
@@ -53,14 +53,14 @@ export default function TopCollections() {
       },
     },
   };
-  const [currentCategory, setCurrentCategory] = useState(filterCategories3[0]);
-  const [filtered, setFiltered] = useState(products9);
+  const [currentCategory, setCurrentCategory] = useState(collectionFilters[0]);
+  const [filtered, setFiltered] = useState(topCollectionProducts);
   useEffect(() => {
     if (currentCategory == "All") {
-      setFiltered(products9);
+      setFiltered(topCollectionProducts);
     } else {
       setFiltered([
-        ...products9.filter((elm) => elm.filterCategory == currentCategory),
+        ...topCollectionProducts.filter((elm) => elm.filterCategory == currentCategory),
       ]);
     }
   }, [currentCategory]);
@@ -70,7 +70,7 @@ export default function TopCollections() {
 
       <section className="products-carousel container">
         <h2 className="section-title fw-normal text-center mb-3 pb-xl-3 mb-xl-3">
-          Our Top Collection
+          Notre sélection
         </h2>
 
         <ul
@@ -78,7 +78,7 @@ export default function TopCollections() {
           id="collections-tab"
           role="tablist"
         >
-          {filterCategories3.map((elm, i) => (
+          {collectionFilters.map((elm, i) => (
             <li
               onClick={() => setCurrentCategory(elm)}
               key={i}
@@ -117,7 +117,7 @@ export default function TopCollections() {
                           src={elm.imgSrc}
                           width="260"
                           height="315"
-                          alt="Cropped Faux leather Jacket"
+                          alt={elm.title}
                           className="pc__img"
                         />
                       </Link>
@@ -126,13 +126,13 @@ export default function TopCollections() {
                         onClick={() => addProductToCart(elm.id)}
                         title={
                           isAddedToCartProducts(elm.id)
-                            ? "Already Added"
-                            : "Add to Cart"
+                            ? "Déjà ajouté"
+                            : "Ajouter au panier"
                         }
                       >
                         {isAddedToCartProducts(elm.id)
-                          ? "Already Added"
-                          : "Add To Cart"}
+                          ? "Déjà ajouté"
+                          : "Ajouter au panier"}
                       </button>
                       <div className="anim_appear-right position-absolute top-0 mt-2 me-2">
                         <button
@@ -140,7 +140,7 @@ export default function TopCollections() {
                           data-bs-toggle="modal"
                           data-bs-target="#quickView"
                           onClick={() => setQuickViewItem(elm)}
-                          title="Quick view"
+                          title="Aperçu rapide"
                         >
                           <svg
                             className="d-inline-block"
@@ -157,7 +157,7 @@ export default function TopCollections() {
                             isAddedtoWishlist(elm.id) ? "active" : ""
                           }`}
                           onClick={() => toggleWishlist(elm.id)}
-                          title="Add To Wishlist"
+                          title="Ajouter aux favoris"
                         >
                           <svg
                             width="14"
@@ -183,15 +183,15 @@ export default function TopCollections() {
                         {elm.priceOld && (
                           <>
                             <span className="money price price-old">
-                              ${elm.priceOld}
+                              {formatPrice(elm.priceOld)}
                             </span>
                             <span className="money price price-sale">
-                              ${elm.price}
+                              {formatPrice(elm.price)}
                             </span>
                           </>
                         )}
                         {!elm.priceOld && (
-                          <span className="money price">${elm.price}</span>
+                          <span className="money price">{formatPrice(elm.price)}</span>
                         )}
                       </div>
                     </div>

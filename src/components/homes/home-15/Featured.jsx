@@ -7,6 +7,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Featured() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -146,7 +147,7 @@ export default function Featured() {
                   <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                 </h6>
                 <div className="product-card__price d-flex align-items-center justify-content-center mb-2">
-                  <span className="money price fw-medium">${elm.price}</span>
+                  <span className="money price fw-medium">{formatPrice(elm.price)}</span>
                 </div>
                 <div className="product-card__review d-flex align-items-center justify-content-center">
                   <div className="reviews-group d-flex">

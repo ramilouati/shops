@@ -6,6 +6,7 @@ import Colors from "../singleProduct/Colors";
 
 import ShareComponent from "../common/ShareComponent";
 import { useState } from "react";
+import { formatPrice } from "@/utlis/formatPrice";
 
 export default function QuickView() {
   const { quickViewItem } = useContextElement();
@@ -121,20 +122,19 @@ export default function QuickView() {
             <div className="product-single__detail">
               <h1 className="product-single__name">{quickViewItem.title}</h1>
               <div className="product-single__price">
-                <span className="current-price">${quickViewItem.price}</span>
+                <span className="current-price">{formatPrice(quickViewItem.price)}</span>
               </div>
               <div className="product-single__short-desc">
                 <p>
-                  Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
-                  elementum gravida nec dui. Aenean aliquam varius ipsum, non
-                  ultricies tellus sodales eu. Donec dignissim viverra nunc, ut
-                  aliquet magna posuere eget.
+                  Une pièce élégante et confortable, confectionnée dans des matières
+                  de qualité. Idéale pour un look moderne au quotidien comme pour
+                  vos occasions spéciales.
                 </p>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
                 <div className="product-single__swatches">
                   <div className="product-swatch text-swatches">
-                    <label>Sizes</label>
+                    <label>Tailles</label>
                     <div className="swatch-list">
                       <Size />
                     </div>
@@ -144,11 +144,11 @@ export default function QuickView() {
                       data-bs-toggle="modal"
                       data-bs-target="#sizeGuide"
                     >
-                      Size Guide
+                      Guide des tailles
                     </a>
                   </div>
                   <div className="product-swatch color-swatches">
-                    <label>Color</label>
+                    <label>Couleur</label>
                     <div className="swatch-list">
                       <Colors />
                     </div>
@@ -198,8 +198,8 @@ export default function QuickView() {
                     className="btn btn-primary btn-addtocart js-open-aside"
                   >
                     {isAddedToCartProducts(quickViewItem.id)
-                      ? "Already Added"
-                      : "Add To Cart"}
+                      ? "Déjà ajouté"
+                      : "Ajouter au panier"}
                   </button>
                 </div>
               </form>
@@ -220,22 +220,22 @@ export default function QuickView() {
                   >
                     <use href="#icon_heart" />
                   </svg>
-                  <span>Add to Wishlist</span>
+                  <span>Ajouter aux favoris</span>
                 </a>
                 <ShareComponent title={quickViewItem.title} />
               </div>
               <div className="product-single__meta-info mb-0">
                 <div className="meta-item">
-                  <label>SKU:</label>
-                  <span>N/A</span>
+                  <label>Réf. :</label>
+                  <span>N/D</span>
                 </div>
                 <div className="meta-item">
-                  <label>Categories:</label>
-                  <span>Casual & Urban Wear, Jackets, Men</span>
+                  <label>Catégories :</label>
+                  <span>Mode urbaine, Vestes, Homme</span>
                 </div>
                 <div className="meta-item">
-                  <label>Tags:</label>
-                  <span>biker, black, bomber, leather</span>
+                  <label>Mots-clés :</label>
+                  <span>biker, noir, bomber, cuir</span>
                 </div>
               </div>
             </div>

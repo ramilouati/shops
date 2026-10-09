@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { useContextElement } from "@/context/Context";
 import React, { useEffect } from "react";
+import { formatPrice } from "@/utlis/formatPrice";
 
 export default function CartDrawer() {
   const { cartProducts, setCartProducts, totalPrice } = useContextElement();
@@ -37,7 +38,7 @@ export default function CartDrawer() {
       >
         <div className="aside-header d-flex align-items-center">
           <h3 className="text-uppercase fs-6 mb-0">
-            SHOPPING BAG (
+            MON PANIER (
             <span className="cart-amount js-cart-items-count">
               {cartProducts.length}
             </span>{" "}
@@ -69,10 +70,10 @@ export default function CartDrawer() {
                       {elm.title}
                     </h6>
                     <p className="cart-drawer-item__option text-secondary">
-                      Color: Yellow
+                      Couleur : Jaune
                     </p>
                     <p className="cart-drawer-item__option text-secondary">
-                      Size: L
+                      Taille : L
                     </p>
                     <div className="d-flex align-items-center justify-content-between mt-1">
                       <div className="qty-control position-relative">
@@ -103,7 +104,7 @@ export default function CartDrawer() {
                       </div>
 
                       <span className="cart-drawer-item__price money price">
-                        ${elm.price * elm.quantity}
+                        {formatPrice(elm.price * elm.quantity)}
                       </span>
                     </div>
                   </div>
@@ -123,7 +124,7 @@ export default function CartDrawer() {
           </div>
         ) : (
           <div className="fs-18 mt-5 px-5">
-            Your cart is empty. Start shopping!
+            Votre panier est vide. Commencez vos achats !
           </div>
         )}
         {/* <!-- /.aside-content --> */}
@@ -131,25 +132,25 @@ export default function CartDrawer() {
         <div className="cart-drawer-actions position-absolute start-0 bottom-0 w-100">
           <hr className="cart-drawer-divider" />
           <div className="d-flex justify-content-between">
-            <h6 className="fs-base fw-medium">SUBTOTAL:</h6>
-            <span className="cart-subtotal fw-medium">${totalPrice}</span>
+            <h6 className="fs-base fw-medium">SOUS-TOTAL :</h6>
+            <span className="cart-subtotal fw-medium">{formatPrice(totalPrice)}</span>
           </div>
           {/* <!-- /.d-flex justify-content-between --> */}
           {cartProducts.length ? (
             <>
               <Link to="/shop_cart" className="btn btn-light mt-3 d-block">
-                View Cart
+                Voir le panier
               </Link>
               <Link
                 to="/shop_checkout"
                 className="btn btn-primary mt-3 d-block"
               >
-                Checkout
+                Commander
               </Link>
             </>
           ) : (
             <Link to="/shop-1" className="btn btn-light mt-3 d-block">
-              Explore shop
+              Découvrir la boutique
             </Link>
           )}
         </div>

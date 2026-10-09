@@ -64,23 +64,9 @@ export default function Header5() {
           {/* <!-- /.logo --> */}
 
           <nav className="navigation">
-            <a
-              className="navigation__item"
-              href="#"
-              data-bs-toggle="modal"
-              data-bs-target="#siteMap"
-            >
-              <svg
-                width="30"
-                height="11"
-                fill="currentColor"
-                viewBox="0 0 30 11"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect width="30" height="2" />
-                <rect y="9" width="25" height="2" />
-              </svg>
-            </a>
+            <ul className="navigation__list list-unstyled d-flex">
+              <Nav />
+            </ul>
           </nav>
           {/* <!-- /.navigation --> */}
 

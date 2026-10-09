@@ -32,7 +32,7 @@ export default function Footer18() {
                   Fast And Free Delivery
                 </h3>
                 <p className="service-promotion__content text-secondary text-white fs-13 mb-0">
-                  Free delivery for all orders over $140
+                  Free delivery for all orders over 140 TND
                 </p>
               </div>
             </div>

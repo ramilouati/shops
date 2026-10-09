@@ -13,8 +13,8 @@ import WeekDeals from "@/components/homes/home-5/WeekDeals";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 5 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Accueil || Boutique de mode en ligne",
+  description: "Découvrez notre boutique de mode en ligne : nouveautés, meilleures ventes et offres de la semaine.",
 };
 export default function HomePage5() {
   return (
@@ -38,7 +38,7 @@ export default function HomePage5() {
         <Features />
         <Cta />
       </main>
-      <Footer5 parentclassName={"footer footer_type_2 dark"} />
+      <Footer5 parentClass={"footer footer_type_2 dark"} />
     </>
   );
 }

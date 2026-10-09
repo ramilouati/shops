@@ -8,6 +8,7 @@ const countries = [
 import { useContextElement } from "@/context/Context";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Checkout() {
   const { cartProducts, totalPrice } = useContextElement();
   const [selectedRegion, setSelectedRegion] = useState("");
@@ -238,7 +239,7 @@ export default function Checkout() {
                       <td>
                         {elm.title} x {elm.quantity}
                       </td>
-                      <td>${elm.price * elm.quantity}</td>
+                      <td>{formatPrice(elm.price * elm.quantity)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -247,7 +248,7 @@ export default function Checkout() {
                 <tbody>
                   <tr>
                     <th>SUBTOTAL</th>
-                    <td>${totalPrice}</td>
+                    <td>{formatPrice(totalPrice)}</td>
                   </tr>
                   <tr>
                     <th>SHIPPING</th>
@@ -255,11 +256,11 @@ export default function Checkout() {
                   </tr>
                   <tr>
                     <th>VAT</th>
-                    <td>${totalPrice && 19}</td>
+                    <td>{formatPrice(totalPrice && 19)}</td>
                   </tr>
                   <tr>
                     <th>TOTAL</th>
-                    <td>${totalPrice && totalPrice + 19}</td>
+                    <td>{formatPrice(totalPrice && totalPrice + 19)}</td>
                   </tr>
                 </tbody>
               </table>

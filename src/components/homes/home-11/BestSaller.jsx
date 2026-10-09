@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["TV/Audio", "Cameras", "Video"];
 
 export default function BestSaller() {
@@ -143,7 +144,7 @@ export default function BestSaller() {
                       </div>
 
                       <div className="product-card__price d-flex mb-2">
-                        <span className="money price fs-5">${elm.price}</span>
+                        <span className="money price fs-5">{formatPrice(elm.price)}</span>
                       </div>
 
                       <div className="anim_appear-bottom position-absolute bottom-0 start-0 end-0 d-none d-sm-flex align-items-center bg-body">

@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import CountDownComponent2 from "@/components/common/CountDownComponent2";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function DailyDeal() {
   const swiperOptions = {
     autoplay: {
@@ -97,7 +98,7 @@ export default function DailyDeal() {
 
                 <div className="product-card__price d-flex mb-2">
                   <span className="money price fs-5 theme-color">
-                    ${elm.price}
+                    {formatPrice(elm.price)}
                   </span>
                 </div>
 

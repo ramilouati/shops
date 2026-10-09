@@ -2,6 +2,7 @@ import { useContextElement } from "@/context/Context";
 import { products5 } from "@/data/products/fashion";
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function FeaturesProducts() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -40,10 +41,10 @@ export default function FeaturesProducts() {
                 </h6>
                 <div className="product-card__price d-flex align-items-center">
                   {elm.oldPrice && (
-                    <span className="money price-old">${elm.oldPrice}</span>
+                    <span className="money price-old">{formatPrice(elm.oldPrice)}</span>
                   )}
                   <span className="money price text-secondary">
-                    ${elm.price}
+                    {formatPrice(elm.price)}
                   </span>
                 </div>
 

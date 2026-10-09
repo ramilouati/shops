@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["Face", "Eyes", "Lips"];
 
 export default function PopulerProducts() {
@@ -191,7 +192,7 @@ export default function PopulerProducts() {
                     </h6>
                     <div className="product-card__price d-flex align-items-center justify-content-center mb-2">
                       <span className="money price fw-medium">
-                        ${elm.price}
+                        {formatPrice(elm.price)}
                       </span>
                     </div>
                     <div className="product-card__review d-flex align-items-center justify-content-center">

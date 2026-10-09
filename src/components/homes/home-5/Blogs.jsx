@@ -1,4 +1,4 @@
-import { blogs1 } from "@/data/blogs";
+import { blogPosts } from "@/data/home5";
 import { Link } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -39,7 +39,7 @@ export default function Blogs() {
   return (
     <section className="blog-carousel container">
       <h2 className="section-title fw-normal text-center mb-3 pb-xl-3 mb-xl-3">
-        Our Blog
+        Notre blog
       </h2>
 
       <div className="position-relative">
@@ -47,7 +47,7 @@ export default function Blogs() {
           {...swiperOptions}
           className="swiper-container js-swiper-slider"
         >
-          {blogs1.map((elm, i) => (
+          {blogPosts.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide blog-grid__item mb-4">
               <div className="blog-grid__item-image">
                 <img
@@ -62,7 +62,7 @@ export default function Blogs() {
               <div className="blog-grid__item-detail">
                 <div className="blog-grid__item-meta">
                   <span className="blog-grid__item-meta__author">
-                    By {elm.author}
+                    Par {elm.author}
                   </span>
                   <span className="blog-grid__item-meta__date">{elm.date}</span>
                 </div>

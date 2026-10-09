@@ -1,4 +1,4 @@
-import { categories3 } from "@/data/categories";
+import { categories } from "@/data/home5";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
@@ -41,7 +41,7 @@ export default function Categories() {
   return (
     <section className="category-carousel container">
       <h2 className="section-title text-center fw-normal mb-3 pb-xl-2 mb-xl-4">
-        Top Categories
+        Catégories populaires
       </h2>
 
       <div className="position-relative">
@@ -49,7 +49,7 @@ export default function Categories() {
           className="swiper-container js-swiper-slider"
           {...swiperOptions}
         >
-          {categories3.map((elm, i) => (
+          {categories.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide">
               <img
                 loading="lazy"
@@ -57,7 +57,7 @@ export default function Categories() {
                 src={elm.imgSrc}
                 width="124"
                 height="124"
-                alt="image"
+                alt={elm.name}
               />
               <div className="text-center">
                 <Link to="/shop-1" className="menu-link fw-medium">

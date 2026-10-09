@@ -4,6 +4,7 @@ import { products28 } from "@/data/products/glasses";
 
 import { Link } from "react-router-dom";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function Style10() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
 
@@ -52,7 +53,7 @@ export default function Style10() {
                 <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
               </h6>
               <div className="product-card__price d-flex text-secondary mb-2">
-                <span className="money price">${elm.price}</span>
+                <span className="money price">{formatPrice(elm.price)}</span>
               </div>
               <div className="d-flex align-items-center">
                 <ColorSelection />

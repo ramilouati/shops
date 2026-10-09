@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Autoplay, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 const filterCategories = ["All", "Sportwear", "Running"];
 
 export default function Trending() {
@@ -121,7 +122,7 @@ export default function Trending() {
                       <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                     </h6>
                     <div className="product-card__price d-flex align-items-center">
-                      <span className="money price">${elm.price}</span>
+                      <span className="money price">{formatPrice(elm.price)}</span>
                     </div>
 
                     <div className="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body mb-1">

@@ -3,6 +3,7 @@ import { products36 } from "@/data/products/bikes";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function BannerSlider() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { setQuickViewItem } = useContextElement();
@@ -40,7 +41,7 @@ export default function BannerSlider() {
                       {elm.title}
                     </h2>
                     <h2 className="fs-40 fw-bold color-white text-uppercase mb-3">
-                      ${elm.price}
+                      {formatPrice(elm.price)}
                     </h2>
 
                     <div className="d-flex align-items-center">

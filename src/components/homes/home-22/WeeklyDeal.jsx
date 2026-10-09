@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import CountDownComponent2 from "@/components/common/CountDownComponent2";
 
+import { formatPrice } from "@/utlis/formatPrice";
 export default function WeeklyDeal() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
@@ -108,7 +109,7 @@ export default function WeeklyDeal() {
                 </h6>
                 <div className="product-card__price d-flex">
                   <span className="money price theme-color fs-15 fw-semi-bold">
-                    ${elm.price}
+                    {formatPrice(elm.price)}
                   </span>
                 </div>
 
