@@ -99,7 +99,7 @@ export default function Header20() {
               src="/assets/images/logo-baby.png"
               width={112}
               height={28}
-              alt="Uomo"
+              alt="TuniShop"
               className="logo__image d-block"
             />
           </Link>

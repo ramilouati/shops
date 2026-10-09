@@ -16,7 +16,7 @@ export default function EditAddress() {
               <p>1418 River Drive, Suite 35 Cottonhall, CA 9622</p>
               <p>United States</p>
               <br />
-              <p>sale@uomo.com</p>
+              <p>contact@tunishop.tn</p>
               <p>+1 246-345-0695</p>
             </div>
           </div>
@@ -30,7 +30,7 @@ export default function EditAddress() {
               <p>1418 River Drive, Suite 35 Cottonhall, CA 9622</p>
               <p>United States</p>
               <br />
-              <p>sale@uomo.com</p>
+              <p>contact@tunishop.tn</p>
               <p>+1 246-345-0695</p>
             </div>
           </div>

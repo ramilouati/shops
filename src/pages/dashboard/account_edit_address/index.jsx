@@ -6,8 +6,8 @@ import EditAddress from "@/components/otherPages/EditAddress";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Dashboard Edit Address || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Dashboard Edit Address || TuniShop",
+  description: "TuniShop",
 };
 export default function AccountEditAddressPage() {
   return (

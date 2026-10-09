@@ -12,8 +12,8 @@ import VideoBanner from "@/components/homes/home-16/VideoBanner";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 16 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 16 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage16() {
   return (

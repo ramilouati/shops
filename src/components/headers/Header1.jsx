@@ -52,10 +52,10 @@ export default function Header1() {
           <div className="logo">
             <Link to="/">
               <img
-                src="/assets/images/logo.png"
+                src="/assets/images/logo-tunishop.svg"
                 width={112}
                 height={28}
-                alt="Uomo"
+                alt="TuniShop"
                 className="logo__image d-block"
               />
             </Link>

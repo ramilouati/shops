@@ -12,8 +12,8 @@ import HospitalEquipment from "@/components/homes/home-14/HospitalEquipment";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 14 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 14 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage14() {
   return (

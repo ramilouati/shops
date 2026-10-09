@@ -13,8 +13,8 @@ import NewArrival from "@/components/homes/home-13/NewArival";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 13 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 13 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage13() {
   return (

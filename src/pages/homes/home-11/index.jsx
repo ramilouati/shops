@@ -11,8 +11,8 @@ import TopDeals from "@/components/homes/home-11/TopDeals";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 11 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 11 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage11() {
   return (

@@ -48,7 +48,7 @@ export default function Footer20() {
                   src="/assets/images/logo-baby.png"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image d-block"
                 />
               </Link>
@@ -59,7 +59,7 @@ export default function Footer20() {
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium">sale@uomo.com</strong>
+              <strong className="fw-medium">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-medium">+1 246-345-0695</strong>

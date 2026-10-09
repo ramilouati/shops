@@ -6,8 +6,8 @@ import Header1 from "@/components/headers/Header1";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Blog 3 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Blog 3 || TuniShop",
+  description: "TuniShop",
 };
 export default function BlogPage3() {
   return (

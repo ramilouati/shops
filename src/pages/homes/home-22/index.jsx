@@ -8,8 +8,8 @@ import SingleProduct from "@/components/homes/home-23/SingleProduct";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 22 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 22 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage22() {
   return (

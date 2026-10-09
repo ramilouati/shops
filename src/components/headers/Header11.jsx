@@ -92,7 +92,7 @@ export default function Header11() {
                   src="/assets/images/logo-blue.png"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image"
                 />
               </Link>

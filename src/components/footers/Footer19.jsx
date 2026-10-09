@@ -43,10 +43,10 @@ export default function Footer19() {
             <div className="logo">
               <Link to="/">
                 <img
-                  src="/assets/images/logo.png"
+                  src="/assets/images/logo-tunishop.svg"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image d-block"
                 />
               </Link>
@@ -57,7 +57,7 @@ export default function Footer19() {
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium body-color">sale@uomo.com</strong>
+              <strong className="fw-medium body-color">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-medium body-color">+1 246-345-0695</strong>

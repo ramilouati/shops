@@ -55,7 +55,7 @@ export default function Header10() {
               src="/assets/images/logo-black.png"
               width={112}
               height={28}
-              alt="Uomo"
+              alt="TuniShop"
               className="logo__image d-block"
             />
           </Link>

@@ -3,8 +3,8 @@ import Footer1 from "@/components/footers/Footer1";
 import Header1 from "@/components/headers/Header1";
 import OrderTrack from "@/components/shopCartandCheckout/OrderTrack";
 const metadata = {
-  title: "Shop Order Tracking || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Shop Order Tracking || TuniShop",
+  description: "TuniShop",
 };
 export default function ShopOrderTrackingPage() {
   return (

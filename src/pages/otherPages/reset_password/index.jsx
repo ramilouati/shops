@@ -5,8 +5,8 @@ import ResetPassword from "@/components/otherPages/ResetPassword";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Reset Password || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Reset Password || TuniShop",
+  description: "TuniShop",
 };
 export default function ResetPasswordPage() {
   return (

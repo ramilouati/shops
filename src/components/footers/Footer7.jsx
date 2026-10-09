@@ -42,10 +42,10 @@ export default function Footer7() {
             <div className="logo">
               <Link to="/">
                 <img
-                  src="/assets/images/logo.png"
+                  src="/assets/images/logo-tunishop.svg"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image d-block"
                 />
               </Link>
@@ -56,7 +56,7 @@ export default function Footer7() {
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium">sale@uomo.com</strong>
+              <strong className="fw-medium">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-medium">+1 246-345-0695</strong>
@@ -195,7 +195,7 @@ export default function Footer7() {
       <div className="footer-bottom">
         <div className="container d-md-flex align-items-center">
           <span className="footer-copyright me-auto">
-            ©{new Date().getFullYear()} Uomo
+            ©{new Date().getFullYear()} TuniShop
           </span>
           <div className="footer-settings d-md-flex align-items-center">
             <select

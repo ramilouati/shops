@@ -17,8 +17,8 @@ export default function Footer5({ parentClass }) {
             <div className="logo">
               <Link to="/">
                 <img
-                  src="/assets/images/logo-white.png"
-                  alt="Uomo"
+                  src="/assets/images/logo-tunishop-white.svg"
+                  alt="TuniShop"
                   width={112}
                   height={28}
                   className="logo__image"
@@ -31,7 +31,7 @@ export default function Footer5({ parentClass }) {
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium">sale@uomo.com</strong>
+              <strong className="fw-medium">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-medium">+216 70 000 000</strong>
@@ -126,7 +126,7 @@ export default function Footer5({ parentClass }) {
       <div className="footer-bottom">
         <div className="container d-md-flex align-items-center">
           <span className="footer-copyright me-auto">
-            ©{new Date().getFullYear()} Uomo
+            ©{new Date().getFullYear()} TuniShop
           </span>
           <div className="footer-settings d-md-flex align-items-center">
             <select

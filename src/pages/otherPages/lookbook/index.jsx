@@ -5,8 +5,8 @@ import Lookbook from "@/components/otherPages/Lookbook";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Lookbook || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Lookbook || TuniShop",
+  description: "TuniShop",
 };
 export default function LookbookPage() {
   return (

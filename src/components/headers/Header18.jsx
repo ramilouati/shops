@@ -53,7 +53,7 @@ export default function Header18() {
               src="/assets/images/logo-white-red.png"
               width={112}
               height={28}
-              alt="Uomo"
+              alt="TuniShop"
               className="logo__image d-block"
             />
           </Link>

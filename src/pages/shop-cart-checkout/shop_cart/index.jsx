@@ -4,8 +4,8 @@ import Header1 from "@/components/headers/Header1";
 import Cart from "@/components/shopCartandCheckout/Cart";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 const metadata = {
-  title: "Shop Cart || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Shop Cart || TuniShop",
+  description: "TuniShop",
 };
 export default function ShopCartPage() {
   return (

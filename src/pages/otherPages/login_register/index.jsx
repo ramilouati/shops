@@ -5,8 +5,8 @@ import LoginRegister from "@/components/otherPages/LoginRegister";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Login Register || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Login Register || TuniShop",
+  description: "TuniShop",
 };
 export default function LoginPage() {
   return (

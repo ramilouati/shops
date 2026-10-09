@@ -13,8 +13,8 @@ import PopulerProducts from "@/components/homes/home-15/PopulerProducts";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 15 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 15 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage15() {
   return (

@@ -50,7 +50,7 @@ export default function Footer13() {
                   src="/assets/images/logo-white-yellow.png"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image d-block"
                 />
               </Link>
@@ -61,7 +61,7 @@ export default function Footer13() {
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium">sale@uomo.com</strong>
+              <strong className="fw-medium">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-medium">+1 246-345-0695</strong>
@@ -174,7 +174,7 @@ export default function Footer13() {
       >
         <div className="container d-md-flex align-items-center justify-content-center">
           <span className="footer-copyright mx-auto">
-            ©{new Date().getFullYear()} Uomo
+            ©{new Date().getFullYear()} TuniShop
           </span>
         </div>
         {/* <!-- /.container d-flex align-items-center --> */}

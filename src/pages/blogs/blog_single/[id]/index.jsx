@@ -6,8 +6,8 @@ import { allBlogs } from "@/data/blogs";
 import MetaComponent from "@/components/common/MetaComponent";
 import { useParams } from "react-router-dom";
 const metadata = {
-  title: "Blog Single || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Blog Single || TuniShop",
+  description: "TuniShop",
 };
 export default function BlogDetailsPage() {
   let params = useParams();

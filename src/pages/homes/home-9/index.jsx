@@ -11,8 +11,8 @@ import Lookbook from "@/components/homes/home-9/Lookbook";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 9 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 9 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage9() {
   return (

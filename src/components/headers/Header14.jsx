@@ -113,7 +113,7 @@ export default function Header14() {
                   src="/assets/images/logo-cosmetics.png"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image"
                 />
               </Link>

@@ -10,8 +10,8 @@ import Instagram from "@/components/homes/home-3/Instagram";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 3 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 3 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage3() {
   return (

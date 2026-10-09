@@ -8,8 +8,8 @@ import Shop7 from "@/components/shoplist/Shop7";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Shop 7 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Shop 7 || TuniShop",
+  description: "TuniShop",
 };
 export default function ShopPage7() {
   return (

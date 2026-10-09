@@ -12,8 +12,8 @@ import WeeklyDeal from "@/components/homes/home-22/WeeklyDeal";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 21 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 21 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage21() {
   return (

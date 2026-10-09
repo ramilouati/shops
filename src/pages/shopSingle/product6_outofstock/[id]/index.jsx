@@ -9,8 +9,8 @@ import { allProducts } from "@/data/products";
 import MetaComponent from "@/components/common/MetaComponent";
 import { useParams } from "react-router-dom";
 const metadata = {
-  title: "Shop Single Out Of Stack || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Shop Single Out Of Stack || TuniShop",
+  description: "TuniShop",
 };
 export default function ProductDetailsPage6() {
   let params = useParams();

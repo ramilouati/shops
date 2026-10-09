@@ -84,7 +84,7 @@ export default function Footer15() {
       <div className="footer-bottom">
         <div className="d-block d-md-flex align-items-center container">
           <span className="footer-copyright me-auto">
-            ©{new Date().getFullYear()} Uomo
+            ©{new Date().getFullYear()} TuniShop
           </span>
           <div className="footer-settings d-block d-md-flex align-items-center">
             <div className="d-flex align-items-center">

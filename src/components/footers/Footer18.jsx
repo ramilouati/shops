@@ -97,7 +97,7 @@ export default function Footer18() {
               <Link to="/">
                 <img
                   src="/assets/images/logo-watches-footer.png"
-                  alt="Uomo"
+                  alt="TuniShop"
                   width={112}
                   height={28}
                   className="logo__image d-block"
@@ -110,7 +110,7 @@ export default function Footer18() {
             </p>
 
             <p className="m-0">
-              <strong className="fw-normal fs-13">sale@uomo.com</strong>
+              <strong className="fw-normal fs-13">contact@tunishop.tn</strong>
             </p>
             <p>
               <strong className="fw-normal fs-13">+1 246-345-0695</strong>

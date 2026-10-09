@@ -13,8 +13,8 @@ import Testimonials from "@/components/homes/home-18/Testimonials";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 17 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 17 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage17() {
   return (

@@ -14,8 +14,8 @@ import Footer20 from "@/components/footers/Footer20";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Home 20 || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "Home 20 || TuniShop",
+  description: "TuniShop",
 };
 export default function HomePage20() {
   return (

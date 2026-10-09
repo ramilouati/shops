@@ -13,7 +13,7 @@ import WeekDeals from "@/components/homes/home-5/WeekDeals";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "Accueil || Boutique de mode en ligne",
+  title: "TuniShop || Boutique de mode en ligne",
   description: "Découvrez notre boutique de mode en ligne : nouveautés, meilleures ventes et offres de la semaine.",
 };
 export default function HomePage5() {

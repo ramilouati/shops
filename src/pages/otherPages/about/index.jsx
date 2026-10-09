@@ -7,8 +7,8 @@ import Services from "@/components/otherPages/about/Services";
 
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
-  title: "About || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
+  title: "About || TuniShop",
+  description: "TuniShop",
 };
 export default function AboutPage() {
   return (

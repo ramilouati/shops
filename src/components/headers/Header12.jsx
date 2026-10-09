@@ -15,10 +15,10 @@ export default function Header12() {
             <div className="logo">
               <Link to="/">
                 <img
-                  src="/assets/images/logo-white.png"
+                  src="/assets/images/logo-tunishop-white.svg"
                   width={112}
                   height={28}
-                  alt="Uomo"
+                  alt="TuniShop"
                   className="logo__image"
                 />
               </Link>
