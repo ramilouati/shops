@@ -1,21 +1,64 @@
-const countries = [
-  "Australia",
-  "Canada",
-  "United Kingdom",
-  "United States",
-  "Turkey",
-];
+const countries = ["Tunisie"];
 import { useContextElement } from "@/context/Context";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "@/utlis/formatPrice";
+import { whatsappOrderUrl } from "@/utlis/whatsapp";
 export default function Checkout() {
-  const { cartProducts, totalPrice } = useContextElement();
-  const [selectedRegion, setSelectedRegion] = useState("");
+  const { cartProducts, totalPrice, setCartProducts } = useContextElement();
+  const [selectedRegion, setSelectedRegion] = useState("Tunisie");
   const [idDDActive, setIdDDActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const navigate = useNavigate();
+
+  const placeOrder = async (event) => {
+    event.preventDefault();
+    if (!cartProducts.length) {
+      setError("Votre panier est vide.");
+      return;
+    }
+    const data = new FormData(event.currentTarget);
+    setSending(true);
+    setError("");
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          address: data.get("address"),
+          city: data.get("city"),
+          notes: data.get("notes"),
+          payment: data.get("payment") || "cod",
+          items: cartProducts.map((item) => ({
+            productId: item.id,
+            title: item.title,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+      const order = await response.json();
+      if (!response.ok) {
+        setError(order.error || "La commande n'a pas pu être enregistrée.");
+        return;
+      }
+      setCartProducts([]);
+      navigate(`/shop_order_complete?order=${order.number}`);
+    } catch {
+      setError("Le serveur de commandes ne répond pas. Lancez npm run api.");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <form onSubmit={placeOrder}>
       <div className="checkout-form">
         <div className="billing-info__wrapper">
           <h4>BILLING DETAILS</h4>
@@ -26,6 +69,8 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_first_name"
+                  name="firstName"
+                  required
                   placeholder="First Name"
                 />
                 <label htmlFor="checkout_first_name">First Name</label>
@@ -37,6 +82,8 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_last_name"
+                  name="lastName"
+                  required
                   placeholder="Last Name"
                 />
                 <label htmlFor="checkout_last_name">Last Name</label>
@@ -116,6 +163,8 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_street_address"
+                  name="address"
+                  required
                   placeholder="Street Address *"
                 />
                 <label htmlFor="checkout_company_name">Street Address *</label>
@@ -134,6 +183,8 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_city"
+                  name="city"
+                  required
                   placeholder="Town / City *"
                 />
                 <label htmlFor="checkout_city">Town / City *</label>
@@ -167,6 +218,8 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_phone"
+                  name="phone"
+                  required
                   placeholder="Phone *"
                 />
                 <label htmlFor="checkout_phone">Phone *</label>
@@ -178,6 +231,7 @@ export default function Checkout() {
                   type="email"
                   className="form-control"
                   id="checkout_email"
+                  name="email"
                   placeholder="Your Mail *"
                 />
                 <label htmlFor="checkout_email">Your Mail *</label>
@@ -215,6 +269,7 @@ export default function Checkout() {
             <div className="mt-3">
               <textarea
                 className="form-control form-control_gray"
+                name="notes"
                 placeholder="Order Notes (optional)"
                 cols="30"
                 rows="8"
@@ -270,9 +325,9 @@ export default function Checkout() {
                 <input
                   className="form-check-input form-check-input_fill"
                   type="radio"
-                  name="checkout_payment_method"
+                  name="payment"
                   id="checkout_payment_method_1"
-                  defaultChecked
+                  value="bank"
                 />
                 <label
                   className="form-check-label"
@@ -290,8 +345,9 @@ export default function Checkout() {
                 <input
                   className="form-check-input form-check-input_fill"
                   type="radio"
-                  name="checkout_payment_method"
+                  name="payment"
                   id="checkout_payment_method_2"
+                  value="bank"
                 />
                 <label
                   className="form-check-label"
@@ -310,14 +366,16 @@ export default function Checkout() {
                 <input
                   className="form-check-input form-check-input_fill"
                   type="radio"
-                  name="checkout_payment_method"
+                  name="payment"
                   id="checkout_payment_method_3"
+                  value="cod"
+                  defaultChecked
                 />
                 <label
                   className="form-check-label"
                   htmlFor="checkout_payment_method_3"
                 >
-                  Cash on delivery
+                  Paiement à la livraison
                   <span className="option-detail d-block">
                     Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
                     elementum gravida nec dui. Aenean aliquam varius ipsum, non
@@ -330,8 +388,9 @@ export default function Checkout() {
                 <input
                   className="form-check-input form-check-input_fill"
                   type="radio"
-                  name="checkout_payment_method"
+                  name="payment"
                   id="checkout_payment_method_4"
+                  value="bank"
                 />
                 <label
                   className="form-check-label"
@@ -356,9 +415,27 @@ export default function Checkout() {
                 .
               </div>
             </div>
-            <button className="btn btn-primary btn-checkout">
-              PLACE ORDER
+            {error && <p className="text-danger mt-3">{error}</p>}
+            <button
+              className="btn btn-primary btn-checkout"
+              type="submit"
+              disabled={sending || !cartProducts.length}
+            >
+              {sending ? "Enregistrement..." : "Confirmer la commande"}
             </button>
+            {cartProducts.length > 0 && (
+              <a
+                className="btn btn-light mt-3 d-block"
+                href={whatsappOrderUrl({
+                  items: cartProducts,
+                  total: totalPrice,
+                })}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Commander sur WhatsApp
+              </a>
+            )}
           </div>
         </div>
       </div>

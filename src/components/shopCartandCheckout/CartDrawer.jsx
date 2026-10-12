@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { useContextElement } from "@/context/Context";
 import React, { useEffect } from "react";
+import { whatsappOrderUrl } from "@/utlis/whatsapp";
 import { formatPrice } from "@/utlis/formatPrice";
 
 export default function CartDrawer() {
@@ -147,6 +148,17 @@ export default function CartDrawer() {
               >
                 Commander
               </Link>
+              <a
+                className="btn btn-light mt-3 d-block"
+                href={whatsappOrderUrl({
+                  items: cartProducts,
+                  total: totalPrice,
+                })}
+                target="_blank"
+                rel="noreferrer"
+              >
+                WhatsApp
+              </a>
             </>
           ) : (
             <Link to="/shop-1" className="btn btn-light mt-3 d-block">

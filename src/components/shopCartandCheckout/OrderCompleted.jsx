@@ -1,13 +1,40 @@
-import { useContextElement } from "@/context/Context";
-import { useEffect, useState } from "react";
-
 import { formatPrice } from "@/utlis/formatPrice";
+import { whatsappOrderUrl } from "@/utlis/whatsapp";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+
+const paymentLabels = {
+  cod: "Paiement à la livraison",
+  whatsapp: "WhatsApp",
+  bank: "Virement bancaire",
+};
+
 export default function OrderCompleted() {
-  const { cartProducts, totalPrice } = useContextElement();
-  const [showDate, setShowDate] = useState(false);
+  const [params] = useSearchParams();
+  const number = params.get("order");
+  const [order, setOrder] = useState(null);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    setShowDate(true);
-  }, []);
+    if (!number) {
+      setError("Aucune commande à afficher.");
+      return;
+    }
+    fetch(`/api/orders/${number}`)
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Commande introuvable");
+        setOrder(data);
+      })
+      .catch((err) => setError(err.message));
+  }, [number]);
+
+  if (error) {
+    return <p className="text-center mt-5">{error}</p>;
+  }
+  if (!order) {
+    return <p className="text-center mt-5">Chargement de la commande...</p>;
+  }
 
   return (
     <div className="order-complete">
@@ -25,45 +52,44 @@ export default function OrderCompleted() {
             fill="white"
           />
         </svg>
-        <h3>Your order is completed!</h3>
-        <p>Thank you. Your order has been received.</p>
+        <h3>Votre commande est enregistrée</h3>
+        <p>Merci {order.customerName}. Nous avons bien reçu votre commande.</p>
       </div>
       <div className="order-info">
         <div className="order-info__item">
-          <label>Order Number</label>
-          <span>13119</span>
+          <label>Numéro</label>
+          <span>{order.number}</span>
         </div>
         <div className="order-info__item">
           <label>Date</label>
-          {showDate && <span>{new Date().toLocaleDateString()}</span>}
+          <span>{new Date(order.createdAt).toLocaleDateString("fr-TN")}</span>
         </div>
         <div className="order-info__item">
           <label>Total</label>
-
-          <span>{formatPrice(totalPrice && totalPrice + 19)}</span>
+          <span>{formatPrice(order.total)}</span>
         </div>
         <div className="order-info__item">
-          <label>Paymetn Method</label>
-          <span>Direct Bank Transfer</span>
+          <label>Paiement</label>
+          <span>{paymentLabels[order.payment] || order.payment}</span>
         </div>
       </div>
       <div className="checkout__totals-wrapper">
         <div className="checkout__totals">
-          <h3>Order Details</h3>
+          <h3>Détails</h3>
           <table className="checkout-cart-items">
             <thead>
               <tr>
-                <th>PRODUCT</th>
-                <th>SUBTOTAL</th>
+                <th>PRODUIT</th>
+                <th>SOUS-TOTAL</th>
               </tr>
             </thead>
             <tbody>
-              {cartProducts.map((elm, i) => (
+              {order.items.map((item, i) => (
                 <tr key={i}>
                   <td>
-                    {elm.title} x {elm.quantity}
+                    {item.title} x {item.quantity}
                   </td>
-                  <td>{formatPrice(elm.price)}</td>
+                  <td>{formatPrice(item.price * item.quantity)}</td>
                 </tr>
               ))}
             </tbody>
@@ -71,23 +97,25 @@ export default function OrderCompleted() {
           <table className="checkout-totals">
             <tbody>
               <tr>
-                <th>SUBTOTAL</th>
-                <td>{formatPrice(totalPrice)}</td>
-              </tr>
-              <tr>
-                <th>SHIPPING</th>
-                <td>Free shipping</td>
-              </tr>
-              <tr>
-                <th>VAT</th>
-                <td>{formatPrice(totalPrice && 19)}</td>
-              </tr>
-              <tr>
                 <th>TOTAL</th>
-                <td>{formatPrice(totalPrice && totalPrice + 19)}</td>
+                <td>{formatPrice(order.total)}</td>
               </tr>
             </tbody>
           </table>
+          <a
+            className="btn btn-primary mt-4 d-block"
+            href={whatsappOrderUrl({
+              items: order.items,
+              total: order.total,
+              orderNumber: order.number,
+              name: order.customerName,
+              phone: order.phone,
+            })}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Envoyer sur WhatsApp
+          </a>
         </div>
       </div>
     </div>

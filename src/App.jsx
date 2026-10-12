@@ -79,6 +79,7 @@ import ProductDetailsPage6 from "./pages/shopSingle/product6_outofstock/[id]";
 import ShopCartPage from "./pages/shop-cart-checkout/shop_cart";
 import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
+import OrdersPage from "./pages/shop-cart-checkout/orders";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
 import BlogPage1 from "./pages/blogs/blog_list1";
 import BlogPage2 from "./pages/blogs/blog_list2";
@@ -199,6 +200,7 @@ function App() {
             <Route path="shop_cart" element={<ShopCartPage />} />
             <Route path="shop_checkout" element={<ShopCheckoutPage />} />
             <Route path="shop_order_complete" element={<ShopOrderConplate />} />
+            <Route path="commandes" element={<OrdersPage />} />
             <Route
               path="shop_order_tracking"
               element={<ShopOrderTrackingPage />}
