@@ -12,7 +12,16 @@ export default function Context({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [wishList, setWishList] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
+  const [catalog, setCatalog] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  useEffect(() => {
+    fetch("/api/products")
+      .then((response) => response.json())
+      .then((products) => {
+        if (Array.isArray(products)) setCatalog(products);
+      })
+      .catch(() => {});
+  }, []);
   useEffect(() => {
     const subtotal = cartProducts.reduce((accumulator, product) => {
       return accumulator + product.quantity * product.price;
@@ -22,10 +31,11 @@ export default function Context({ children }) {
 
   const addProductToCart = (id) => {
     if (!cartProducts.filter((elm) => elm.id == id)[0]) {
-      const item = {
-        ...allProducts.filter((elm) => elm.id == id)[0],
-        quantity: 1,
-      };
+      const source =
+        catalog.find((elm) => elm.id == id) ||
+        allProducts.find((elm) => elm.id == id);
+      if (!source || source.price == null) return;
+      const item = { ...source, quantity: 1 };
       setCartProducts((pre) => [...pre, item]);
 
       document
@@ -84,6 +94,7 @@ export default function Context({ children }) {
     toggleWishlist,
     isAddedtoWishlist,
     quickViewItem,
+    catalog,
     wishList,
     setQuickViewItem,
   };

@@ -7,7 +7,9 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function TopCollections() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
+  const collectionProducts = catalog.filter((product) => product.section === "collection");
+  const products = collectionProducts.length ? collectionProducts : topCollectionProducts;
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
@@ -54,16 +56,14 @@ export default function TopCollections() {
     },
   };
   const [currentCategory, setCurrentCategory] = useState(collectionFilters[0]);
-  const [filtered, setFiltered] = useState(topCollectionProducts);
+  const [filtered, setFiltered] = useState(products);
   useEffect(() => {
     if (currentCategory == "All") {
-      setFiltered(topCollectionProducts);
+      setFiltered(products);
     } else {
-      setFiltered([
-        ...topCollectionProducts.filter((elm) => elm.filterCategory == currentCategory),
-      ]);
+      setFiltered(products.filter((elm) => elm.filterCategory == currentCategory));
     }
-  }, [currentCategory]);
+  }, [currentCategory, catalog]);
   return (
     <div className="bg-white">
       <div className="mb-4 mb-xl-5 pt-1 pb-5"></div>
@@ -105,6 +105,7 @@ export default function TopCollections() {
           >
             <div className="position-relative">
               <Swiper
+                key={filtered.map((product) => product.id).join("-")}
                 className="swiper-container js-swiper-slider"
                 {...swiperOptions}
               >

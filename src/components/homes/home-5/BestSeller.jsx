@@ -1,12 +1,14 @@
 import { useContextElement } from "@/context/Context";
-import { bestSellerProducts } from "@/data/home5";
+import { bestSellerProducts as staticBestSellers } from "@/data/home5";
 import { formatPrice } from "@/utlis/formatPrice";
 import { Link } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function BestSeller() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
+  const fromCatalog = catalog.filter((product) => product.section === "bestseller");
+  const bestSellerProducts = fromCatalog.length ? fromCatalog : staticBestSellers;
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
@@ -52,6 +54,7 @@ export default function BestSeller() {
 
         <div id="best-sellers" className="position-relative">
           <Swiper
+            key={bestSellerProducts.map((product) => product.id).join("-")}
             {...swiperOptions}
             className="swiper-container js-swiper-slider"
           >

@@ -11,29 +11,33 @@ import { useContextElement } from "@/context/Context";
 const itemPerRow = [2, 3, 4];
 
 import { openModalShopFilter } from "@/utlis/aside";
-import {
-  menuCategories,
-  sortingOptions,
-} from "@/data/products/productCategories";
+import { sortingOptions } from "@/data/products/productCategories";
 import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop1() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(4);
 
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
-  const [currentCategory, setCurrentCategory] = useState(menuCategories[0]);
+  const shopProducts = catalog.length ? catalog : products51;
+  const categories = [
+    "Tout",
+    ...new Set(shopProducts.map((product) => product.category).filter(Boolean)),
+  ];
+  const [currentCategory, setCurrentCategory] = useState("Tout");
 
-  // eslint-disable-next-line no-unused-vars
-  const [filtered, setFiltered] = useState(products51);
+  const [filtered, setFiltered] = useState(shopProducts);
   useEffect(() => {
-    if (currentCategory == "All") {
-      setFiltered(products51);
+    if (currentCategory == "Tout" || currentCategory == "All") {
+      setFiltered(shopProducts);
     } else {
       setFiltered(
-        products51.filter((elm) => elm.filterCategory2 == currentCategory)
+        shopProducts.filter(
+          (elm) =>
+            elm.category == currentCategory || elm.filterCategory2 == currentCategory
+        )
       );
     }
-  }, [currentCategory]);
+  }, [currentCategory, shopProducts]);
 
   return (
     <>
@@ -59,10 +63,10 @@ export default function Shop1() {
 
             <div className="shop-banner__content container position-absolute start-50 top-50 translate-middle">
               <h2 className="stroke-text h1 smooth-16 text-uppercase fw-bold mb-3 mb-xl-4 mb-xl-5">
-                Jackets & Coats
+                Boutique
               </h2>
               <ul className="d-flex flex-wrap list-unstyled text-uppercase h6">
-                {menuCategories.map((elm, i) => (
+                {categories.map((elm, i) => (
                   <li key={i} className="me-3 me-xl-4 pe-1">
                     <a
                       onClick={() => setCurrentCategory(elm)}
@@ -152,7 +156,7 @@ export default function Shop1() {
           className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`}
           id="products-grid"
         >
-          {products51.map((elm, i) => (
+          {filtered.map((elm, i) => (
             <div key={i} className="product-card-wrapper">
               <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                 <div className="pc__img-wrapper">
@@ -165,7 +169,7 @@ export default function Shop1() {
                       nextEl: ".next" + i,
                     }}
                   >
-                    {[elm.imgSrc, elm.imgSrc2].map((elm2, i) => (
+                    {[elm.imgSrc, elm.imgSrc2].filter(Boolean).map((elm2, i) => (
                       <SwiperSlide key={i} className="swiper-slide">
                         <Link to={`/product1_simple/${elm.id}`}>
                           <img

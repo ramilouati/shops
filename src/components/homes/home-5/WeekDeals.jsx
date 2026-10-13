@@ -1,5 +1,5 @@
 import { useContextElement } from "@/context/Context";
-import { weekDealProducts } from "@/data/home5";
+import { weekDealProducts as staticWeekDeals } from "@/data/home5";
 import { formatPrice } from "@/utlis/formatPrice";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,7 +8,9 @@ import { Link } from "react-router-dom";
 import CountDownComponent from "@/components/common/CountDownComponent";
 
 export default function WeekDeals() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
+  const fromCatalog = catalog.filter((product) => product.section === "deal");
+  const weekDealProducts = fromCatalog.length ? fromCatalog : staticWeekDeals;
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
@@ -87,6 +89,7 @@ export default function WeekDeals() {
           <div className="col-md-6 col-lg-8 col-xl-80per">
             <div className="position-relative">
               <Swiper
+                key={weekDealProducts.map((product) => product.id).join("-")}
                 className="swiper-container js-swiper-slider"
                 {...swiperOptions}
               >

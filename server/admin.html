@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TuniShop — Administration</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: #f6f4f2; color: #222; }
+      header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 28px; background: #1c1c1c; color: #fff; }
+      header a { color: #fff; }
+      h1 { margin: 0; font-size: 22px; letter-spacing: 0.08em; }
+      h1 span { color: #e70013; }
+      main { max-width: 1100px; margin: 0 auto; padding: 24px; display: grid; gap: 20px; }
+      section { background: #fff; border-radius: 12px; padding: 20px; }
+      h2 { margin: 0 0 14px; font-size: 18px; }
+      form, .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #666; }
+      input, select, button { font: inherit; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; }
+      button { background: #e70013; color: #fff; border: 0; cursor: pointer; }
+      button.ghost { background: #eee; color: #222; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
+      .chat { display: grid; gap: 8px; }
+      .bubble { background: #f6f4f2; border-radius: 8px; padding: 10px; white-space: pre-wrap; }
+      .error { color: #e70013; }
+      @media (max-width: 800px) { form, .row { grid-template-columns: 1fr 1fr; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>TUNI<span>SHOP</span></h1>
+      <a href="http://localhost:5173/">Voir la boutique</a>
+    </header>
+    <main>
+      <section>
+        <h2>Nouveau produit</h2>
+        <form id="create">
+          <label>Nom<input name="title" required /></label>
+          <label>Prix TND<input name="price" type="number" min="1" step="0.001" required /></label>
+          <label>Ancien prix<input name="priceOld" type="number" min="0" step="0.001" /></label>
+          <label>Stock<input name="stock" type="number" min="0" value="10" required /></label>
+          <label>Catégorie<input name="category" value="Vestes" required /></label>
+          <label>Rayon
+            <select name="section">
+              <option value="collection">Notre sélection</option>
+              <option value="bestseller">Meilleures ventes</option>
+              <option value="deal">Offres</option>
+            </select>
+          </label>
+          <label>Onglet
+            <select name="filterCategory">
+              <option>En vedette</option>
+              <option>Populaires</option>
+              <option>Mieux notés</option>
+            </select>
+          </label>
+          <label>Image<input name="imgSrc" value="/assets/images/home/demo5/product-0-1.jpg" /></label>
+          <button type="submit">Ajouter</button>
+        </form>
+        <p id="create-error" class="error"></p>
+      </section>
+      <section>
+        <h2>Produits</h2>
+        <table>
+          <thead><tr><th>Article</th><th>Prix</th><th>Stock</th><th>Rayon</th><th></th></tr></thead>
+          <tbody id="products"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Commandes</h2>
+        <table>
+          <thead><tr><th>Commande</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+          <tbody id="orders"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Assistant boutique</h2>
+        <p>Ce test répond avec le stock et les commandes enregistrées. Le bouton WhatsApp de la boutique ouvre toujours le numéro du magasin.</p>
+        <div class="chat">
+          <div id="reply" class="bubble">Écrivez « catalogue » ou un nom de produit.</div>
+          <form id="chat" class="row">
+            <label style="grid-column: span 3;">Message<input name="message" placeholder="robe midi" required /></label>
+            <button type="submit">Envoyer</button>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script>
+      const money = (value) => new Intl.NumberFormat("fr-TN", { style: "currency", currency: "TND", currencyDisplay: "code", maximumFractionDigits: 3 }).format(value);
+      const sections = { collection: "Sélection", bestseller: "Meilleures ventes", deal: "Offres" };
+      const statuses = ["nouvelle", "confirmée", "expédiée", "livrée", "annulée"];
+
+      async function loadProducts() {
+        const products = await fetch("/api/products").then((response) => response.json());
+        document.getElementById("products").innerHTML = products.map((product) => `
+          <tr>
+            <td>${product.title}<br><small>${product.category}</small></td>
+            <td><input data-id="${product.id}" data-field="price" type="number" value="${product.price}" /></td>
+            <td><input data-id="${product.id}" data-field="stock" type="number" value="${product.stock}" /></td>
+            <td>${sections[product.section] || product.section}</td>
+            <td>
+              <button class="ghost" data-save="${product.id}">Sauver</button>
+              <button class="ghost" data-delete="${product.id}">Supprimer</button>
+            </td>
+          </tr>`).join("");
+      }
+
+      async function loadOrders() {
+        const orders = await fetch("/api/orders").then((response) => response.json());
+        document.getElementById("orders").innerHTML = orders.length ? orders.map((order) => `
+          <tr>
+            <td>${order.number}<br><small>${order.items.map((item) => item.title + " x" + item.quantity).join(", ")}</small></td>
+            <td>${order.customerName}<br><small>${order.phone} · ${order.city}</small></td>
+            <td>${money(order.total)}</td>
+            <td>
+              <select data-order="${order.number}">
+                ${statuses.map((status) => `<option ${status === order.status ? "selected" : ""}>${status}</option>`).join("")}
+              </select>
+            </td>
+          </tr>`).join("") : `<tr><td colspan="4">Aucune commande.</td></tr>`;
+      }
+
+      document.getElementById("create").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const body = await response.json();
+        document.getElementById("create-error").textContent = response.ok ? "" : body.error;
+        if (response.ok) { event.currentTarget.reset(); loadProducts(); }
+      });
+
+      document.getElementById("products").addEventListener("click", async (event) => {
+        const saveId = event.target.dataset.save;
+        const deleteId = event.target.dataset.delete;
+        if (saveId) {
+          const fields = {};
+          document.querySelectorAll(`[data-id="${saveId}"]`).forEach((input) => { fields[input.dataset.field] = input.value; });
+          await fetch(`/api/products/${saveId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) });
+          loadProducts();
+        }
+        if (deleteId && confirm("Supprimer ce produit ?")) {
+          await fetch(`/api/products/${deleteId}`, { method: "DELETE" });
+          loadProducts();
+        }
+      });
+
+      document.getElementById("orders").addEventListener("change", async (event) => {
+        const number = event.target.dataset.order;
+        if (!number) return;
+        await fetch(`/api/orders/${number}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: event.target.value }) });
+      });
+
+      document.getElementById("chat").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const message = new FormData(event.currentTarget).get("message");
+        const data = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) }).then((response) => response.json());
+        document.getElementById("reply").textContent = data.reply;
+      });
+
+      loadProducts();
+      loadOrders();
+    </script>
+  </body>
+</html>
