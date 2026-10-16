@@ -6,7 +6,7 @@ import { whatsappOrderUrl } from "@/utlis/whatsapp";
 import { formatPrice } from "@/utlis/formatPrice";
 
 export default function CartDrawer() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, shopPhone } = useContextElement();
   const { pathname } = useLocation();
   const closeCart = () => {
     document
@@ -153,6 +153,7 @@ export default function CartDrawer() {
                 href={whatsappOrderUrl({
                   items: cartProducts,
                   total: totalPrice,
+                  shopPhone,
                 })}
                 target="_blank"
                 rel="noreferrer"

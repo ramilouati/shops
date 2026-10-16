@@ -1,6 +1,7 @@
 import MetaComponent from "@/components/common/MetaComponent";
 import Footer1 from "@/components/footers/Footer1";
 import Header1 from "@/components/headers/Header1";
+import { apiUrl } from "@/utlis/api";
 import { formatPrice } from "@/utlis/formatPrice";
 import { useEffect, useState } from "react";
 
@@ -14,7 +15,7 @@ export default function OrdersPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/orders")
+    fetch(apiUrl("/api/orders"))
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Impossible de charger les commandes");

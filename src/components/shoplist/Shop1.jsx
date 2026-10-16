@@ -11,7 +11,6 @@ import { useContextElement } from "@/context/Context";
 const itemPerRow = [2, 3, 4];
 
 import { openModalShopFilter } from "@/utlis/aside";
-import { sortingOptions } from "@/data/products/productCategories";
 import { formatPrice } from "@/utlis/formatPrice";
 export default function Shop1() {
   const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
@@ -24,20 +23,25 @@ export default function Shop1() {
     ...new Set(shopProducts.map((product) => product.category).filter(Boolean)),
   ];
   const [currentCategory, setCurrentCategory] = useState("Tout");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("default");
 
   const [filtered, setFiltered] = useState(shopProducts);
   useEffect(() => {
-    if (currentCategory == "Tout" || currentCategory == "All") {
-      setFiltered(shopProducts);
-    } else {
-      setFiltered(
-        shopProducts.filter(
-          (elm) =>
-            elm.category == currentCategory || elm.filterCategory2 == currentCategory
-        )
-      );
-    }
-  }, [currentCategory, shopProducts]);
+    let list = shopProducts.filter((elm) => {
+      const inCategory =
+        currentCategory == "Tout" ||
+        currentCategory == "All" ||
+        elm.category == currentCategory ||
+        elm.filterCategory2 == currentCategory;
+      const inSearch = elm.title?.toLowerCase().includes(query.trim().toLowerCase());
+      return inCategory && inSearch;
+    });
+    if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
+    if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
+    if (sort === "name") list = [...list].sort((a, b) => a.title.localeCompare(b.title, "fr"));
+    setFiltered(list);
+  }, [currentCategory, shopProducts, query, sort]);
 
   return (
     <>
@@ -94,16 +98,24 @@ export default function Shop1() {
           </div>
 
           <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
+            <input
+              className="form-control w-auto"
+              type="search"
+              placeholder="Rechercher"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Rechercher un article"
+            />
             <select
               className="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0"
-              aria-label="Sort Items"
-              name="total-number"
+              aria-label="Trier"
+              value={sort}
+              onChange={(event) => setSort(event.target.value)}
             >
-              {sortingOptions.map((option, index) => (
-                <option key={index} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              <option value="default">Tri par défaut</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="name">Nom, A-Z</option>
             </select>
 
             <div className="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
@@ -209,23 +221,35 @@ export default function Shop1() {
                       </svg>
                     </span>
                   </Swiper>
-                  <button
-                    className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                    onClick={() => addProductToCart(elm.id)}
-                    title={
-                      isAddedToCartProducts(elm.id)
-                        ? "Already Added"
-                        : "Add to Cart"
-                    }
-                  >
-                    {isAddedToCartProducts(elm.id)
-                      ? "Already Added"
-                      : "Add To Cart"}
-                  </button>
+                  {elm.stock === 0 ? (
+                    <button
+                      className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium"
+                      disabled
+                    >
+                      Rupture
+                    </button>
+                  ) : (
+                    <button
+                      className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
+                      onClick={() => addProductToCart(elm.id)}
+                      title={
+                        isAddedToCartProducts(elm.id)
+                          ? "Déjà ajouté"
+                          : "Ajouter au panier"
+                      }
+                    >
+                      {isAddedToCartProducts(elm.id)
+                        ? "Déjà ajouté"
+                        : "Ajouter au panier"}
+                    </button>
+                  )}
                 </div>
 
                 <div className="pc__info position-relative">
                   <p className="pc__category">{elm.category}</p>
+                  {elm.stock > 0 && elm.stock <= 5 && (
+                    <p className="text-danger mb-1">Plus que {elm.stock} en stock</p>
+                  )}
                   <h6 className="pc__title">
                     <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
                   </h6>

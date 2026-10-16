@@ -12,8 +12,13 @@
       header a { color: #fff; }
       h1 { margin: 0; font-size: 22px; letter-spacing: 0.08em; }
       h1 span { color: #e70013; }
-      main { max-width: 1100px; margin: 0 auto; padding: 24px; display: grid; gap: 20px; }
+      nav { display: flex; gap: 8px; padding: 16px 28px 0; max-width: 1100px; margin: 0 auto; }
+      nav button { background: transparent; color: #222; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+      nav button.active { border-color: #e70013; color: #e70013; }
+      main { max-width: 1100px; margin: 0 auto; padding: 16px 24px 32px; display: grid; gap: 20px; }
       section { background: #fff; border-radius: 12px; padding: 20px; }
+      .panel { display: none; gap: 20px; }
+      .panel.active { display: grid; }
       h2 { margin: 0 0 14px; font-size: 18px; }
       form, .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
       label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #666; }
@@ -22,10 +27,24 @@
       button.ghost { background: #eee; color: #222; }
       table { width: 100%; border-collapse: collapse; font-size: 14px; }
       th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
+      .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .card { background: #fff; border-radius: 12px; padding: 16px; }
+      .card span { display: block; color: #777; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+      .card strong { display: block; margin-top: 6px; font-size: 22px; }
+      .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; min-height: 140px; }
+      .bar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; height: 140px; font-size: 11px; color: #666; }
+      .bar i { display: block; width: 100%; background: #e70013; border-radius: 6px 6px 0 0; min-height: 2px; }
+      .split { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
+      .warn { color: #e70013; }
       .chat { display: grid; gap: 8px; }
       .bubble { background: #f6f4f2; border-radius: 8px; padding: 10px; white-space: pre-wrap; }
       .error { color: #e70013; }
-      @media (max-width: 800px) { form, .row { grid-template-columns: 1fr 1fr; } }
+      .tools { display: flex; gap: 10px; margin-bottom: 12px; }
+      .tools input, .tools select { max-width: 280px; }
+      @media (max-width: 800px) {
+        form, .row, .cards, .split { grid-template-columns: 1fr 1fr; }
+        nav { flex-wrap: wrap; }
+      }
     </style>
   </head>
   <body>
@@ -33,94 +52,262 @@
       <h1>TUNI<span>SHOP</span></h1>
       <a href="http://localhost:5173/">Voir la boutique</a>
     </header>
+    <nav>
+      <button type="button" class="active" data-tab="analyse">Analyse</button>
+      <button type="button" data-tab="produits">Produits</button>
+      <button type="button" data-tab="commandes">Commandes</button>
+      <button type="button" data-tab="reglages">Réglages</button>
+      <button type="button" data-tab="assistant">Assistant</button>
+    </nav>
     <main>
-      <section>
-        <h2>Nouveau produit</h2>
-        <form id="create">
-          <label>Nom<input name="title" required /></label>
-          <label>Prix TND<input name="price" type="number" min="1" step="0.001" required /></label>
-          <label>Ancien prix<input name="priceOld" type="number" min="0" step="0.001" /></label>
-          <label>Stock<input name="stock" type="number" min="0" value="10" required /></label>
-          <label>Catégorie<input name="category" value="Vestes" required /></label>
-          <label>Rayon
-            <select name="section">
-              <option value="collection">Notre sélection</option>
-              <option value="bestseller">Meilleures ventes</option>
-              <option value="deal">Offres</option>
-            </select>
-          </label>
-          <label>Onglet
-            <select name="filterCategory">
-              <option>En vedette</option>
-              <option>Populaires</option>
-              <option>Mieux notés</option>
-            </select>
-          </label>
-          <label>Image<input name="imgSrc" value="/assets/images/home/demo5/product-0-1.jpg" /></label>
-          <button type="submit">Ajouter</button>
-        </form>
-        <p id="create-error" class="error"></p>
-      </section>
-      <section>
-        <h2>Produits</h2>
-        <table>
-          <thead><tr><th>Article</th><th>Prix</th><th>Stock</th><th>Rayon</th><th></th></tr></thead>
-          <tbody id="products"></tbody>
-        </table>
-      </section>
-      <section>
-        <h2>Commandes</h2>
-        <table>
-          <thead><tr><th>Commande</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
-          <tbody id="orders"></tbody>
-        </table>
-      </section>
-      <section>
-        <h2>Assistant boutique</h2>
-        <p>Ce test répond avec le stock et les commandes enregistrées. Le bouton WhatsApp de la boutique ouvre toujours le numéro du magasin.</p>
-        <div class="chat">
-          <div id="reply" class="bubble">Écrivez « catalogue » ou un nom de produit.</div>
-          <form id="chat" class="row">
-            <label style="grid-column: span 3;">Message<input name="message" placeholder="robe midi" required /></label>
-            <button type="submit">Envoyer</button>
-          </form>
+      <div id="analyse" class="panel active">
+        <div class="cards" id="cards"></div>
+        <section>
+          <h2>Ventes des 7 derniers jours</h2>
+          <div class="bars" id="bars"></div>
+        </section>
+        <div class="split">
+          <section>
+            <h2>Meilleurs articles</h2>
+            <table>
+              <thead><tr><th>Article</th><th>Qté</th><th>Chiffre</th></tr></thead>
+              <tbody id="top"></tbody>
+            </table>
+          </section>
+          <section>
+            <h2>Stock faible</h2>
+            <table>
+              <thead><tr><th>Article</th><th>Stock</th><th></th></tr></thead>
+              <tbody id="low"></tbody>
+            </table>
+          </section>
         </div>
-      </section>
+        <section>
+          <h2>Commandes par statut</h2>
+          <table>
+            <thead><tr><th>Statut</th><th>Nombre</th><th>Montant</th></tr></thead>
+            <tbody id="statuses"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="produits" class="panel">
+        <section>
+          <h2>Nouveau produit</h2>
+          <form id="create">
+            <label>Nom<input name="title" required /></label>
+            <label>Prix TND<input name="price" type="number" min="1" step="0.001" required /></label>
+            <label>Ancien prix<input name="priceOld" type="number" min="0" step="0.001" /></label>
+            <label>Stock<input name="stock" type="number" min="0" value="10" required /></label>
+            <label>Catégorie<input name="category" value="Vestes" required /></label>
+            <label>Rayon
+              <select name="section">
+                <option value="collection">Notre sélection</option>
+                <option value="bestseller">Meilleures ventes</option>
+                <option value="deal">Offres</option>
+              </select>
+            </label>
+            <label>Onglet
+              <select name="filterCategory">
+                <option>En vedette</option>
+                <option>Populaires</option>
+                <option>Mieux notés</option>
+              </select>
+            </label>
+            <label>Image<input name="imgSrc" value="/assets/images/home/demo5/product-0-1.jpg" /></label>
+            <button type="submit">Ajouter</button>
+          </form>
+          <p id="create-error" class="error"></p>
+        </section>
+        <section>
+          <h2>Import CSV</h2>
+          <p>Colonnes : nom, prix, stock, categorie. Un article déjà présent est mis à jour (prix et stock).</p>
+          <input id="csv-file" type="file" accept=".csv,text/csv" />
+          <textarea id="csv" rows="6" placeholder="nom,prix,stock,categorie&#10;Robe lin,189,8,Robes" style="width:100%; margin-top:10px; font:inherit; padding:8px;"></textarea>
+          <div class="tools" style="margin-top:10px;">
+            <button type="button" id="import-csv">Importer</button>
+            <button type="button" id="csv-template" class="ghost">Télécharger le modèle</button>
+            <button type="button" id="export-products" class="ghost">Exporter le catalogue</button>
+          </div>
+          <p id="import-result"></p>
+        </section>
+        <section>
+          <h2>Catalogue</h2>
+          <div class="tools">
+            <input id="product-search" type="search" placeholder="Rechercher un article" />
+          </div>
+          <table>
+            <thead><tr><th>Article</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Rayon</th><th></th></tr></thead>
+            <tbody id="products"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="commandes" class="panel">
+        <section>
+          <h2>Commandes</h2>
+          <div class="tools">
+            <input id="order-search" type="search" placeholder="Nom, téléphone ou numéro" />
+            <select id="order-status">
+              <option value="">Tous les statuts</option>
+              <option>nouvelle</option>
+              <option>confirmée</option>
+              <option>expédiée</option>
+              <option>livrée</option>
+              <option>annulée</option>
+            </select>
+            <button type="button" id="export-orders" class="ghost">Exporter CSV</button>
+          </div>
+          <table>
+            <thead><tr><th>Commande</th><th>Client</th><th>Adresse</th><th>Total</th><th>Statut</th></tr></thead>
+            <tbody id="orders"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="reglages" class="panel">
+        <section>
+          <h2>Livraison</h2>
+          <form id="settings" class="row">
+            <label>Frais de livraison (TND)<input name="deliveryFee" type="number" min="0" step="0.001" required /></label>
+            <label>Gratuite à partir de (TND)<input name="freeFrom" type="number" min="0" step="0.001" required /></label>
+            <label>WhatsApp boutique<input name="whatsappPhone" inputmode="numeric" placeholder="21620000000" required /></label>
+            <button type="submit">Enregistrer</button>
+          </form>
+          <p id="settings-error" class="error"></p>
+        </section>
+        <section>
+          <h2>Codes promo</h2>
+          <form id="coupon" class="row">
+            <label>Code<input name="code" placeholder="ETE10" required /></label>
+            <label>Type
+              <select name="kind">
+                <option value="percent">Pourcentage</option>
+                <option value="fixed">Montant TND</option>
+              </select>
+            </label>
+            <label>Valeur<input name="amount" type="number" min="1" step="0.001" required /></label>
+            <button type="submit">Ajouter</button>
+          </form>
+          <p id="coupon-error" class="error"></p>
+          <table>
+            <thead><tr><th>Code</th><th>Réduction</th><th></th></tr></thead>
+            <tbody id="coupons"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="assistant" class="panel">
+        <section>
+          <h2>Assistant boutique</h2>
+          <p>Même réponses que l’assistant de la boutique : stock, livraison, codes promo et suivi. Le numéro WhatsApp se règle dans Réglages.</p>
+          <div class="chat">
+            <div id="reply" class="bubble">Écrivez « catalogue », un article, ou un numéro TS-1001.</div>
+            <form id="chat" class="row">
+              <label style="grid-column: span 3;">Message<input name="message" placeholder="robe midi" required /></label>
+              <button type="submit">Envoyer</button>
+            </form>
+          </div>
+        </section>
+      </div>
     </main>
     <script>
-      const money = (value) => new Intl.NumberFormat("fr-TN", { style: "currency", currency: "TND", currencyDisplay: "code", maximumFractionDigits: 3 }).format(value);
+      const money = (value) => new Intl.NumberFormat("fr-TN", { style: "currency", currency: "TND", currencyDisplay: "code", minimumFractionDigits: 0, maximumFractionDigits: 3 }).format(Number(value) || 0);
       const sections = { collection: "Sélection", bestseller: "Meilleures ventes", deal: "Offres" };
       const statuses = ["nouvelle", "confirmée", "expédiée", "livrée", "annulée"];
+      const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+      let products = [];
+      let orders = [];
 
-      async function loadProducts() {
-        const products = await fetch("/api/products").then((response) => response.json());
-        document.getElementById("products").innerHTML = products.map((product) => `
+      document.querySelectorAll("nav button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("nav button").forEach((item) => item.classList.remove("active"));
+          document.querySelectorAll(".panel").forEach((panel) => panel.classList.remove("active"));
+          button.classList.add("active");
+          document.getElementById(button.dataset.tab).classList.add("active");
+        });
+      });
+
+      async function loadStats() {
+        const stats = await fetch("/api/stats").then((response) => response.json());
+        const max = Math.max(...stats.days.map((day) => day.revenue), 1);
+        document.getElementById("cards").innerHTML = [
+          ["Chiffre d'affaires", money(stats.revenue)],
+          ["Panier moyen", money(stats.average)],
+          ["Commandes actives", stats.activeOrders],
+          ["Clients", stats.customers],
+          ["Valeur du stock", money(stats.catalog.stockValue)],
+          ["Articles", stats.catalog.products],
+        ].map(([label, value]) => `<div class="card"><span>${label}</span><strong>${value}</strong></div>`).join("");
+        document.getElementById("bars").innerHTML = stats.days.map((day) => `
+          <div class="bar" title="${money(day.revenue)}">
+            <i style="height:${Math.max(4, (day.revenue / max) * 110)}px"></i>
+            <b>${day.orders}</b>
+            ${day.day.slice(5)}
+          </div>`).join("");
+        document.getElementById("top").innerHTML = stats.topProducts.length
+          ? stats.topProducts.map((item) => `<tr><td>${esc(item.title)}</td><td>${item.quantity}</td><td>${money(item.revenue)}</td></tr>`).join("")
+          : `<tr><td colspan="3">Pas encore de vente.</td></tr>`;
+        document.getElementById("low").innerHTML = stats.lowStock.length
+          ? stats.lowStock.map((item) => `<tr><td>${esc(item.title)}<br><small>${esc(item.category)}</small></td><td class="warn">${item.stock}</td><td><button class="ghost" data-restock="${item.id}" data-stock="${item.stock}">+10</button></td></tr>`).join("")
+          : `<tr><td colspan="3">Aucun article sous 5 pièces.</td></tr>`;
+        document.getElementById("statuses").innerHTML = stats.byStatus.length
+          ? stats.byStatus.map((row) => `<tr><td>${esc(row.status)}</td><td>${row.count}</td><td>${money(row.total)}</td></tr>`).join("")
+          : `<tr><td colspan="3">Aucune commande.</td></tr>`;
+      }
+
+      function renderProducts() {
+        const query = document.getElementById("product-search").value.trim().toLowerCase();
+        const visible = products.filter((product) => `${product.title} ${product.category}`.toLowerCase().includes(query));
+        document.getElementById("products").innerHTML = visible.map((product) => `
           <tr>
-            <td>${product.title}<br><small>${product.category}</small></td>
+            <td><input data-id="${product.id}" data-field="title" value="${esc(product.title)}" /></td>
+            <td><input data-id="${product.id}" data-field="category" value="${esc(product.category)}" /></td>
             <td><input data-id="${product.id}" data-field="price" type="number" value="${product.price}" /></td>
             <td><input data-id="${product.id}" data-field="stock" type="number" value="${product.stock}" /></td>
-            <td>${sections[product.section] || product.section}</td>
+            <td>${sections[product.section] || esc(product.section)}</td>
             <td>
               <button class="ghost" data-save="${product.id}">Sauver</button>
               <button class="ghost" data-delete="${product.id}">Supprimer</button>
             </td>
-          </tr>`).join("");
+          </tr>`).join("") || `<tr><td colspan="6">Aucun article.</td></tr>`;
+      }
+
+      function renderOrders() {
+        const query = document.getElementById("order-search").value.trim().toLowerCase();
+        const status = document.getElementById("order-status").value;
+        const visible = orders.filter((order) => {
+          const text = `${order.number} ${order.customerName} ${order.phone} ${order.city}`.toLowerCase();
+          return text.includes(query) && (!status || order.status === status);
+        });
+        document.getElementById("orders").innerHTML = visible.length ? visible.map((order) => `
+          <tr>
+            <td>${esc(order.number)}<br><small>${esc(order.items.map((item) => item.title + " x" + item.quantity).join(", "))}</small></td>
+            <td>${esc(order.customerName)}<br><small>${esc(order.phone)}</small></td>
+            <td>${esc(order.address)}<br><small>${esc(order.city)}</small></td>
+            <td>${money(order.total)}${order.coupon ? `<br><small>${esc(order.coupon)}</small>` : ""}</td>
+            <td>
+              <select data-order="${esc(order.number)}">
+                ${statuses.map((item) => `<option ${item === order.status ? "selected" : ""}>${item}</option>`).join("")}
+              </select>
+              <a href="${customerWhatsapp(order)}" target="_blank" rel="noreferrer">WhatsApp client</a>
+            </td>
+          </tr>`).join("") : `<tr><td colspan="5">Aucune commande.</td></tr>`;
+      }
+
+      async function loadProducts() {
+        products = await fetch("/api/products").then((response) => response.json());
+        renderProducts();
       }
 
       async function loadOrders() {
-        const orders = await fetch("/api/orders").then((response) => response.json());
-        document.getElementById("orders").innerHTML = orders.length ? orders.map((order) => `
-          <tr>
-            <td>${order.number}<br><small>${order.items.map((item) => item.title + " x" + item.quantity).join(", ")}</small></td>
-            <td>${order.customerName}<br><small>${order.phone} · ${order.city}</small></td>
-            <td>${money(order.total)}</td>
-            <td>
-              <select data-order="${order.number}">
-                ${statuses.map((status) => `<option ${status === order.status ? "selected" : ""}>${status}</option>`).join("")}
-              </select>
-            </td>
-          </tr>`).join("") : `<tr><td colspan="4">Aucune commande.</td></tr>`;
+        orders = await fetch("/api/orders").then((response) => response.json());
+        renderOrders();
       }
+
+      document.getElementById("product-search").addEventListener("input", renderProducts);
+      document.getElementById("order-search").addEventListener("input", renderOrders);
+      document.getElementById("order-status").addEventListener("change", renderOrders);
 
       document.getElementById("create").addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -128,7 +315,10 @@
         const response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
         const body = await response.json();
         document.getElementById("create-error").textContent = response.ok ? "" : body.error;
-        if (response.ok) { event.currentTarget.reset(); loadProducts(); }
+        if (response.ok) {
+          event.currentTarget.reset();
+          await Promise.all([loadProducts(), loadStats()]);
+        }
       });
 
       document.getElementById("products").addEventListener("click", async (event) => {
@@ -138,11 +328,11 @@
           const fields = {};
           document.querySelectorAll(`[data-id="${saveId}"]`).forEach((input) => { fields[input.dataset.field] = input.value; });
           await fetch(`/api/products/${saveId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) });
-          loadProducts();
+          await Promise.all([loadProducts(), loadStats()]);
         }
         if (deleteId && confirm("Supprimer ce produit ?")) {
           await fetch(`/api/products/${deleteId}`, { method: "DELETE" });
-          loadProducts();
+          await Promise.all([loadProducts(), loadStats()]);
         }
       });
 
@@ -150,6 +340,7 @@
         const number = event.target.dataset.order;
         if (!number) return;
         await fetch(`/api/orders/${number}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: event.target.value }) });
+        await Promise.all([loadOrders(), loadStats()]);
       });
 
       document.getElementById("chat").addEventListener("submit", async (event) => {
@@ -159,8 +350,115 @@
         document.getElementById("reply").textContent = data.reply;
       });
 
+      async function loadSettings() {
+        const settings = await fetch("/api/settings").then((response) => response.json());
+        const form = document.getElementById("settings");
+        form.deliveryFee.value = settings.deliveryFee;
+        form.freeFrom.value = settings.freeFrom;
+        form.whatsappPhone.value = settings.whatsappPhone || "";
+        const coupons = await fetch("/api/coupons").then((response) => response.json());
+        document.getElementById("coupons").innerHTML = coupons.length
+          ? coupons.map((coupon) => `<tr><td>${esc(coupon.code)}</td><td>${coupon.kind === "percent" ? coupon.amount + " %" : money(coupon.amount)}</td><td><button class="ghost" data-coupon="${esc(coupon.code)}">Supprimer</button></td></tr>`).join("")
+          : `<tr><td colspan="3">Aucun code.</td></tr>`;
+      }
+
+      document.getElementById("settings").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const response = await fetch("/api/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const body = await response.json();
+        document.getElementById("settings-error").textContent = response.ok ? "Livraison enregistrée." : body.error;
+      });
+
+      document.getElementById("coupon").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const response = await fetch("/api/coupons", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const body = await response.json();
+        document.getElementById("coupon-error").textContent = response.ok ? "" : body.error;
+        if (response.ok) { event.currentTarget.reset(); loadSettings(); }
+      });
+
+      document.getElementById("coupons").addEventListener("click", async (event) => {
+        const code = event.target.dataset.coupon;
+        if (!code) return;
+        await fetch(`/api/coupons/${code}`, { method: "DELETE" });
+        loadSettings();
+      });
+
+      const customerWhatsapp = (order) => {
+        let phone = String(order.phone || "").replace(/\D/g, "");
+        if (phone.startsWith("0")) phone = `216${phone.slice(1)}`;
+        if (phone.length === 8) phone = `216${phone}`;
+        const text = `Bonjour ${order.customerName}, votre commande ${order.number} (${order.total} TND) est « ${order.status} ».`;
+        return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      };
+
+      const downloadCsv = (name, lines) => {
+        const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = name;
+        link.click();
+      };
+
+      document.getElementById("low").addEventListener("click", async (event) => {
+        const id = event.target.dataset.restock;
+        if (!id) return;
+        const stock = Number(event.target.dataset.stock) + 10;
+        await fetch(`/api/products/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ stock }) });
+        await Promise.all([loadProducts(), loadStats()]);
+      });
+
+      document.getElementById("csv-file").addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        document.getElementById("csv").value = await file.text();
+      });
+
+      document.getElementById("csv-template").addEventListener("click", () => {
+        downloadCsv("modele-catalogue.csv", ["nom,prix,stock,categorie,ancien_prix,rayon", "Robe lin,189,8,Robes,220,collection"]);
+      });
+
+      document.getElementById("export-products").addEventListener("click", () => {
+        const lines = ["nom,prix,stock,categorie,ancien_prix,rayon"];
+        products.forEach((product) => {
+          const cells = [product.title, product.price, product.stock, product.category, product.priceOld || "", product.section || ""];
+          lines.push(cells.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(","));
+        });
+        downloadCsv("catalogue-tunishop.csv", lines);
+      });
+
+      document.getElementById("import-csv").addEventListener("click", async () => {
+        const csv = document.getElementById("csv").value;
+        const response = await fetch("/api/products/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv }) });
+        const body = await response.json();
+        const result = document.getElementById("import-result");
+        if (!response.ok) {
+          result.textContent = body.error;
+          result.className = "error";
+          return;
+        }
+        const problems = body.errors.length ? ` ${body.errors.length} ligne(s) ignorée(s).` : "";
+        result.className = "";
+        result.textContent = `${body.created} ajouté(s), ${body.updated} mis à jour.${problems}`;
+        document.getElementById("csv").value = "";
+        await Promise.all([loadProducts(), loadStats()]);
+      });
+
+      document.getElementById("export-orders").addEventListener("click", () => {
+        const lines = ["numero,client,telephone,ville,total,statut,articles"];
+        orders.forEach((order) => {
+          const cells = [order.number, order.customerName, order.phone, order.city, order.total, order.status, order.items.map((item) => item.title + " x" + item.quantity).join(" | ")];
+          lines.push(cells.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(","));
+        });
+        downloadCsv("commandes-tunishop.csv", lines);
+      });
+
+      loadStats();
       loadProducts();
       loadOrders();
+      loadSettings();
     </script>
   </body>
 </html>

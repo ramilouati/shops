@@ -101,6 +101,7 @@ import ResetPasswordPage from "./pages/otherPages/reset_password";
 import AboutPage from "./pages/otherPages/about";
 import ContactPage from "./pages/otherPages/contact";
 import ScrollTopBehaviour from "./components/common/ScrollTopBehaviour";
+import ShopAssistant from "./components/common/ShopAssistant";
 
 function App() {
   useEffect(() => {
@@ -243,6 +244,7 @@ function App() {
         <SizeGuide />
         <Delivery />
         <CartDrawer />
+        <ShopAssistant />
         <SiteMap />
         <CustomerLogin />
         <ShopFilter />

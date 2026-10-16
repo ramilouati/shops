@@ -1,7 +1,8 @@
+import { apiUrl } from "@/utlis/api";
 import { formatPrice } from "@/utlis/formatPrice";
 import { whatsappOrderUrl } from "@/utlis/whatsapp";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const paymentLabels = {
   cod: "Paiement à la livraison",
@@ -20,7 +21,7 @@ export default function OrderCompleted() {
       setError("Aucune commande à afficher.");
       return;
     }
-    fetch(`/api/orders/${number}`)
+    fetch(apiUrl(`/api/orders/${number}`))
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Commande introuvable");
@@ -96,6 +97,16 @@ export default function OrderCompleted() {
           </table>
           <table className="checkout-totals">
             <tbody>
+              {order.discount > 0 && (
+                <tr>
+                  <th>RÉDUCTION</th>
+                  <td>-{formatPrice(order.discount)}</td>
+                </tr>
+              )}
+              <tr>
+                <th>LIVRAISON</th>
+                <td>{order.shipping ? formatPrice(order.shipping) : "Gratuite"}</td>
+              </tr>
               <tr>
                 <th>TOTAL</th>
                 <td>{formatPrice(order.total)}</td>
@@ -116,6 +127,9 @@ export default function OrderCompleted() {
           >
             Envoyer sur WhatsApp
           </a>
+          <Link className="btn btn-outline-primary mt-3 d-block" to="/shop_order_tracking">
+            Suivre la commande
+          </Link>
         </div>
       </div>
     </div>

@@ -1,29 +1,66 @@
 const countries = ["Tunisie"];
 import { useContextElement } from "@/context/Context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { apiUrl } from "@/utlis/api";
 import { formatPrice } from "@/utlis/formatPrice";
 import { whatsappOrderUrl } from "@/utlis/whatsapp";
 export default function Checkout() {
-  const { cartProducts, totalPrice, setCartProducts } = useContextElement();
+  const { cartProducts, totalPrice, setCartProducts, shopPhone } = useContextElement();
   const [selectedRegion, setSelectedRegion] = useState("Tunisie");
   const [idDDActive, setIdDDActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [quote, setQuote] = useState(null);
   const navigate = useNavigate();
 
-  const placeOrder = async (event) => {
+  useEffect(() => {
+    if (!cartProducts.length) {
+      setQuote(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetch(apiUrl("/api/quote"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          coupon: couponCode,
+          items: cartProducts.map((item) => ({
+            productId: item.id,
+            title: item.title,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+        }),
+      })
+        .then(async (response) => {
+          const data = await response.json();
+          setQuote(response.ok ? data : { error: data.error });
+        })
+        .catch(() => setQuote(null));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [cartProducts, couponCode]);
+
+  const placeOrder = async (event, paymentOverride) => {
     event.preventDefault();
     if (!cartProducts.length) {
       setError("Votre panier est vide.");
       return;
     }
-    const data = new FormData(event.currentTarget);
+    if (quote?.error) {
+      setError(quote.error);
+      return;
+    }
+    const form = event.currentTarget.tagName === "FORM" ? event.currentTarget : event.currentTarget.form;
+    const data = new FormData(form);
+    const payment = paymentOverride || data.get("payment") || "cod";
     setSending(true);
     setError("");
     try {
-      const response = await fetch("/api/orders", {
+      const response = await fetch(apiUrl("/api/orders"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -34,7 +71,8 @@ export default function Checkout() {
           address: data.get("address"),
           city: data.get("city"),
           notes: data.get("notes"),
-          payment: data.get("payment") || "cod",
+          payment,
+          coupon: couponCode,
           items: cartProducts.map((item) => ({
             productId: item.id,
             title: item.title,
@@ -47,6 +85,20 @@ export default function Checkout() {
       if (!response.ok) {
         setError(order.error || "La commande n'a pas pu être enregistrée.");
         return;
+      }
+      if (payment === "whatsapp") {
+        window.open(
+          whatsappOrderUrl({
+            items: order.items,
+            total: order.total,
+            orderNumber: order.number,
+            name: order.customerName,
+            phone: order.phone,
+            shopPhone,
+          }),
+          "_blank",
+          "noopener,noreferrer"
+        );
       }
       setCartProducts([]);
       navigate(`/shop_order_complete?order=${order.number}`);
@@ -302,23 +354,41 @@ export default function Checkout() {
               <table className="checkout-totals">
                 <tbody>
                   <tr>
-                    <th>SUBTOTAL</th>
-                    <td>{formatPrice(totalPrice)}</td>
+                    <th>SOUS-TOTAL</th>
+                    <td>{formatPrice(quote?.subtotal ?? totalPrice)}</td>
                   </tr>
+                  {quote?.discount > 0 && (
+                    <tr>
+                      <th>RÉDUCTION {quote.coupon}</th>
+                      <td>-{formatPrice(quote.discount)}</td>
+                    </tr>
+                  )}
                   <tr>
-                    <th>SHIPPING</th>
-                    <td>Free shipping</td>
-                  </tr>
-                  <tr>
-                    <th>VAT</th>
-                    <td>{formatPrice(totalPrice && 19)}</td>
+                    <th>LIVRAISON</th>
+                    <td>
+                      {quote ? (quote.shipping ? formatPrice(quote.shipping) : "Gratuite") : "…"}
+                    </td>
                   </tr>
                   <tr>
                     <th>TOTAL</th>
-                    <td>{formatPrice(totalPrice && totalPrice + 19)}</td>
+                    <td>{formatPrice(quote?.total ?? totalPrice)}</td>
                   </tr>
                 </tbody>
               </table>
+              <div className="d-flex gap-2 mt-3">
+                <input
+                  className="form-control"
+                  placeholder="Code promo"
+                  value={couponCode}
+                  onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
+                />
+              </div>
+              {quote?.error && <p className="text-danger mt-2 mb-0">{quote.error}</p>}
+              {quote && !quote.error && (
+                <p className="text-secondary mt-2 mb-0">
+                  Livraison gratuite dès {formatPrice(quote.freeFrom)}.
+                </p>
+              )}
             </div>
             <div className="checkout__payment-methods">
               <div className="form-check">
@@ -424,17 +494,14 @@ export default function Checkout() {
               {sending ? "Enregistrement..." : "Confirmer la commande"}
             </button>
             {cartProducts.length > 0 && (
-              <a
+              <button
                 className="btn btn-light mt-3 d-block"
-                href={whatsappOrderUrl({
-                  items: cartProducts,
-                  total: totalPrice,
-                })}
-                target="_blank"
-                rel="noreferrer"
+                type="button"
+                disabled={sending}
+                onClick={(event) => placeOrder(event, "whatsapp")}
               >
-                Commander sur WhatsApp
-              </a>
+                Enregistrer et envoyer sur WhatsApp
+              </button>
             )}
           </div>
         </div>

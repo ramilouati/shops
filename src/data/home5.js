@@ -233,5 +233,6 @@ export const footerHelpLinks = [
   { href: "/store_location", text: "Trouver un magasin" },
   { href: "/terms", text: "Mentions légales" },
   { href: "/contact", text: "Contact" },
+  { href: "/shop_order_tracking", text: "Suivi de commande" },
   { href: "/about", text: "Carte cadeau" },
 ];

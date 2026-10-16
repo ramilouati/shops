@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { allProducts } from "@/data/products";
+import { apiUrl } from "@/utlis/api";
 import React, { useEffect } from "react";
 import { useContext, useState } from "react";
 const dataContext = React.createContext();
@@ -13,9 +14,19 @@ export default function Context({ children }) {
   const [wishList, setWishList] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
   const [catalog, setCatalog] = useState([]);
+  const [shopPhone, setShopPhone] = useState("21620000000");
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
-    fetch("/api/products")
+    fetch(apiUrl("/api/settings"))
+      .then((response) => response.json())
+      .then((settings) => {
+        const phone = String(settings.whatsappPhone || "").replace(/\D/g, "");
+        if (phone) setShopPhone(phone);
+      })
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    fetch(apiUrl("/api/products"))
       .then((response) => response.json())
       .then((products) => {
         if (Array.isArray(products)) setCatalog(products);
@@ -34,7 +45,7 @@ export default function Context({ children }) {
       const source =
         catalog.find((elm) => elm.id == id) ||
         allProducts.find((elm) => elm.id == id);
-      if (!source || source.price == null) return;
+      if (!source || source.price == null || source.stock === 0) return;
       const item = { ...source, quantity: 1 };
       setCartProducts((pre) => [...pre, item]);
 
@@ -95,6 +106,7 @@ export default function Context({ children }) {
     isAddedtoWishlist,
     quickViewItem,
     catalog,
+    shopPhone,
     wishList,
     setQuickViewItem,
   };

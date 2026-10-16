@@ -5,10 +5,10 @@ import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, "data");
-fs.mkdirSync(dataDir, { recursive: true });
+const dbFile = process.env.SQLITE_PATH || path.join(__dirname, "data", "tunishop.db");
+fs.mkdirSync(path.dirname(dbFile), { recursive: true });
 
-const db = new DatabaseSync(path.join(dataDir, "tunishop.db"));
+const db = new DatabaseSync(dbFile);
 db.exec(`
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY,
@@ -97,6 +97,28 @@ db.exec(`
   UPDATE products SET filter_category = 'En vedette' WHERE filter_category IS NULL;
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS coupons (
+    code TEXT PRIMARY KEY,
+    kind TEXT NOT NULL,
+    amount REAL NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1
+  );
+`);
+const saveSetting = db.prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)");
+saveSetting.run("delivery_fee", "7");
+saveSetting.run("free_from", "200");
+saveSetting.run("whatsapp_phone", "21620000000");
+db.prepare("INSERT OR IGNORE INTO coupons (code, kind, amount, active) VALUES ('BIENVENUE', 'percent', 10, 1)").run();
+const orderColumns = db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name);
+if (!orderColumns.includes("discount")) db.exec("ALTER TABLE orders ADD COLUMN discount REAL DEFAULT 0");
+if (!orderColumns.includes("shipping")) db.exec("ALTER TABLE orders ADD COLUMN shipping REAL DEFAULT 0");
+if (!orderColumns.includes("coupon")) db.exec("ALTER TABLE orders ADD COLUMN coupon TEXT");
+
 const productSql =
   "SELECT id, title, price, price_old AS priceOld, category, img_src AS imgSrc, stock, section, filter_category AS filterCategory FROM products";
 
@@ -125,31 +147,134 @@ const send = (res, status, data) => {
   res.end(JSON.stringify(data));
 };
 
+const getSettings = () => ({
+  deliveryFee: Number(db.prepare("SELECT value FROM settings WHERE key = 'delivery_fee'").get()?.value) || 0,
+  freeFrom: Number(db.prepare("SELECT value FROM settings WHERE key = 'free_from'").get()?.value) || 0,
+  whatsappPhone: db.prepare("SELECT value FROM settings WHERE key = 'whatsapp_phone'").get()?.value || "21620000000",
+});
+
 const replyTo = (message) => {
   const text = String(message || "").trim().toLowerCase();
-  if (!text) return "Écrivez un produit, un numéro TS-1001, ou « catalogue ».";
+  const settings = getSettings();
+  if (!text) return "Écrivez un article, « catalogue », « livraison », ou un numéro TS-1001 avec le téléphone.";
   const orderNumber = text.match(/ts-\d+/);
   if (orderNumber) {
-    const row = db
-      .prepare("SELECT number, status, total FROM orders WHERE lower(number) = ?")
-      .get(orderNumber[0]);
+    const row = db.prepare("SELECT number, status, total, phone FROM orders WHERE lower(number) = ?").get(orderNumber[0]);
     if (!row) return "Je ne trouve pas cette commande.";
+    const digits = text.replace(orderNumber[0], "").replace(/\D/g, "");
+    if (!digits) return `Commande ${row.number.toUpperCase()} trouvée. Ajoutez le téléphone utilisé à l’achat.`;
+    if (!String(row.phone).replace(/\D/g, "").endsWith(digits) && !digits.endsWith(String(row.phone).replace(/\D/g, ""))) {
+      return "Le téléphone ne correspond pas à cette commande.";
+    }
     return `Commande ${row.number} : ${row.status}. Total ${row.total} TND.`;
   }
+  if (["bonjour", "salut", "menu", "aide", "hello"].some((word) => text === word || text.startsWith(`${word} `))) {
+    return "Bonjour, je suis l’assistant TuniShop. Je peux donner le catalogue, le prix d’un article, les frais de livraison, les codes promo, ou le suivi d’une commande.";
+  }
+  if (text.includes("livraison") || text.includes("frais") || text.includes("port")) {
+    return `La livraison coûte ${settings.deliveryFee} TND. Elle est offerte dès ${settings.freeFrom} TND.`;
+  }
+  if (text.includes("promo") || text.includes("code") || text.includes("reduction") || text.includes("réduction")) {
+    const coupons = db.prepare("SELECT code, kind, amount FROM coupons WHERE active = 1 ORDER BY code").all();
+    if (!coupons.length) return "Aucun code promo en ce moment.";
+    return coupons.map((coupon) => `${coupon.code} : ${coupon.kind === "percent" ? `${coupon.amount} %` : `${coupon.amount} TND`}`).join("\n");
+  }
+  if (text.includes("whatsapp") || text.includes("horaire") || text.includes("contact")) {
+    return `WhatsApp : +${settings.whatsappPhone}. Nous répondons du lundi au samedi, de 9h à 19h.`;
+  }
+  if (text.includes("suivi")) return "Envoyez le numéro de commande et le téléphone, par exemple TS-1001 20000000.";
   const products = db.prepare("SELECT title, price, stock FROM products ORDER BY title").all();
-  if (["catalogue", "bonjour", "menu", "prix"].some((word) => text.includes(word))) {
-    return products
-      .map((product) => `${product.title} — ${product.price} TND, stock ${product.stock}`)
-      .join("\n");
+  if (text.includes("catalogue") || text.includes("boutique") || text === "prix") {
+    const lines = products.slice(0, 8).map((product) => `${product.title} — ${product.price} TND${product.stock < 1 ? " (rupture)" : ""}`);
+    return lines.join("\n") + (products.length > 8 ? "\nDemandez un article pour le détail." : "");
   }
   const hit = products.find(
-    (product) =>
-      text.includes(product.title.toLowerCase()) ||
-      product.title.toLowerCase().includes(text)
+    (product) => text.includes(product.title.toLowerCase()) || product.title.toLowerCase().includes(text)
   );
-  if (!hit) return "Article introuvable. Écrivez « catalogue » pour la liste.";
+  if (!hit) return "Je n’ai pas trouvé cet article. Écrivez « catalogue » ou le début du nom.";
   if (hit.stock < 1) return `${hit.title} est en rupture de stock.`;
   return `${hit.title} coûte ${hit.price} TND. Il en reste ${hit.stock}.`;
+};
+
+const parseCsv = (source) => {
+  const text = String(source || "").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const headerLine = text.split("\n").find((line) => line.trim()) || "";
+  const delimiter = (headerLine.match(/;/g) || []).length > (headerLine.match(/,/g) || []).length ? ";" : ",";
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (quoted) {
+      if (char === '"' && text[index + 1] === '"') {
+        cell += '"';
+        index += 1;
+      } else if (char === '"') quoted = false;
+      else cell += char;
+    } else if (char === '"') quoted = true;
+    else if (char === delimiter) {
+      row.push(cell.trim());
+      cell = "";
+    } else if (char === "\n") {
+      row.push(cell.trim());
+      if (row.some(Boolean)) rows.push(row);
+      row = [];
+      cell = "";
+    } else cell += char;
+  }
+  if (cell || row.length) {
+    row.push(cell.trim());
+    if (row.some(Boolean)) rows.push(row);
+  }
+  return rows;
+};
+
+const buildLines = (items) => {
+  if (!Array.isArray(items) || !items.length) return { error: "Le panier est vide." };
+  const lines = [];
+  for (const item of items) {
+    const quantity = Number(item.quantity);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
+      return { error: "Quantité invalide." };
+    }
+    const product = item.productId
+      ? db.prepare("SELECT * FROM products WHERE id = ?").get(Number(item.productId))
+      : null;
+    if (product) {
+      if (product.stock < quantity) return { error: `Stock insuffisant pour ${product.title}.` };
+      lines.push({ productId: product.id, title: product.title, price: product.price, quantity });
+    } else {
+      const price = Number(item.price);
+      const title = String(item.title || "").trim();
+      if (!title || !Number.isFinite(price) || price <= 0) return { error: "Article invalide." };
+      lines.push({ productId: null, title, price, quantity });
+    }
+  }
+  return { lines };
+};
+
+const quoteOrder = (lines, couponCode) => {
+  const settings = getSettings();
+  const subtotal = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
+  const code = String(couponCode || "").trim().toUpperCase();
+  let discount = 0;
+  if (code) {
+    const coupon = db.prepare("SELECT * FROM coupons WHERE code = ? AND active = 1").get(code);
+    if (!coupon) return { error: "Code promo invalide." };
+    discount = coupon.kind === "percent" ? (subtotal * coupon.amount) / 100 : Math.min(subtotal, coupon.amount);
+  }
+  const afterDiscount = Math.max(0, subtotal - discount);
+  const shipping = afterDiscount >= settings.freeFrom ? 0 : settings.deliveryFee;
+  return {
+    subtotal,
+    discount,
+    shipping,
+    total: afterDiscount + shipping,
+    coupon: code,
+    freeFrom: settings.freeFrom,
+    deliveryFee: settings.deliveryFee,
+  };
 };
 
 const orderWithItems = (row) => {
@@ -168,6 +293,10 @@ const orderWithItems = (row) => {
     city: row.city,
     notes: row.notes,
     payment: row.payment,
+    subtotal: row.total - (row.shipping || 0) + (row.discount || 0),
+    discount: row.discount || 0,
+    shipping: row.shipping || 0,
+    coupon: row.coupon || "",
     total: row.total,
     status: row.status,
     createdAt: row.created_at,
@@ -189,7 +318,11 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/admin")) {
-      const html = fs.readFileSync(path.join(__dirname, "admin.html"), "utf8");
+      const shopUrl = process.env.SHOP_URL || "http://localhost:5173/";
+      const html = fs.readFileSync(path.join(__dirname, "admin.html"), "utf8").replaceAll(
+        "http://localhost:5173/",
+        shopUrl
+      );
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(html);
       return;
@@ -197,6 +330,139 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "GET" && url.pathname === "/api/health") {
       send(res, 200, { ok: true });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/stats") {
+      const summary = db
+        .prepare(
+          `SELECT
+             COUNT(*) AS orders,
+             SUM(CASE WHEN status != 'annulée' THEN 1 ELSE 0 END) AS activeOrders,
+             COALESCE(SUM(CASE WHEN status != 'annulée' THEN total ELSE 0 END), 0) AS revenue,
+             COUNT(DISTINCT CASE WHEN status != 'annulée' THEN phone END) AS customers
+           FROM orders`
+        )
+        .get();
+      const byDay = Object.fromEntries(
+        db
+          .prepare(
+            `SELECT substr(created_at, 1, 10) AS day,
+                    COUNT(*) AS orders,
+                    COALESCE(SUM(CASE WHEN status != 'annulée' THEN total ELSE 0 END), 0) AS revenue
+             FROM orders
+             GROUP BY day`
+          )
+          .all()
+          .map((row) => [row.day, row])
+      );
+      const days = [];
+      for (let i = 6; i >= 0; i -= 1) {
+        const day = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+        days.push({
+          day,
+          orders: byDay[day]?.orders || 0,
+          revenue: byDay[day]?.revenue || 0,
+        });
+      }
+      send(res, 200, {
+        revenue: summary.revenue,
+        orders: summary.orders,
+        activeOrders: summary.activeOrders || 0,
+        customers: summary.customers || 0,
+        average: summary.activeOrders ? summary.revenue / summary.activeOrders : 0,
+        byStatus: db
+          .prepare(
+            "SELECT status, COUNT(*) AS count, COALESCE(SUM(total), 0) AS total FROM orders GROUP BY status"
+          )
+          .all(),
+        days,
+        topProducts: db
+          .prepare(
+            `SELECT oi.title,
+                    SUM(oi.quantity) AS quantity,
+                    SUM(oi.price * oi.quantity) AS revenue
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             WHERE o.status != 'annulée'
+             GROUP BY oi.title
+             ORDER BY revenue DESC
+             LIMIT 5`
+          )
+          .all(),
+        lowStock: db
+          .prepare(
+            "SELECT id, title, stock, category FROM products WHERE stock <= 5 ORDER BY stock ASC, title"
+          )
+          .all(),
+        catalog: db
+          .prepare(
+            "SELECT COUNT(*) AS products, COALESCE(SUM(price * stock), 0) AS stockValue FROM products"
+          )
+          .get(),
+      });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/settings") {
+      send(res, 200, getSettings());
+      return;
+    }
+
+    if (req.method === "PATCH" && url.pathname === "/api/settings") {
+      const body = await readBody(req);
+      const deliveryFee = Number(body.deliveryFee);
+      const freeFrom = Number(body.freeFrom);
+      const whatsappPhone = String(body.whatsappPhone || "").replace(/\D/g, "");
+      if (!Number.isFinite(deliveryFee) || deliveryFee < 0 || !Number.isFinite(freeFrom) || freeFrom < 0) {
+        send(res, 400, { error: "Frais de livraison invalides." });
+        return;
+      }
+      if (!/^\d{8,15}$/.test(whatsappPhone)) {
+        send(res, 400, { error: "Numéro WhatsApp invalide. Exemple : 21620000000." });
+        return;
+      }
+      const update = db.prepare("INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value");
+      update.run("delivery_fee", String(deliveryFee));
+      update.run("free_from", String(freeFrom));
+      update.run("whatsapp_phone", whatsappPhone);
+      send(res, 200, getSettings());
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/coupons") {
+      send(res, 200, db.prepare("SELECT code, kind, amount, active FROM coupons ORDER BY code").all());
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/coupons") {
+      const body = await readBody(req);
+      const code = String(body.code || "").trim().toUpperCase();
+      const amount = Number(body.amount);
+      const kind = body.kind === "fixed" ? "fixed" : "percent";
+      if (!/^[A-Z0-9-]{3,20}$/.test(code) || !Number.isFinite(amount) || amount <= 0 || (kind === "percent" && amount > 100)) {
+        send(res, 400, { error: "Code ou réduction invalide." });
+        return;
+      }
+      db.prepare("INSERT INTO coupons (code, kind, amount, active) VALUES (?, ?, ?, 1) ON CONFLICT(code) DO UPDATE SET kind = excluded.kind, amount = excluded.amount, active = 1").run(code, kind, amount);
+      send(res, 201, { code, kind, amount, active: 1 });
+      return;
+    }
+
+    const couponMatch = url.pathname.match(/^\/api\/coupons\/([A-Za-z0-9-]+)$/);
+    if (couponMatch && req.method === "DELETE") {
+      db.prepare("DELETE FROM coupons WHERE code = ?").run(couponMatch[1].toUpperCase());
+      send(res, 200, { ok: true });
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/quote") {
+      const body = await readBody(req);
+      const built = buildLines(body.items);
+      if (built.error) return send(res, 400, built);
+      const quote = quoteOrder(built.lines, body.coupon);
+      if (quote.error) return send(res, 400, quote);
+      send(res, 200, quote);
       return;
     }
 
@@ -210,6 +476,76 @@ const server = http.createServer(async (req, res) => {
       const product = db.prepare(`${productSql} WHERE id = ?`).get(Number(productMatch[1]));
       if (!product) return send(res, 404, { error: "Produit introuvable" });
       send(res, 200, product);
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/products/import") {
+      const body = await readBody(req);
+      const table = parseCsv(body.csv);
+      if (table.length < 2) {
+        send(res, 400, { error: "Ajoutez une ligne d’en-tête puis au moins un article." });
+        return;
+      }
+      const header = table[0].map((name) =>
+        name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/\s+/g, "_")
+      );
+      const column = (...names) => header.findIndex((name) => names.includes(name));
+      const titleCol = column("nom", "title", "article", "produit");
+      const priceCol = column("prix", "price");
+      const stockCol = column("stock");
+      const categoryCol = column("categorie", "category");
+      const oldCol = column("ancien_prix", "prix_ancien", "priceold", "price_old");
+      const sectionCol = column("rayon", "section");
+      if (titleCol < 0 || priceCol < 0) {
+        send(res, 400, { error: "Colonnes requises : nom, prix. Stock et categorie sont utiles." });
+        return;
+      }
+      const sectionOf = (value) => {
+        const text = String(value || "").toLowerCase();
+        if (text.includes("vente") || text.includes("best")) return "bestseller";
+        if (text.includes("offre") || text.includes("deal")) return "deal";
+        return "collection";
+      };
+      const created = [];
+      const updated = [];
+      const errors = [];
+      const findByTitle = db.prepare("SELECT id FROM products WHERE lower(title) = lower(?)");
+      const insert = db.prepare(
+        "INSERT INTO products (id, title, price, price_old, category, img_src, stock, section, filter_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      );
+      const update = db.prepare(
+        "UPDATE products SET price = ?, price_old = ?, category = ?, stock = ?, section = ? WHERE id = ?"
+      );
+      db.exec("BEGIN");
+      try {
+        for (let index = 1; index < table.length && index <= 300; index += 1) {
+          const cells = table[index];
+          const title = String(cells[titleCol] || "").trim();
+          const price = Number(String(cells[priceCol] || "").replace(",", "."));
+          const stock = stockCol < 0 || cells[stockCol] === "" ? 10 : Number(cells[stockCol]);
+          if (!title || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+            errors.push({ line: index + 1, error: title ? "Prix ou stock invalide." : "Nom manquant." });
+            continue;
+          }
+          const priceOld = oldCol >= 0 && cells[oldCol] ? Number(String(cells[oldCol]).replace(",", ".")) : null;
+          const category = categoryCol >= 0 && cells[categoryCol] ? cells[categoryCol] : "Boutique";
+          const section = sectionOf(sectionCol >= 0 ? cells[sectionCol] : "");
+          const existing = findByTitle.get(title);
+          if (existing) {
+            update.run(price, Number.isFinite(priceOld) ? priceOld : null, category, stock, section, existing.id);
+            updated.push(title);
+          } else {
+            const id = db.prepare("SELECT COALESCE(MAX(id), 5000) + 1 AS id FROM products").get().id;
+            insert.run(id, title, price, Number.isFinite(priceOld) ? priceOld : null, category, "/assets/images/home/demo5/product-0-1.jpg", stock, section, "En vedette");
+            created.push(title);
+          }
+        }
+        db.exec("COMMIT");
+      } catch (error) {
+        db.exec("ROLLBACK");
+        throw error;
+      }
+      send(res, 200, { created: created.length, updated: updated.length, errors });
       return;
     }
 
@@ -315,7 +651,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "GET" && orderMatch) {
       const row = db.prepare("SELECT * FROM orders WHERE number = ?").get(orderMatch[1].toUpperCase());
-      if (!row) return send(res, 404, { error: "Commande introuvable" });
+      const phone = url.searchParams.get("phone");
+      if (!row || (phone && phone !== row.phone)) {
+        return send(res, 404, { error: "Commande introuvable" });
+      }
       send(res, 200, orderWithItems(row));
       return;
     }
@@ -327,47 +666,16 @@ const server = http.createServer(async (req, res) => {
       const phone = String(body.phone || "").trim();
       const address = String(body.address || "").trim();
       const city = String(body.city || "").trim();
-      const items = Array.isArray(body.items) ? body.items : [];
-      if (!firstName || !lastName || !phone || !address || !city || !items.length) {
-        send(res, 400, {
-          error: "Nom, téléphone, adresse, ville et au moins un article sont requis.",
-        });
+      if (!firstName || !lastName || !phone || !address || !city) {
+        send(res, 400, { error: "Nom, téléphone, adresse et ville sont requis." });
         return;
       }
-
-      const lines = [];
-      for (const item of items) {
-        const quantity = Number(item.quantity);
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
-          send(res, 400, { error: "Quantité invalide." });
-          return;
-        }
-        const product = item.productId
-          ? db.prepare("SELECT * FROM products WHERE id = ?").get(Number(item.productId))
-          : null;
-        if (product) {
-          if (product.stock < quantity) {
-            send(res, 400, { error: `Stock insuffisant pour ${product.title}.` });
-            return;
-          }
-          lines.push({
-            productId: product.id,
-            title: product.title,
-            price: product.price,
-            quantity,
-          });
-        } else {
-          const price = Number(item.price);
-          const title = String(item.title || "").trim();
-          if (!title || !Number.isFinite(price) || price <= 0) {
-            send(res, 400, { error: "Article invalide." });
-            return;
-          }
-          lines.push({ productId: null, title, price, quantity });
-        }
-      }
-
-      const total = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
+      const items = Array.isArray(body.items) ? body.items : [];
+      const built = buildLines(items);
+      if (built.error) return send(res, 400, built);
+      const quote = quoteOrder(built.lines, body.coupon);
+      if (quote.error) return send(res, 400, quote);
+      const { lines } = built;
       const nextId = db
         .prepare(
           "SELECT COALESCE(MAX(CAST(SUBSTR(number, 4) AS INTEGER)), 1000) + 1 AS n FROM orders"
@@ -383,8 +691,8 @@ const server = http.createServer(async (req, res) => {
         const result = db
           .prepare(
             `INSERT INTO orders
-              (number, customer_name, phone, email, address, city, notes, payment, total, status, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'nouvelle', ?)`
+              (number, customer_name, phone, email, address, city, notes, payment, total, discount, shipping, coupon, status, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'nouvelle', ?)`
           )
           .run(
             number,
@@ -395,7 +703,10 @@ const server = http.createServer(async (req, res) => {
             city,
             String(body.notes || "").trim(),
             payment,
-            total,
+            quote.total,
+            quote.discount,
+            quote.shipping,
+            quote.coupon,
             new Date().toISOString()
           );
         const insertItem = db.prepare(
@@ -426,6 +737,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 const port = Number(process.env.PORT) || 3001;
-server.listen(port, () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`TuniShop API on http://localhost:${port}`);
 });
