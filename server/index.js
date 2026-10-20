@@ -3,6 +3,20 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
+import {
+  COOKIE_CUSTOMER,
+  COOKIE_TEAM,
+  TEAM_ROLES,
+  cookieOptions,
+  createSession,
+  destroySession,
+  ensureAuthTables,
+  hashPassword,
+  publicUser,
+  readCookie,
+  userFromSession,
+  verifyPassword,
+} from "./auth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbFile = process.env.SQLITE_PATH || path.join(__dirname, "data", "tunishop.db");
@@ -118,16 +132,100 @@ const orderColumns = db.prepare("PRAGMA table_info(orders)").all().map((column) 
 if (!orderColumns.includes("discount")) db.exec("ALTER TABLE orders ADD COLUMN discount REAL DEFAULT 0");
 if (!orderColumns.includes("shipping")) db.exec("ALTER TABLE orders ADD COLUMN shipping REAL DEFAULT 0");
 if (!orderColumns.includes("coupon")) db.exec("ALTER TABLE orders ADD COLUMN coupon TEXT");
+if (!orderColumns.includes("user_id")) db.exec("ALTER TABLE orders ADD COLUMN user_id INTEGER");
+
+ensureAuthTables(db);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+  );
+  CREATE TABLE IF NOT EXISTS product_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    src TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE TABLE IF NOT EXISTS stock_moves (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    delta INTEGER NOT NULL,
+    stock_after INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    note TEXT,
+    created_at TEXT NOT NULL
+  );
+`);
+const insertCategory = db.prepare("INSERT OR IGNORE INTO categories (name) VALUES (?)");
+for (const row of db.prepare("SELECT DISTINCT category AS name FROM products WHERE category IS NOT NULL AND trim(category) != ''").all()) {
+  insertCategory.run(row.name);
+}
+const missingImages = db.prepare(`
+  SELECT id, img_src AS imgSrc FROM products
+  WHERE id NOT IN (SELECT product_id FROM product_images) AND img_src IS NOT NULL
+`).all();
+const insertImage = db.prepare("INSERT INTO product_images (product_id, src, position) VALUES (?, ?, 0)");
+for (const row of missingImages) insertImage.run(row.id, row.imgSrc);
+
+const uploadsDir = path.join(__dirname, "..", "public", "uploads");
+fs.mkdirSync(uploadsDir, { recursive: true });
 
 const productSql =
   "SELECT id, title, price, price_old AS priceOld, category, img_src AS imgSrc, stock, section, filter_category AS filterCategory FROM products";
+
+const withImages = (product) => {
+  if (!product) return null;
+  const images = db
+    .prepare("SELECT src FROM product_images WHERE product_id = ? ORDER BY position, id")
+    .all(product.id)
+    .map((row) => row.src);
+  return { ...product, images, imgSrc: images[0] || product.imgSrc, imgSrc2: images[1] || null };
+};
+
+const recordStock = (productId, delta, reason, note = "") => {
+  const product = db.prepare("SELECT id, stock FROM products WHERE id = ?").get(productId);
+  if (!product) return { error: "Produit introuvable" };
+  if (!Number.isInteger(delta) || delta === 0) return { error: "Quantité invalide." };
+  const next = product.stock + delta;
+  if (next < 0) return { error: "Le stock ne peut pas passer sous zéro." };
+  db.prepare("UPDATE products SET stock = ? WHERE id = ?").run(next, productId);
+  db.prepare(
+    "INSERT INTO stock_moves (product_id, delta, stock_after, reason, note, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(productId, delta, next, reason, note, new Date().toISOString());
+  return { stock: next };
+};
+
+const saveUploadedImages = (productId, images) => {
+  if (!Array.isArray(images) || images.length < 1 || images.length > 4) {
+    return { error: "Choisissez entre 1 et 4 photos." };
+  }
+  const saved = [];
+  for (const [index, image] of images.entries()) {
+    const match = String(image).match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/);
+    if (!match) return { error: "Photo invalide. Utilisez JPG, PNG ou WebP." };
+    const ext = match[1] === "image/png" ? "png" : match[1] === "image/webp" ? "webp" : "jpg";
+    const buffer = Buffer.from(match[2].replace(/\s/g, ""), "base64");
+    if (!buffer.length || buffer.length > 2_000_000) return { error: "Chaque photo doit faire moins de 2 Mo." };
+    const filename = `${productId}-${Date.now()}-${index}.${ext}`;
+    fs.writeFileSync(path.join(uploadsDir, filename), buffer);
+    saved.push(`/uploads/${filename}`);
+  }
+  db.prepare("DELETE FROM product_images WHERE product_id = ?").run(productId);
+  const insert = db.prepare("INSERT INTO product_images (product_id, src, position) VALUES (?, ?, ?)");
+  saved.forEach((src, position) => insert.run(productId, src, position));
+  db.prepare("UPDATE products SET img_src = ? WHERE id = ?").run(saved[0], productId);
+  return { images: saved };
+};
+
+const knownCategory = (name) => db.prepare("SELECT name FROM categories WHERE name = ?").get(name);
 
 const readBody = (req) =>
   new Promise((resolve, reject) => {
     let raw = "";
     req.on("data", (chunk) => {
       raw += chunk;
-      if (raw.length > 1_000_000) reject(new Error("Payload too large"));
+      if (raw.length > 12_000_000) reject(new Error("Payload too large"));
     });
     req.on("end", () => {
       if (!raw) return resolve({});
@@ -138,6 +236,32 @@ const readBody = (req) =>
       }
     });
   });
+
+const teamUser = (req) => userFromSession(db, readCookie(req, COOKIE_TEAM), "team");
+const customerUser = (req) => userFromSession(db, readCookie(req, COOKIE_CUSTOMER), "customer");
+const isAdmin = (req) => {
+  const user = teamUser(req);
+  return !!user && TEAM_ROLES.includes(user.role);
+};
+const isFullAdmin = (req) => teamUser(req)?.role === "admin";
+
+const setAuthCookie = (res, req, name, token, status, payload) => {
+  res.writeHead(status, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Set-Cookie": `${name}=${encodeURIComponent(token)}; ${cookieOptions(req)}`,
+  });
+  res.end(JSON.stringify(payload));
+};
+
+const clearAuthCookie = (res, req, name, payload = { ok: true }) => {
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Set-Cookie": `${name}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`,
+  });
+  res.end(JSON.stringify(payload));
+};
 
 const send = (res, status, data) => {
   res.writeHead(status, {
@@ -309,7 +433,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
+      "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     });
     res.end();
@@ -317,6 +441,233 @@ const server = http.createServer(async (req, res) => {
   }
 
   try {
+    const adminOnly =
+      url.pathname === "/api/stats" ||
+      url.pathname === "/api/products/import" ||
+      (url.pathname === "/api/products" && req.method !== "GET") ||
+      (/^\/api\/products\/\d+$/.test(url.pathname) && req.method !== "GET") ||
+      url.pathname.startsWith("/api/coupons") ||
+      url.pathname.startsWith("/api/stock") ||
+      url.pathname.startsWith("/api/users") ||
+      (url.pathname.startsWith("/api/categories") && req.method !== "GET") ||
+      (url.pathname === "/api/settings" && req.method !== "GET") ||
+      (url.pathname === "/api/orders" && req.method === "GET") ||
+      (/^\/api\/orders\/TS-\d+$/i.test(url.pathname) && req.method === "PATCH");
+    if (adminOnly && !isAdmin(req)) {
+      send(res, 401, { error: "Connexion requise." });
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/login") {
+      const body = await readBody(req);
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const user = db.prepare("SELECT * FROM users WHERE lower(email) = ?").get(email);
+      if (!user || !user.active || !TEAM_ROLES.includes(user.role) || !verifyPassword(password, user.password_hash)) {
+        send(res, 401, { error: "E-mail ou mot de passe incorrect." });
+        return;
+      }
+      destroySession(db, readCookie(req, COOKIE_TEAM));
+      const session = createSession(db, user.id, "team");
+      setAuthCookie(res, req, COOKIE_TEAM, session.token, 200, { ok: true, user: publicUser(user) });
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/logout") {
+      destroySession(db, readCookie(req, COOKIE_TEAM));
+      clearAuthCookie(res, req, COOKIE_TEAM);
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/me") {
+      const user = teamUser(req);
+      if (!user) return send(res, 401, { error: "Connexion requise." });
+      send(res, 200, { user: publicUser(user) });
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/register") {
+      const body = await readBody(req);
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const name = String(body.name || "").trim();
+      const phone = String(body.phone || "").replace(/\D/g, "");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6 || name.length < 2) {
+        send(res, 400, { error: "Nom, e-mail valide et mot de passe (6 caractères min.) sont requis." });
+        return;
+      }
+      try {
+        const result = db
+          .prepare(
+            "INSERT INTO users (email, password_hash, name, phone, role, active, created_at) VALUES (?, ?, ?, ?, 'customer', 1, ?)"
+          )
+          .run(email, hashPassword(password), name, phone, new Date().toISOString());
+        const session = createSession(db, Number(result.lastInsertRowid), "customer");
+        const user = db.prepare("SELECT * FROM users WHERE id = ?").get(Number(result.lastInsertRowid));
+        setAuthCookie(res, req, COOKIE_CUSTOMER, session.token, 201, { ok: true, user: publicUser(user) });
+      } catch {
+        send(res, 400, { error: "Cet e-mail est déjà utilisé." });
+      }
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/customer/login") {
+      const body = await readBody(req);
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const user = db.prepare("SELECT * FROM users WHERE lower(email) = ?").get(email);
+      if (!user || !user.active || user.role !== "customer" || !verifyPassword(password, user.password_hash)) {
+        send(res, 401, { error: "E-mail ou mot de passe incorrect." });
+        return;
+      }
+      destroySession(db, readCookie(req, COOKIE_CUSTOMER));
+      const session = createSession(db, user.id, "customer");
+      setAuthCookie(res, req, COOKIE_CUSTOMER, session.token, 200, { ok: true, user: publicUser(user) });
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/customer/logout") {
+      destroySession(db, readCookie(req, COOKIE_CUSTOMER));
+      clearAuthCookie(res, req, COOKIE_CUSTOMER);
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/customer/me") {
+      const user = customerUser(req);
+      if (!user) return send(res, 401, { error: "Connexion requise." });
+      const wishlist = db
+        .prepare("SELECT product_id AS id FROM wishlists WHERE user_id = ? ORDER BY created_at DESC")
+        .all(user.id)
+        .map((row) => row.id);
+      send(res, 200, { user: publicUser(user), wishlist });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/customer/orders") {
+      const user = customerUser(req);
+      if (!user) return send(res, 401, { error: "Connexion requise." });
+      const rows = db
+        .prepare("SELECT * FROM orders WHERE user_id = ? OR (user_id IS NULL AND phone = ?) ORDER BY id DESC")
+        .all(user.id, user.phone || "__none__");
+      send(res, 200, rows.map(orderWithItems));
+      return;
+    }
+
+    if (req.method === "PUT" && url.pathname === "/api/customer/wishlist") {
+      const user = customerUser(req);
+      if (!user) return send(res, 401, { error: "Connexion requise." });
+      const body = await readBody(req);
+      const ids = Array.isArray(body.productIds)
+        ? [...new Set(body.productIds.map(Number).filter((id) => Number.isInteger(id) && id > 0))]
+        : [];
+      db.exec("BEGIN");
+      try {
+        db.prepare("DELETE FROM wishlists WHERE user_id = ?").run(user.id);
+        const insert = db.prepare(
+          "INSERT INTO wishlists (user_id, product_id, created_at) VALUES (?, ?, ?)"
+        );
+        const now = new Date().toISOString();
+        for (const id of ids) insert.run(user.id, id, now);
+        db.exec("COMMIT");
+      } catch (error) {
+        db.exec("ROLLBACK");
+        throw error;
+      }
+      send(res, 200, { wishlist: ids });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/users") {
+      if (!isFullAdmin(req)) return send(res, 403, { error: "Réservé à l’administrateur." });
+      send(
+        res,
+        200,
+        db
+          .prepare(
+            "SELECT id, email, name, phone, role, active, created_at AS createdAt FROM users ORDER BY role, name"
+          )
+          .all()
+          .map((row) => ({ ...row, active: !!row.active }))
+      );
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/users") {
+      if (!isFullAdmin(req)) return send(res, 403, { error: "Réservé à l’administrateur." });
+      const body = await readBody(req);
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const name = String(body.name || "").trim();
+      const phone = String(body.phone || "").replace(/\D/g, "");
+      const role = ["admin", "staff", "customer"].includes(body.role) ? body.role : "";
+      if (!role || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6 || name.length < 2) {
+        send(res, 400, { error: "Nom, e-mail, rôle et mot de passe (6 min.) sont requis." });
+        return;
+      }
+      try {
+        const result = db
+          .prepare(
+            "INSERT INTO users (email, password_hash, name, phone, role, active, created_at) VALUES (?, ?, ?, ?, ?, 1, ?)"
+          )
+          .run(email, hashPassword(password), name, phone, role, new Date().toISOString());
+        send(res, 201, publicUser(db.prepare("SELECT * FROM users WHERE id = ?").get(Number(result.lastInsertRowid))));
+      } catch {
+        send(res, 400, { error: "Cet e-mail est déjà utilisé." });
+      }
+      return;
+    }
+
+    const userMatch = url.pathname.match(/^\/api\/users\/(\d+)$/);
+    if (userMatch && req.method === "PATCH") {
+      if (!isFullAdmin(req)) return send(res, 403, { error: "Réservé à l’administrateur." });
+      const id = Number(userMatch[1]);
+      const current = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+      if (!current) return send(res, 404, { error: "Utilisateur introuvable" });
+      const body = await readBody(req);
+      const name = String(body.name ?? current.name).trim();
+      const phone = String(body.phone ?? current.phone ?? "").replace(/\D/g, "");
+      const role = ["admin", "staff", "customer"].includes(body.role) ? body.role : current.role;
+      const active = body.active == null ? current.active : body.active ? 1 : 0;
+      if (current.role === "admin" && (role !== "admin" || !active)) {
+        const admins = db.prepare("SELECT COUNT(*) AS n FROM users WHERE role = 'admin' AND active = 1").get().n;
+        if (admins <= 1) return send(res, 400, { error: "Il doit rester au moins un administrateur actif." });
+      }
+      if (name.length < 2) return send(res, 400, { error: "Nom invalide." });
+      if (body.password) {
+        if (String(body.password).length < 6) return send(res, 400, { error: "Mot de passe trop court." });
+        db.prepare(
+          "UPDATE users SET name = ?, phone = ?, role = ?, active = ?, password_hash = ? WHERE id = ?"
+        ).run(name, phone, role, active, hashPassword(body.password), id);
+      } else {
+        db.prepare("UPDATE users SET name = ?, phone = ?, role = ?, active = ? WHERE id = ?").run(
+          name,
+          phone,
+          role,
+          active,
+          id
+        );
+      }
+      send(res, 200, publicUser(db.prepare("SELECT * FROM users WHERE id = ?").get(id)));
+      return;
+    }
+
+    if (userMatch && req.method === "DELETE") {
+      if (!isFullAdmin(req)) return send(res, 403, { error: "Réservé à l’administrateur." });
+      const id = Number(userMatch[1]);
+      const current = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+      if (!current) return send(res, 404, { error: "Utilisateur introuvable" });
+      if (teamUser(req)?.id === id) return send(res, 400, { error: "Vous ne pouvez pas supprimer votre propre compte." });
+      if (current.role === "admin") {
+        const admins = db.prepare("SELECT COUNT(*) AS n FROM users WHERE role = 'admin' AND active = 1").get().n;
+        if (admins <= 1) return send(res, 400, { error: "Il doit rester au moins un administrateur." });
+      }
+      db.prepare("DELETE FROM sessions WHERE user_id = ?").run(id);
+      db.prepare("DELETE FROM wishlists WHERE user_id = ?").run(id);
+      db.prepare("DELETE FROM users WHERE id = ?").run(id);
+      send(res, 200, { ok: true });
+      return;
+    }
+
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/admin")) {
       const shopUrl = process.env.SHOP_URL || "http://localhost:5173/";
       const html = fs.readFileSync(path.join(__dirname, "admin.html"), "utf8").replaceAll(
@@ -325,6 +676,15 @@ const server = http.createServer(async (req, res) => {
       );
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(html);
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname.startsWith("/uploads/")) {
+      const file = path.join(uploadsDir, path.basename(url.pathname));
+      if (!fs.existsSync(file)) return send(res, 404, { error: "Not found" });
+      const types = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };
+      res.writeHead(200, { "Content-Type": types[path.extname(file).toLowerCase()] || "application/octet-stream" });
+      res.end(fs.readFileSync(file));
       return;
     }
 
@@ -397,9 +757,107 @@ const server = http.createServer(async (req, res) => {
           .all(),
         catalog: db
           .prepare(
-            "SELECT COUNT(*) AS products, COALESCE(SUM(price * stock), 0) AS stockValue FROM products"
+            `SELECT COUNT(*) AS products,
+                    COALESCE(SUM(price * stock), 0) AS stockValue,
+                    COALESCE(SUM(stock), 0) AS units,
+                    SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) AS outOfStock,
+                    SUM(CASE WHEN stock > 0 AND stock <= 5 THEN 1 ELSE 0 END) AS low
+             FROM products`
           )
           .get(),
+        cancelled: db.prepare("SELECT COUNT(*) AS n FROM orders WHERE status = 'annulée'").get().n,
+        repeatCustomers: db
+          .prepare(
+            `SELECT COUNT(*) AS n FROM (
+               SELECT phone FROM orders WHERE status != 'annulée' GROUP BY phone HAVING COUNT(*) > 1
+             )`
+          )
+          .get().n,
+        itemsSold: db
+          .prepare(
+            `SELECT COALESCE(SUM(oi.quantity), 0) AS n
+             FROM order_items oi JOIN orders o ON o.id = oi.order_id
+             WHERE o.status != 'annulée'`
+          )
+          .get().n,
+        discounts: db
+          .prepare(
+            `SELECT COALESCE(SUM(CASE WHEN status != 'annulée' THEN discount ELSE 0 END), 0) AS discount,
+                    COALESCE(SUM(CASE WHEN status != 'annulée' THEN shipping ELSE 0 END), 0) AS shipping,
+                    SUM(CASE WHEN status != 'annulée' AND COALESCE(shipping, 0) = 0 THEN 1 ELSE 0 END) AS freeDeliveries
+             FROM orders`
+          )
+          .get(),
+        byCity: db
+          .prepare(
+            `SELECT city, COUNT(*) AS orders, COALESCE(SUM(total), 0) AS revenue
+             FROM orders WHERE status != 'annulée'
+             GROUP BY city ORDER BY revenue DESC LIMIT 8`
+          )
+          .all(),
+        byPayment: db
+          .prepare(
+            `SELECT payment, COUNT(*) AS orders, COALESCE(SUM(total), 0) AS revenue
+             FROM orders WHERE status != 'annulée'
+             GROUP BY payment ORDER BY revenue DESC`
+          )
+          .all(),
+        byCoupon: db
+          .prepare(
+            `SELECT coupon, COUNT(*) AS orders, COALESCE(SUM(discount), 0) AS discount, COALESCE(SUM(total), 0) AS revenue
+             FROM orders
+             WHERE status != 'annulée' AND coupon IS NOT NULL AND trim(coupon) != ''
+             GROUP BY coupon ORDER BY orders DESC`
+          )
+          .all(),
+        byCategory: db
+          .prepare(
+            `SELECT COALESCE(p.category, 'Sans catégorie') AS category,
+                    SUM(oi.quantity) AS quantity,
+                    SUM(oi.price * oi.quantity) AS revenue
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             LEFT JOIN products p ON p.id = oi.product_id
+             WHERE o.status != 'annulée'
+             GROUP BY category
+             ORDER BY revenue DESC`
+          )
+          .all(),
+        stockByCategory: db
+          .prepare(
+            `SELECT COALESCE(category, 'Sans catégorie') AS category,
+                    COUNT(*) AS products,
+                    COALESCE(SUM(stock), 0) AS units,
+                    SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) AS outOfStock,
+                    COALESCE(SUM(price * stock), 0) AS value
+             FROM products
+             GROUP BY category
+             ORDER BY value DESC`
+          )
+          .all(),
+        unsold: db
+          .prepare(
+            `SELECT p.id, p.title, p.category, p.stock
+             FROM products p
+             WHERE NOT EXISTS (
+               SELECT 1 FROM order_items oi
+               JOIN orders o ON o.id = oi.order_id
+               WHERE oi.product_id = p.id AND o.status != 'annulée'
+             )
+             ORDER BY p.stock DESC, p.title
+             LIMIT 20`
+          )
+          .all(),
+        weeks: db
+          .prepare(
+            `SELECT CAST((julianday('now') - julianday(created_at)) / 7 AS INTEGER) AS weeksAgo,
+                    COUNT(*) AS orders,
+                    COALESCE(SUM(CASE WHEN status != 'annulée' THEN total ELSE 0 END), 0) AS revenue
+             FROM orders
+             WHERE julianday(created_at) >= julianday('now', '-28 days')
+             GROUP BY weeksAgo`
+          )
+          .all(),
       });
       return;
     }
@@ -466,8 +924,80 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "GET" && url.pathname === "/api/categories") {
+      send(res, 200, db.prepare("SELECT id, name FROM categories ORDER BY name").all());
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/categories") {
+      const body = await readBody(req);
+      const name = String(body.name || "").trim();
+      if (name.length < 2 || name.length > 40) {
+        send(res, 400, { error: "Le nom de catégorie doit faire entre 2 et 40 caractères." });
+        return;
+      }
+      try {
+        const result = db.prepare("INSERT INTO categories (name) VALUES (?)").run(name);
+        send(res, 201, { id: Number(result.lastInsertRowid), name });
+      } catch {
+        send(res, 400, { error: "Cette catégorie existe déjà." });
+      }
+      return;
+    }
+
+    const categoryMatch = url.pathname.match(/^\/api\/categories\/(\d+)$/);
+    if (categoryMatch && req.method === "PATCH") {
+      const body = await readBody(req);
+      const name = String(body.name || "").trim();
+      const current = db.prepare("SELECT * FROM categories WHERE id = ?").get(Number(categoryMatch[1]));
+      if (!current) return send(res, 404, { error: "Catégorie introuvable" });
+      if (name.length < 2 || name.length > 40) return send(res, 400, { error: "Nom invalide." });
+      try {
+        db.prepare("UPDATE categories SET name = ? WHERE id = ?").run(name, current.id);
+        db.prepare("UPDATE products SET category = ? WHERE category = ?").run(name, current.name);
+        send(res, 200, { id: current.id, name });
+      } catch {
+        send(res, 400, { error: "Cette catégorie existe déjà." });
+      }
+      return;
+    }
+
+    if (categoryMatch && req.method === "DELETE") {
+      const current = db.prepare("SELECT * FROM categories WHERE id = ?").get(Number(categoryMatch[1]));
+      if (!current) return send(res, 404, { error: "Catégorie introuvable" });
+      const used = db.prepare("SELECT COUNT(*) AS n FROM products WHERE category = ?").get(current.name).n;
+      if (used) return send(res, 400, { error: "Des articles utilisent encore cette catégorie." });
+      db.prepare("DELETE FROM categories WHERE id = ?").run(current.id);
+      send(res, 200, { ok: true });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/stock") {
+      const products = db.prepare(`${productSql} ORDER BY stock ASC, title`).all().map(withImages);
+      const moves = db.prepare(`
+        SELECT m.id, m.product_id AS productId, p.title, m.delta, m.stock_after AS stockAfter, m.reason, m.note, m.created_at AS createdAt
+        FROM stock_moves m JOIN products p ON p.id = m.product_id
+        ORDER BY m.id DESC LIMIT 40
+      `).all();
+      send(res, 200, { products, moves });
+      return;
+    }
+
+    const stockMatch = url.pathname.match(/^\/api\/stock\/(\d+)$/);
+    if (stockMatch && req.method === "POST") {
+      const body = await readBody(req);
+      const delta = Number(body.delta);
+      const reasons = ["réception", "correction", "casse", "inventaire"];
+      const reason = reasons.includes(body.reason) ? body.reason : "";
+      if (!reason) return send(res, 400, { error: "Choisissez un motif." });
+      const result = recordStock(Number(stockMatch[1]), delta, reason, String(body.note || "").trim());
+      if (result.error) return send(res, 400, result);
+      send(res, 200, result);
+      return;
+    }
+
     if (req.method === "GET" && url.pathname === "/api/products") {
-      send(res, 200, db.prepare(`${productSql} ORDER BY id`).all());
+      send(res, 200, db.prepare(`${productSql} ORDER BY id`).all().map(withImages));
       return;
     }
 
@@ -475,7 +1005,7 @@ const server = http.createServer(async (req, res) => {
     if (productMatch && req.method === "GET") {
       const product = db.prepare(`${productSql} WHERE id = ?`).get(Number(productMatch[1]));
       if (!product) return send(res, 404, { error: "Produit introuvable" });
-      send(res, 200, product);
+      send(res, 200, withImages(product));
       return;
     }
 
@@ -529,14 +1059,18 @@ const server = http.createServer(async (req, res) => {
           }
           const priceOld = oldCol >= 0 && cells[oldCol] ? Number(String(cells[oldCol]).replace(",", ".")) : null;
           const category = categoryCol >= 0 && cells[categoryCol] ? cells[categoryCol] : "Boutique";
+          insertCategory.run(category);
           const section = sectionOf(sectionCol >= 0 ? cells[sectionCol] : "");
           const existing = findByTitle.get(title);
           if (existing) {
-            update.run(price, Number.isFinite(priceOld) ? priceOld : null, category, stock, section, existing.id);
+            const currentStock = db.prepare("SELECT stock FROM products WHERE id = ?").get(existing.id).stock;
+            update.run(price, Number.isFinite(priceOld) ? priceOld : null, category, currentStock, section, existing.id);
+            if (stock !== currentStock) recordStock(existing.id, stock - currentStock, "inventaire", "Import CSV");
             updated.push(title);
           } else {
             const id = db.prepare("SELECT COALESCE(MAX(id), 5000) + 1 AS id FROM products").get().id;
-            insert.run(id, title, price, Number.isFinite(priceOld) ? priceOld : null, category, "/assets/images/home/demo5/product-0-1.jpg", stock, section, "En vedette");
+            insert.run(id, title, price, Number.isFinite(priceOld) ? priceOld : null, category, "/assets/images/home/demo5/product-0-1.jpg", 0, section, "En vedette");
+            if (stock > 0) recordStock(id, stock, "inventaire", "Import CSV");
             created.push(title);
           }
         }
@@ -554,25 +1088,32 @@ const server = http.createServer(async (req, res) => {
       const title = String(body.title || "").trim();
       const price = Number(body.price);
       const stock = Number(body.stock);
+      const category = String(body.category || "").trim();
       if (!title || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
         send(res, 400, { error: "Titre, prix et stock sont requis." });
         return;
       }
+      if (!knownCategory(category)) {
+        send(res, 400, { error: "Choisissez une catégorie existante." });
+        return;
+      }
       const id = db.prepare("SELECT COALESCE(MAX(id), 5000) + 1 AS id FROM products").get().id;
+      const saved = saveUploadedImages(id, body.images);
+      if (saved.error) return send(res, 400, saved);
       db.prepare(
-        "INSERT INTO products (id, title, price, price_old, category, img_src, stock, section, filter_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO products (id, title, price, price_old, category, img_src, stock, section, filter_category) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)"
       ).run(
         id,
         title,
         price,
         body.priceOld ? Number(body.priceOld) : null,
-        String(body.category || "Boutique").trim(),
-        String(body.imgSrc || "/assets/images/home/demo5/product-0-1.jpg").trim(),
-        stock,
+        category,
+        saved.images[0],
         ["collection", "bestseller", "deal"].includes(body.section) ? body.section : "collection",
         String(body.filterCategory || "En vedette").trim()
       );
-      send(res, 201, db.prepare(`${productSql} WHERE id = ?`).get(id));
+      if (stock > 0) recordStock(id, stock, "réception", "Création de l’article");
+      send(res, 201, withImages(db.prepare(`${productSql} WHERE id = ?`).get(id)));
       return;
     }
 
@@ -582,25 +1123,25 @@ const server = http.createServer(async (req, res) => {
       if (!current) return send(res, 404, { error: "Produit introuvable" });
       const body = await readBody(req);
       const price = body.price == null ? current.price : Number(body.price);
-      const stock = body.stock == null ? current.stock : Number(body.stock);
-      if (!Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
-        send(res, 400, { error: "Prix ou stock invalide." });
-        return;
+      const category = String(body.category || current.category || "").trim();
+      if (!Number.isFinite(price) || price <= 0) return send(res, 400, { error: "Prix invalide." });
+      if (!knownCategory(category)) return send(res, 400, { error: "Choisissez une catégorie existante." });
+      if (Array.isArray(body.images) && body.images.length) {
+        const saved = saveUploadedImages(id, body.images);
+        if (saved.error) return send(res, 400, saved);
       }
       db.prepare(
-        `UPDATE products SET title = ?, price = ?, price_old = ?, category = ?, img_src = ?, stock = ?, section = ?, filter_category = ? WHERE id = ?`
+        `UPDATE products SET title = ?, price = ?, price_old = ?, category = ?, section = ?, filter_category = ? WHERE id = ?`
       ).run(
         String(body.title || current.title).trim(),
         price,
         body.priceOld == null || body.priceOld === "" ? current.price_old : Number(body.priceOld),
-        String(body.category || current.category || "").trim(),
-        String(body.imgSrc || current.img_src).trim(),
-        stock,
+        category,
         body.section || current.section,
         String(body.filterCategory || current.filter_category || "En vedette").trim(),
         id
       );
-      send(res, 200, db.prepare(`${productSql} WHERE id = ?`).get(id));
+      send(res, 200, withImages(db.prepare(`${productSql} WHERE id = ?`).get(id)));
       return;
     }
 
@@ -608,6 +1149,7 @@ const server = http.createServer(async (req, res) => {
       const id = Number(productMatch[1]);
       const result = db.prepare("DELETE FROM products WHERE id = ?").run(id);
       if (!result.changes) return send(res, 404, { error: "Produit introuvable" });
+      db.prepare("DELETE FROM product_images WHERE product_id = ?").run(id);
       send(res, 200, { ok: true });
       return;
     }
@@ -639,9 +1181,7 @@ const server = http.createServer(async (req, res) => {
       if (body.status === "annulée" && row.status !== "annulée") {
         const items = db.prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?").all(row.id);
         for (const item of items) {
-          if (item.product_id) {
-            db.prepare("UPDATE products SET stock = stock + ? WHERE id = ?").run(item.quantity, item.product_id);
-          }
+          if (item.product_id) recordStock(item.product_id, item.quantity, "annulation", row.number);
         }
       }
       db.prepare("UPDATE orders SET status = ? WHERE id = ?").run(body.status, row.id);
@@ -685,20 +1225,21 @@ const server = http.createServer(async (req, res) => {
       const payment = ["cod", "whatsapp", "bank"].includes(body.payment)
         ? body.payment
         : "cod";
+      const buyer = customerUser(req);
 
       db.exec("BEGIN");
       try {
         const result = db
           .prepare(
             `INSERT INTO orders
-              (number, customer_name, phone, email, address, city, notes, payment, total, discount, shipping, coupon, status, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'nouvelle', ?)`
+              (number, customer_name, phone, email, address, city, notes, payment, total, discount, shipping, coupon, status, created_at, user_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'nouvelle', ?, ?)`
           )
           .run(
             number,
             `${firstName} ${lastName}`,
             phone,
-            String(body.email || "").trim(),
+            String(body.email || buyer?.email || "").trim(),
             address,
             city,
             String(body.notes || "").trim(),
@@ -707,17 +1248,18 @@ const server = http.createServer(async (req, res) => {
             quote.discount,
             quote.shipping,
             quote.coupon,
-            new Date().toISOString()
+            new Date().toISOString(),
+            buyer?.id || null
           );
         const insertItem = db.prepare(
           "INSERT INTO order_items (order_id, product_id, title, price, quantity) VALUES (?, ?, ?, ?, ?)"
         );
-        const updateStock = db.prepare(
-          "UPDATE products SET stock = stock - ? WHERE id = ?"
-        );
         for (const line of lines) {
           insertItem.run(result.lastInsertRowid, line.productId, line.title, line.price, line.quantity);
-          if (line.productId) updateStock.run(line.quantity, line.productId);
+          if (line.productId) {
+            const moved = recordStock(line.productId, -line.quantity, "vente", number);
+            if (moved.error) throw new Error(moved.error);
+          }
         }
         db.exec("COMMIT");
       } catch (error) {

@@ -1,37 +1,11 @@
 import { useContextElement } from "@/context/Context";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 import { formatPrice } from "@/utlis/formatPrice";
 export default function Cart() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
-  const setQuantity = (id, quantity) => {
-    if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
-      const items = [...cartProducts];
-      const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
-      setCartProducts(items);
-    }
-  };
+  const { cartProducts, setCartProducts, totalPrice, setItemQuantity } = useContextElement();
   const removeItem = (id) => {
     setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
-  };
-
-  const [checkboxes, setCheckboxes] = useState({
-    free_shipping: false,
-    flat_rate: false,
-    local_pickup: false,
-  });
-
-  // Step 2: Create a handler function
-  const handleCheckboxChange = (event) => {
-    const { id, checked } = event.target;
-    setCheckboxes((prevCheckboxes) => ({
-      ...prevCheckboxes,
-      [id]: checked,
-    }));
   };
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
@@ -41,11 +15,11 @@ export default function Cart() {
             <table className="cart-table">
               <thead>
                 <tr>
-                  <th>Product</th>
+                  <th>Article</th>
                   <th></th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Subtotal</th>
+                  <th>Prix</th>
+                  <th>Quantité</th>
+                  <th>Sous-total</th>
                   <th></th>
                 </tr>
               </thead>
@@ -59,17 +33,14 @@ export default function Cart() {
                           src={elm.imgSrc}
                           width="120"
                           height="120"
-                          alt="image"
+                          alt={elm.title}
                         />
                       </div>
                     </td>
                     <td>
                       <div className="shopping-cart__product-item__detail">
                         <h4>{elm.title}</h4>
-                        <ul className="shopping-cart__product-item__options">
-                          <li>Color: Yellow</li>
-                          <li>Size: L</li>
-                        </ul>
+                        <p className="mb-0">{elm.category}</p>
                       </div>
                     </td>
                     <td>
@@ -85,18 +56,18 @@ export default function Cart() {
                           value={elm.quantity}
                           min={1}
                           onChange={(e) =>
-                            setQuantity(elm.id, e.target.value / 1)
+                            setItemQuantity(elm.id, e.target.value / 1)
                           }
                           className="qty-control__number text-center"
                         />
                         <div
-                          onClick={() => setQuantity(elm.id, elm.quantity - 1)}
+                          onClick={() => setItemQuantity(elm.id, elm.quantity - 1)}
                           className="qty-control__reduce"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => setQuantity(elm.id, elm.quantity + 1)}
+                          onClick={() => setItemQuantity(elm.id, elm.quantity + 1)}
                           className="qty-control__increase"
                         >
                           +
@@ -129,33 +100,14 @@ export default function Cart() {
                 ))}
               </tbody>
             </table>
-            <div className="cart-table-footer">
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="position-relative bg-body"
-              >
-                <input
-                  className="form-control"
-                  type="text"
-                  name="coupon_code"
-                  placeholder="Coupon Code"
-                />
-                <input
-                  className="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4"
-                  type="submit"
-                  defaultValue="APPLY COUPON"
-                />
-              </form>
-              <button className="btn btn-light">UPDATE CART</button>
-            </div>
           </>
         ) : (
           <>
-            <div className="fs-20">Shop cart is empty</div>
+            <div className="fs-20">Votre panier est vide.</div>
 
-            <button className="btn mt-3 btn-light">
-              <Link to={"/shop-1"}>Explore Products</Link>
-            </button>
+            <Link to="/shop-1" className="btn mt-3 btn-light">
+              Voir la boutique
+            </Link>
           </>
         )}
       </div>
@@ -163,88 +115,29 @@ export default function Cart() {
         <div className="shopping-cart__totals-wrapper">
           <div className="sticky-content">
             <div className="shopping-cart__totals">
-              <h3>Cart Totals</h3>
+              <h3>Total</h3>
               <table className="cart-totals">
                 <tbody>
                   <tr>
-                    <th>Subtotal</th>
+                    <th>Sous-total</th>
                     <td>{formatPrice(totalPrice)}</td>
                   </tr>
                   <tr>
-                    <th>Shipping</th>
-                    <td>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="free_shipping"
-                          checked={checkboxes.free_shipping}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="free_shipping"
-                        >
-                          Free shipping
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="flat_rate"
-                          checked={checkboxes.flat_rate}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label className="form-check-label" htmlFor="flat_rate">
-                          Flat rate: 49 TND
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="local_pickup"
-                          checked={checkboxes.local_pickup}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="local_pickup"
-                        >
-                          Local pickup: 8 TND
-                        </label>
-                      </div>
-                      <div>Shipping to AL.</div>
-                      <div>
-                        <a href="#" className="menu-link menu-link_us-s">
-                          CHANGE ADDRESS
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>VAT</th>
-                    <td>19 TND</td>
+                    <th>Livraison</th>
+                    <td>Calculée à l’étape suivante</td>
                   </tr>
                   <tr>
                     <th>Total</th>
-                    <td>
-                      $
-                      {49 * checkboxes.flat_rate +
-                        8 * checkboxes.local_pickup +
-                        totalPrice +
-                        19}
-                    </td>
+                    <td>{formatPrice(totalPrice)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div className="mobile_fixed-btn_wrapper">
               <div className="button-wrapper container">
-                <button className="btn btn-primary btn-checkout">
-                  PROCEED TO CHECKOUT
-                </button>
+                <Link to="/shop_checkout" className="btn btn-primary btn-checkout">
+                  Commander
+                </Link>
               </div>
             </div>
           </div>

@@ -18,7 +18,6 @@ import MobileHeader from "@/components/headers/MobileHeader";
 import SizeGuide from "@/components/modals/SizeGuide";
 import Delivery from "@/components/modals/Delivery";
 import CustomerLogin from "@/components/asides/CustomerLogin";
-import ShopFilter from "@/components/asides/ShopFilter";
 import ProductDescription from "@/components/asides/ProductDescription";
 import ProductAdditionalInformation from "@/components/asides/ProductAdditionalInformation";
 import ProductReviews from "@/components/asides/ProductReviews";
@@ -87,6 +86,7 @@ import BlogPage3 from "./pages/blogs/blog_list3";
 import BlogDetailsPage from "./pages/blogs/blog_single/[id]";
 import AccountPage from "./pages/dashboard/account_dashboard";
 import LoginPage from "./pages/otherPages/login_register";
+import ComptePage from "./pages/compte";
 import StoreLocationPage from "./pages/otherPages/store_location";
 import LookbookPage from "./pages/otherPages/lookbook";
 import FaqPage from "./pages/otherPages/faq";
@@ -213,6 +213,7 @@ function App() {
 
             <Route path="account_dashboard" element={<AccountPage />} />
             <Route path="login_register" element={<LoginPage />} />
+            <Route path="compte" element={<ComptePage />} />
             <Route path="store_location" element={<StoreLocationPage />} />
             <Route path="lookbook" element={<LookbookPage />} />
             <Route path="faq" element={<FaqPage />} />
@@ -247,7 +248,6 @@ function App() {
         <ShopAssistant />
         <SiteMap />
         <CustomerLogin />
-        <ShopFilter />
         <ProductDescription />
         <ProductAdditionalInformation />
         <ProductReviews />

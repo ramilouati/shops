@@ -1,6 +1,6 @@
 import MetaComponent from "@/components/common/MetaComponent";
-import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Footer5 from "@/components/footers/Footer5";
+import Header5 from "@/components/headers/Header5";
 import OrderTrack from "@/components/shopCartandCheckout/OrderTrack";
 const metadata = {
   title: "Shop Order Tracking || TuniShop",
@@ -10,13 +10,13 @@ export default function ShopOrderTrackingPage() {
   return (
     <>
       <MetaComponent meta={metadata} />
-      <Header1 />
+      <Header5 solid />
       <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
+        <div className="pt-5 mt-5"></div>
         <OrderTrack />
       </main>
       <div className="mb-5 pb-xl-5"></div>
-      <Footer1 />
+      <Footer5 parentClass="footer footer_type_2 dark" />
     </>
   );
 }

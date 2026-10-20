@@ -1,9 +1,29 @@
-export const heroSlides = [1, 2, 3, 4].map((id) => ({
-  id,
-  bgColor: "#f5e6e0",
-  imgSrc: "/assets/images/home/demo5/slider1.jpg",
-  title: "Des pièces d'exception pour un style unique",
-}));
+export const heroSlides = [
+  {
+    id: 1,
+    bgColor: "#1c1c1c",
+    videoSrc: "/assets/videos/video_1.mp4",
+    posterSrc: "/assets/images/home/demo5/slider1.jpg",
+    title: "Des pièces d’exception pour un style unique",
+    ctaLabel: "Voir la boutique",
+  },
+  {
+    id: 2,
+    bgColor: "#1c1c1c",
+    videoSrc: "/assets/videos/video_2.mp4",
+    posterSrc: "/assets/images/home/demo5/slider2.jpg",
+    title: "Nouveautés de saison, livrées en Tunisie",
+    ctaLabel: "Découvrir",
+  },
+  {
+    id: 3,
+    bgColor: "#1c1c1c",
+    videoSrc: "/assets/videos/video_3.mp4",
+    posterSrc: "/assets/images/home/demo5/slider1.jpg",
+    title: "L’élégance tunisienne, livrée chez vous",
+    ctaLabel: "Explorer",
+  },
+];
 
 const categoryList = [
   { name: "Sacs à main", imgSrc: "/assets/images/home/demo5/category_1.png" },
@@ -213,26 +233,17 @@ export const servicePromotions = [
 
 export const footerCompanyLinks = [
   { href: "/about", text: "À propos" },
-  { href: "/about", text: "Carrières" },
-  { href: "/about", text: "Affiliation" },
-  { href: "/blog_list1", text: "Blog" },
   { href: "/contact", text: "Nous contacter" },
 ];
 
 export const footerShopLinks = [
-  { href: "/shop-2", text: "Nouveautés" },
-  { href: "/shop-3", text: "Accessoires" },
-  { href: "/shop-4", text: "Homme" },
-  { href: "/shop-5", text: "Femme" },
   { href: "/shop-1", text: "Toute la boutique" },
+  { href: "/shop-2", text: "Nouveautés" },
+  { href: "/shop_cart", text: "Panier" },
 ];
 
 export const footerHelpLinks = [
-  { href: "/about", text: "Service client" },
-  { href: "/account_dashboard", text: "Mon compte" },
-  { href: "/store_location", text: "Trouver un magasin" },
-  { href: "/terms", text: "Mentions légales" },
-  { href: "/contact", text: "Contact" },
   { href: "/shop_order_tracking", text: "Suivi de commande" },
-  { href: "/about", text: "Carte cadeau" },
+  { href: "/contact", text: "Contact" },
+  { href: "/about", text: "Livraison" },
 ];

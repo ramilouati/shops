@@ -5,19 +5,26 @@ export default function NewsLetter() {
   const modalElement = useRef(null);
 
   useEffect(() => {
+    let timer;
+    let myModal;
     import("bootstrap").then((bootstrap) => {
-      const myModal = new bootstrap.Modal(
+      myModal = new bootstrap.Modal(
         document.getElementById("newsletterPopup"),
         {
           keyboard: false,
         }
       );
 
-      myModal.show();
-      modalElement.current.addEventListener("hidden.bs.modal", () => {
+      // Delay so the hero videos are visible first.
+      timer = window.setTimeout(() => myModal.show(), 12000);
+      modalElement.current?.addEventListener("hidden.bs.modal", () => {
         myModal.hide();
       });
     });
+    return () => {
+      window.clearTimeout(timer);
+      myModal?.hide();
+    };
   }, []);
 
   return (

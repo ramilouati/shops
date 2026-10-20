@@ -1,5 +1,5 @@
 import { useContextElement } from "@/context/Context";
-import { collectionFilters, topCollectionProducts } from "@/data/home5";
+import { collectionFilters } from "@/data/home5";
 import { formatPrice } from "@/utlis/formatPrice";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 export default function TopCollections() {
   const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
   const collectionProducts = catalog.filter((product) => product.section === "collection");
-  const products = collectionProducts.length ? collectionProducts : topCollectionProducts;
+  const products = collectionProducts;
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
@@ -55,10 +55,11 @@ export default function TopCollections() {
       },
     },
   };
-  const [currentCategory, setCurrentCategory] = useState(collectionFilters[0]);
+  const filters = ["Tout", ...collectionFilters];
+  const [currentCategory, setCurrentCategory] = useState("Tout");
   const [filtered, setFiltered] = useState(products);
   useEffect(() => {
-    if (currentCategory == "All") {
+    if (currentCategory === "Tout") {
       setFiltered(products);
     } else {
       setFiltered(products.filter((elm) => elm.filterCategory == currentCategory));
@@ -78,7 +79,7 @@ export default function TopCollections() {
           id="collections-tab"
           role="tablist"
         >
-          {collectionFilters.map((elm, i) => (
+          {filters.map((elm, i) => (
             <li
               onClick={() => setCurrentCategory(elm)}
               key={i}

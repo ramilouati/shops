@@ -6,23 +6,13 @@ import { whatsappOrderUrl } from "@/utlis/whatsapp";
 import { formatPrice } from "@/utlis/formatPrice";
 
 export default function CartDrawer() {
-  const { cartProducts, setCartProducts, totalPrice, shopPhone } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, shopPhone, setItemQuantity } = useContextElement();
   const { pathname } = useLocation();
   const closeCart = () => {
     document
       .getElementById("cartDrawerOverlay")
       .classList.remove("page-overlay_visible");
     document.getElementById("cartDrawer").classList.remove("aside_visible");
-  };
-  const setQuantity = (id, quantity) => {
-    if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
-      const items = [...cartProducts];
-      const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
-      setCartProducts(items);
-    }
   };
   const removeItem = (id) => {
     setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
@@ -70,34 +60,31 @@ export default function CartDrawer() {
                     <h6 className="cart-drawer-item__title fw-normal">
                       {elm.title}
                     </h6>
-                    <p className="cart-drawer-item__option text-secondary">
-                      Couleur : Jaune
-                    </p>
-                    <p className="cart-drawer-item__option text-secondary">
-                      Taille : L
-                    </p>
+                    {elm.stock > 0 && elm.stock <= 5 && (
+                      <p className="cart-drawer-item__option text-secondary">
+                        Plus que {elm.stock} en stock
+                      </p>
+                    )}
                     <div className="d-flex align-items-center justify-content-between mt-1">
                       <div className="qty-control position-relative">
                         <input
                           type="number"
                           name="quantity"
-                          onChange={(e) =>
-                            setQuantity(elm.id, e.target.value / 1)
-                          }
+                          onChange={(e) => setItemQuantity(elm.id, e.target.value)}
                           value={elm.quantity}
                           min="1"
                           className="qty-control__number border-0 text-center"
                         />
                         <div
                           onClick={() => {
-                            setQuantity(elm.id, elm.quantity - 1);
+                            setItemQuantity(elm.id, elm.quantity - 1);
                           }}
                           className="qty-control__reduce text-start"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => setQuantity(elm.id, elm.quantity + 1)}
+                          onClick={() => setItemQuantity(elm.id, elm.quantity + 1)}
                           className="qty-control__increase text-end"
                         >
                           +

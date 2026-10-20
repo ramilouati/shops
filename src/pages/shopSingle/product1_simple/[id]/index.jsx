@@ -1,30 +1,44 @@
-import Footer1 from "@/components/footers/Footer1";
-
-import Header1 from "@/components/headers/Header1";
+import Footer5 from "@/components/footers/Footer5";
+import Header5 from "@/components/headers/Header5";
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 import SingleProduct12 from "@/components/singleProduct/SingleProduct12";
-import { allProducts } from "@/data/products";
 import MetaComponent from "@/components/common/MetaComponent";
+import { apiUrl } from "@/utlis/api";
+import { useContextElement } from "@/context/Context";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 const metadata = {
-  title: "Shop Single 1 || TuniShop",
+  title: "Article || TuniShop",
   description: "TuniShop",
 };
+
 export default function ProductDetailsPage1() {
-  let params = useParams();
-  const productId = params.id;
-  const product =
-    allProducts.filter((elm) => elm.id == productId)[0] || allProducts[0];
+  const params = useParams();
+  const { catalog } = useContextElement();
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const known = catalog.find((item) => item.id == params.id) || null;
+    setProduct(known);
+    fetch(apiUrl(`/api/products/${params.id}`))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((live) => {
+        if (live?.id) setProduct(live);
+      })
+      .catch(() => {});
+  }, [params.id, catalog]);
+
   return (
     <>
       <MetaComponent meta={metadata} />
-      <Header1 />
+      <Header5 solid />
       <main className="page-wrapper">
-        <div className="mb-md-1 pb-md-3"></div>
-        <SingleProduct12 product={product} />
+        <div className="pt-5 mt-4"></div>
+        {product ? <SingleProduct12 product={product} /> : <p className="container">Article introuvable.</p>}
         <RelatedSlider />
       </main>
-      <Footer1 />
+      <Footer5 parentClass="footer footer_type_2 dark" />
     </>
   );
 }

@@ -1,25 +1,41 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useContextElement } from "@/context/Context";
+import { formatPrice } from "@/utlis/formatPrice";
 
 export default function SearchPopup() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
   const containerRef = useRef(null);
-
-  const handleClickOutside = (event) => {
-    if (containerRef.current && !containerRef.current.contains(event.target)) {
-      setIsPopupOpen(false);
-    }
-  };
+  const navigate = useNavigate();
+  const { catalog } = useContextElement();
+  const needle = keyword.trim().toLowerCase();
+  const results = needle
+    ? catalog
+        .filter((product) =>
+          `${product.title} ${product.category}`.toLowerCase().includes(needle)
+        )
+        .slice(0, 6)
+    : [];
+  const categories = [...new Set(catalog.map((product) => product.category).filter(Boolean))].slice(0, 5);
 
   useEffect(() => {
-    // Add event listener for clicks
-    document.addEventListener("click", handleClickOutside);
-
-    // Clean up the event listener on component unmount
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsPopupOpen(false);
+      }
     };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  const goToShop = (event) => {
+    event.preventDefault();
+    if (!needle) return;
+    setIsPopupOpen(false);
+    navigate(`/shop-1?q=${encodeURIComponent(keyword.trim())}`);
+  };
+
   return (
     <div
       ref={containerRef}
@@ -48,10 +64,7 @@ export default function SearchPopup() {
       </div>
 
       <div className="search-popup js-hidden-content">
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="search-field container"
-        >
+        <form onSubmit={goToShop} className="search-field container">
           <p className="text-uppercase text-secondary fw-medium mb-4">
             Que recherchez-vous ?
           </p>
@@ -61,6 +74,8 @@ export default function SearchPopup() {
               type="text"
               name="search-keyword"
               placeholder="Rechercher un produit"
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
             />
             <button className="btn-icon search-popup__submit" type="submit">
               <svg
@@ -76,48 +91,51 @@ export default function SearchPopup() {
             </button>
             <button
               className="btn-icon btn-close-lg search-popup__reset"
-              type="reset"
+              type="button"
+              onClick={() => setKeyword("")}
             ></button>
           </div>
 
           <div className="search-popup__results">
             <div className="sub-menu search-suggestion">
-              <h6 className="sub-menu__title fs-base">Liens rapides</h6>
+              <h6 className="sub-menu__title fs-base">Catégories</h6>
               <ul className="sub-menu__list list-unstyled">
-                <li className="sub-menu__item">
-                  <Link to="/shop-2" className="menu-link menu-link_us-s">
-                    Nouveautés
-                  </Link>
-                </li>
-                <li className="sub-menu__item">
-                  <a href="#" className="menu-link menu-link_us-s">
-                    Robes
-                  </a>
-                </li>
-                <li className="sub-menu__item">
-                  <Link to="/shop-3" className="menu-link menu-link_us-s">
-                    Accessoires
-                  </Link>
-                </li>
-                <li className="sub-menu__item">
-                  <a href="#" className="menu-link menu-link_us-s">
-                    Chaussures
-                  </a>
-                </li>
-                <li className="sub-menu__item">
-                  <a href="#" className="menu-link menu-link_us-s">
-                    Sweat-shirts
-                  </a>
-                </li>
+                {categories.map((name) => (
+                  <li key={name} className="sub-menu__item">
+                    <Link
+                      to={`/shop-1?category=${encodeURIComponent(name)}`}
+                      className="menu-link menu-link_us-s"
+                      onClick={() => setIsPopupOpen(false)}
+                    >
+                      {name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            <div className="search-result row row-cols-5"></div>
+            <div className="search-result">
+              {results.map((product) => (
+                <Link
+                  key={product.id}
+                  to={`/product1_simple/${product.id}`}
+                  className="d-flex align-items-center gap-3 py-2 text-reset"
+                  onClick={() => setIsPopupOpen(false)}
+                >
+                  {product.imgSrc ? (
+                    <img src={product.imgSrc} alt="" width="48" height="48" />
+                  ) : null}
+                  <span>
+                    {product.title}
+                    <br />
+                    <small>{formatPrice(product.price)}</small>
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </form>
-        {/* <!-- /.header-search --> */}
       </div>
-      {/* <!-- /.search-popup --> */}
     </div>
   );
 }

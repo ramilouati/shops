@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TuniShop — Guide pour l’équipe marketing</title>
+    <style>
+      @page { size: A4; margin: 14mm 16mm 16mm; }
+      @page :first { margin: 0; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: #222;
+        font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+      h1, h2, h3, p { margin: 0; }
+      .cover {
+        min-height: 297mm;
+        background: #1c1c1c;
+        color: #fff;
+        padding: 28mm 18mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        page-break-after: always;
+      }
+      .brand { font-size: 42px; letter-spacing: 0.14em; font-weight: 700; }
+      .brand span { color: #e70013; }
+      .cover h1 { font-size: 34px; line-height: 1.15; max-width: 14ch; font-weight: 600; }
+      .cover p { max-width: 42ch; color: #ddd; font-size: 15px; }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip { border: 1px solid #555; border-radius: 999px; padding: 6px 12px; font-size: 12px; }
+      h2 { font-size: 20px; margin: 0 0 8px; }
+      h3 { font-size: 14px; margin: 0 0 6px; }
+      .lead { color: #444; margin-bottom: 14px; }
+      .block { margin-bottom: 14px; page-break-inside: avoid; }
+      .card {
+        background: #f6f4f2;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        page-break-inside: avoid;
+      }
+      .card h3 { color: #e70013; }
+      ol { margin: 6px 0 0; padding-left: 18px; }
+      li { margin: 2px 0; }
+      .note {
+        border-left: 3px solid #e70013;
+        padding: 8px 12px;
+        background: #fff5f5;
+        margin: 10px 0 14px;
+        page-break-inside: avoid;
+      }
+      .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 16px; }
+      .link {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 12px;
+        page-break-inside: avoid;
+      }
+      .link strong { display: block; margin-bottom: 4px; }
+      .link span { color: #e70013; word-break: break-all; font-size: 11px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+      th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+      th { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #777; }
+      .footer-note { margin-top: 18px; color: #777; font-size: 11px; }
+      .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    </style>
+  </head>
+  <body>
+    <section class="cover">
+      <div class="brand">TUNI<span>SHOP</span></div>
+      <div>
+        <h1>Guide d’utilisation pour l’équipe marketing</h1>
+        <p>Comment un client commande, et comment l’équipe prépare les articles, les promos et le suivi.</p>
+      </div>
+      <div class="chips">
+        <div class="chip">Boutique</div>
+        <div class="chip">Commandes</div>
+        <div class="chip">WhatsApp</div>
+        <div class="chip">Codes promo</div>
+        <div class="chip">Catalogue</div>
+      </div>
+    </section>
+
+    <h2>Deux adresses à retenir</h2>
+    <p class="lead">La boutique est le site que voient les clients. L’administration est réservée à l’équipe. Les prix sont en dinars tunisiens (TND).</p>
+    <div class="links">
+      <div class="link">
+        <strong>Boutique</strong>
+        Le site public TuniShop, celui partagé aux clients.
+        <span>Menu : Accueil, Boutique, Nouveautés, Lookbook, Blog, À propos, Contact</span>
+      </div>
+      <div class="link">
+        <strong>Administration</strong>
+        <span>https://shops-25os.onrender.com/admin</span>
+      </div>
+    </div>
+    <div class="note">Si une page met du temps à s’ouvrir, attendez environ une minute puis rechargez. Le service se met en pause quand personne ne l’utilise.</div>
+
+    <h2>Ce que le client peut faire</h2>
+
+    <div class="card">
+      <h3>1. Trouver un article</h3>
+      <ol>
+        <li>Ouvrir la boutique, puis <strong>Boutique</strong>.</li>
+        <li>Choisir une catégorie en haut : Tout, Vestes, Robes, et les autres.</li>
+        <li>Écrire un mot dans <strong>Rechercher</strong>, par exemple « robe ».</li>
+        <li>Trier avec la liste : prix croissant, prix décroissant, ou nom de A à Z.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>2. Voir si l’article est disponible</h3>
+      <ol>
+        <li><strong>Plus que 5 en stock</strong> (ou un autre petit nombre) : il en reste peu.</li>
+        <li><strong>Rupture</strong> : on ne peut pas l’ajouter au panier.</li>
+        <li>Sinon, le bouton <strong>Ajouter au panier</strong> est actif. Après l’ajout, il devient <strong>Déjà ajouté</strong>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>3. Commander et payer à la livraison</h3>
+      <ol>
+        <li>Ouvrir le panier, puis <strong>Commander</strong>.</li>
+        <li>Remplir le prénom, le nom, l’adresse, la ville et le téléphone. Sur l’écran, ces champs sont encore écrits en anglais : First Name, Last Name, Street Address, Town / City, Phone.</li>
+        <li>Laisser le paiement sur <strong>Paiement à la livraison</strong>.</li>
+        <li>Appuyer sur <strong>Confirmer la commande</strong>.</li>
+        <li>La page suivante montre le numéro, par exemple TS-1001. Le garder : il sert au suivi.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>4. Utiliser un code promo et la livraison</h3>
+      <ol>
+        <li>Sur la page de commande, écrire le code dans <strong>Code promo</strong>. Le code de démonstration est <strong>BIENVENUE</strong> : 10 % de réduction.</li>
+        <li>Le total se met à jour tout seul : sous-total, réduction, livraison, total.</li>
+        <li>La livraison coûte 7 TND. Elle est offerte à partir de 200 TND.</li>
+        <li>Un code inconnu affiche un message rouge. La commande ne part pas tant que le code est faux.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>5. Commander par WhatsApp</h3>
+      <ol>
+        <li>Depuis le panier, <strong>WhatsApp</strong> ouvre une discussion avec le message déjà écrit. Cela n’enregistre pas encore la commande.</li>
+        <li>Depuis la page de commande, remplir d’abord le nom, l’adresse et le téléphone.</li>
+        <li>Appuyer sur <strong>Enregistrer et envoyer sur WhatsApp</strong>.</li>
+        <li>La commande est enregistrée, puis WhatsApp s’ouvre avec le numéro de commande et le total.</li>
+        <li>Le client doit encore appuyer sur envoyer dans WhatsApp. Rien ne part tout seul.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>6. Suivre une commande</h3>
+      <ol>
+        <li>En bas du site, ouvrir <strong>Suivi de commande</strong>. Le lien est aussi sur la page de confirmation.</li>
+        <li>Écrire le numéro, par exemple TS-1001, et le même téléphone que lors de l’achat.</li>
+        <li>Appuyer sur <strong>Suivre</strong>.</li>
+        <li>Le statut s’affiche : Reçue, Confirmée, Expédiée, Livrée ou Annulée.</li>
+        <li>Si le téléphone ne correspond pas, la commande n’apparaît pas.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>7. Poser une question à l’assistant</h3>
+      <ol>
+        <li>Appuyer sur le bouton rouge <strong>Aide</strong>, en bas à droite.</li>
+        <li>Choisir Catalogue, Livraison, Code promo ou Suivi, ou écrire une question.</li>
+        <li>Exemples : « robe », « livraison », « code promo », ou « TS-1001 » suivi du téléphone.</li>
+        <li><strong>Écrire sur WhatsApp</strong> ouvre la discussion. S’il y a un panier, le message contient les articles.</li>
+      </ol>
+    </div>
+
+    <h2>Ce que l’équipe fait dans l’administration</h2>
+    <p class="lead">Ouvrir https://shops-25os.onrender.com/admin. Cinq onglets : Analyse, Produits, Commandes, Réglages, Assistant.</p>
+
+    <div class="card">
+      <h3>8. Lire l’activité</h3>
+      <ol>
+        <li>Rester sur <strong>Analyse</strong>.</li>
+        <li>En haut : chiffre d’affaires, panier moyen, commandes en cours, nombre de clients, valeur du stock, nombre d’articles.</li>
+        <li>Le graphique montre les 7 derniers jours.</li>
+        <li><strong>Meilleurs articles</strong> : ce qui s’est le plus vendu.</li>
+        <li><strong>Stock faible</strong> : les articles à 5 pièces ou moins. Le bouton <strong>+10</strong> rajoute 10 pièces tout de suite.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>9. Ajouter ou corriger un article</h3>
+      <ol>
+        <li>Onglet <strong>Produits</strong>.</li>
+        <li>Pour un seul article : remplir Nom, Prix, Stock, Catégorie, puis <strong>Ajouter</strong>.</li>
+        <li>Le rayon choisit où il apparaît sur l’accueil : Notre sélection, Meilleures ventes, ou Offres.</li>
+        <li>Dans le tableau, modifier le nom, la catégorie, le prix ou le stock, puis <strong>Sauver</strong>.</li>
+        <li><strong>Supprimer</strong> retire l’article de la boutique.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>10. Charger plusieurs articles d’un coup</h3>
+      <ol>
+        <li>Dans <strong>Produits</strong>, descendre à <strong>Import CSV</strong>.</li>
+        <li>Appuyer sur <strong>Télécharger le modèle</strong>.</li>
+        <li>Remplir le fichier. La première ligne reste : nom, prix, stock, categorie.</li>
+        <li>Exemple : <em>Robe lin, 189, 8, Robes</em>.</li>
+        <li>Choisir le fichier, puis <strong>Importer</strong>.</li>
+        <li>Un article qui a déjà le même nom est mis à jour (prix et stock). Les autres sont ajoutés.</li>
+        <li><strong>Exporter le catalogue</strong> télécharge la liste actuelle, utile avant une grosse modification.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>11. Traiter une commande</h3>
+      <ol>
+        <li>Onglet <strong>Commandes</strong>.</li>
+        <li>Chercher par nom, téléphone ou numéro TS-.</li>
+        <li>Filtrer par statut si besoin.</li>
+        <li>Changer le statut dans la liste. Il est enregistré tout de suite.</li>
+        <li>Ordre habituel : nouvelle, puis confirmée, expédiée, livrée.</li>
+        <li><strong>Annulée</strong> remet les pièces en stock. À n’utiliser que si la vente est vraiment annulée.</li>
+        <li><strong>WhatsApp client</strong> ouvre un message déjà rédigé pour prévenir le client de son statut.</li>
+        <li><strong>Exporter CSV</strong> télécharge la liste, par exemple pour un tableau de suivi.</li>
+      </ol>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <h3>12. Lancer une promo</h3>
+        <ol>
+          <li>Onglet <strong>Réglages</strong>, partie Codes promo.</li>
+          <li>Écrire un code simple, par exemple ETE10.</li>
+          <li>Choisir Pourcentage ou Montant TND, puis la valeur.</li>
+          <li>Appuyer sur <strong>Ajouter</strong>.</li>
+          <li>Communiquer ce code aux clients. Ils le saisissent au moment de payer.</li>
+          <li><strong>Supprimer</strong> retire le code. BIENVENUE peut rester pour les nouveaux clients.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>13. Régler la livraison et WhatsApp</h3>
+        <ol>
+          <li>Dans <strong>Réglages</strong>, modifier les frais et le montant pour la livraison offerte.</li>
+          <li>Dans <strong>WhatsApp boutique</strong>, mettre le vrai numéro, avec l’indicatif et sans espaces. Exemple : 21620123456.</li>
+          <li>Appuyer sur <strong>Enregistrer</strong>.</li>
+          <li>Les nouveaux messages WhatsApp de la boutique partent vers ce numéro.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>14. Répondre vite à une question</h3>
+      <ol>
+        <li>Onglet <strong>Assistant</strong>.</li>
+        <li>Écrire le nom d’un article, « catalogue », « livraison », ou un numéro de commande avec le téléphone.</li>
+        <li>La réponse reprend le stock, le prix ou le statut. C’est le même assistant que le bouton Aide du site.</li>
+      </ol>
+    </div>
+
+    <h2>Trois situations utiles en marketing</h2>
+    <div class="card">
+      <h3>Préparer une sélection de la semaine</h3>
+      <ol>
+        <li>Choisir 4 à 8 articles.</li>
+        <li>Dans Produits, mettre les pièces phares en rayon <strong>Meilleures ventes</strong> ou <strong>Offres</strong>.</li>
+        <li>Vérifier le stock. S’il est bas, appuyer sur <strong>+10</strong> dans Analyse, ou corriger le nombre.</li>
+        <li>Ouvrir la boutique et contrôler que les bons articles apparaissent.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Annoncer une réduction</h3>
+      <ol>
+        <li>Créer le code dans Réglages.</li>
+        <li>Passer une commande test avec ce code pour vérifier le nouveau total.</li>
+        <li>Publier le code sur les réseaux ou dans le message WhatsApp.</li>
+        <li>Le lendemain, ouvrir Analyse et Commandes pour voir ce qui est parti.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Relancer un client</h3>
+      <ol>
+        <li>Ouvrir Commandes et trouver la commande.</li>
+        <li>Passer le statut à confirmée, puis expédiée quand le colis part.</li>
+        <li>Appuyer sur <strong>WhatsApp client</strong> et envoyer le message.</li>
+        <li>Le client peut aussi suivre seul sa commande avec son numéro TS- et son téléphone.</li>
+      </ol>
+    </div>
+
+    <h2>Les mots du statut</h2>
+    <table>
+      <thead><tr><th>Dans l’admin</th><th>Ce que voit le client</th><th>Quand l’utiliser</th></tr></thead>
+      <tbody>
+        <tr><td>nouvelle</td><td>Reçue</td><td>La commande vient d’arriver.</td></tr>
+        <tr><td>confirmée</td><td>Confirmée</td><td>L’équipe a vérifié l’adresse et le stock.</td></tr>
+        <tr><td>expédiée</td><td>Expédiée</td><td>Le colis est parti.</td></tr>
+        <tr><td>livrée</td><td>Livrée</td><td>Le client a reçu la commande.</td></tr>
+        <tr><td>annulée</td><td>Annulée</td><td>La vente est annulée. Le stock revient.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">WhatsApp prépare le message. Une personne doit encore l’envoyer. Il n’y a pas encore de paiement par carte : le parcours prévu est le paiement à la livraison, ou l’envoi de la commande sur WhatsApp.</div>
+    <p class="footer-note">TuniShop — guide marketing. Les montants de livraison et les codes promo sont ceux réglés dans l’administration au moment de la commande.</p>
+  </body>
+</html>

@@ -1,47 +1,54 @@
-import { products51 } from "@/data/products/fashion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Star from "../common/Star";
 import ColorSelection from "../common/ColorSelection";
 import { Navigation } from "swiper/modules";
-import Pagination1 from "../common/Pagination1";
 import { useEffect, useState } from "react";
-import BreadCumb from "./BreadCumb";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useContextElement } from "@/context/Context";
 const itemPerRow = [2, 3, 4];
 
-import { openModalShopFilter } from "@/utlis/aside";
 import { formatPrice } from "@/utlis/formatPrice";
-export default function Shop1() {
+export default function Shop1({ title = "Boutique", section }) {
   const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(4);
+  const [params, setParams] = useSearchParams();
 
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
-  const shopProducts = catalog.length ? catalog : products51;
+  const shopProducts = section
+    ? catalog.filter((product) => product.section === section)
+    : catalog;
   const categories = [
     "Tout",
     ...new Set(shopProducts.map((product) => product.category).filter(Boolean)),
   ];
-  const [currentCategory, setCurrentCategory] = useState("Tout");
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("default");
+  const currentCategory = params.get("category") || "Tout";
+  const query = params.get("q") || "";
+  const sort = params.get("sort") || "default";
+  const inStock = params.get("stock") === "1";
+  const setParam = (key, value) => {
+    const next = new URLSearchParams(params);
+    if (!value || value === "Tout" || value === "default") next.delete(key);
+    else next.set(key, value);
+    setParams(next, { replace: true });
+  };
 
-  const [filtered, setFiltered] = useState(shopProducts);
+  const [filtered, setFiltered] = useState([]);
   useEffect(() => {
-    let list = shopProducts.filter((elm) => {
-      const inCategory =
-        currentCategory == "Tout" ||
-        currentCategory == "All" ||
-        elm.category == currentCategory ||
-        elm.filterCategory2 == currentCategory;
-      const inSearch = elm.title?.toLowerCase().includes(query.trim().toLowerCase());
-      return inCategory && inSearch;
+    const source = section
+      ? catalog.filter((product) => product.section === section)
+      : catalog;
+    let list = source.filter((elm) => {
+      const inCategory = currentCategory === "Tout" || elm.category === currentCategory;
+      const text = `${elm.title || ""} ${elm.category || ""}`.toLowerCase();
+      const inSearch = text.includes(query.trim().toLowerCase());
+      const available = !inStock || Number(elm.stock) > 0;
+      return inCategory && inSearch && available;
     });
     if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     if (sort === "name") list = [...list].sort((a, b) => a.title.localeCompare(b.title, "fr"));
     setFiltered(list);
-  }, [currentCategory, shopProducts, query, sort]);
+  }, [catalog, section, currentCategory, query, sort, inStock]);
 
   return (
     <>
@@ -67,13 +74,13 @@ export default function Shop1() {
 
             <div className="shop-banner__content container position-absolute start-50 top-50 translate-middle">
               <h2 className="stroke-text h1 smooth-16 text-uppercase fw-bold mb-3 mb-xl-4 mb-xl-5">
-                Boutique
+                {title}
               </h2>
               <ul className="d-flex flex-wrap list-unstyled text-uppercase h6">
                 {categories.map((elm, i) => (
                   <li key={i} className="me-3 me-xl-4 pe-1">
                     <a
-                      onClick={() => setCurrentCategory(elm)}
+                      onClick={() => setParam("category", elm)}
                       className={`menu-link menu-link_us-s ${
                         currentCategory == elm ? "menu-link_active" : ""
                       }`}
@@ -94,7 +101,11 @@ export default function Shop1() {
       <section className="shop-main container">
         <div className="d-flex justify-content-between mb-4 pb-md-2">
           <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
-            <BreadCumb />
+            <Link to="/" className="menu-link menu-link_us-s text-uppercase fw-medium">
+              Accueil
+            </Link>
+            <span className="breadcrumb-separator menu-link fw-medium ps-1 pe-1">/</span>
+            <span className="menu-link menu-link_us-s text-uppercase fw-medium">{title}</span>
           </div>
 
           <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
@@ -103,14 +114,14 @@ export default function Shop1() {
               type="search"
               placeholder="Rechercher"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => setParam("q", event.target.value.trim() ? event.target.value : "")}
               aria-label="Rechercher un article"
             />
             <select
               className="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0"
               aria-label="Trier"
               value={sort}
-              onChange={(event) => setSort(event.target.value)}
+              onChange={(event) => setParam("sort", event.target.value)}
             >
               <option value="default">Tri par défaut</option>
               <option value="price-asc">Prix croissant</option>
@@ -121,7 +132,7 @@ export default function Shop1() {
             <div className="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
 
             <div className="col-size align-items-center order-1 d-none d-lg-flex">
-              <span className="text-uppercase fw-medium me-2">View</span>
+              <span className="text-uppercase fw-medium me-2">Affichage</span>
               {itemPerRow.map((elm, i) => (
                 <button
                   key={i}
@@ -137,28 +148,14 @@ export default function Shop1() {
             {/* <!-- /.col-size --> */}
 
             <div className="shop-asc__seprator mx-3 bg-light d-none d-lg-block order-md-1"></div>
-
-            <div className="shop-filter d-flex align-items-center order-0 order-md-3">
-              <button
-                className="btn-link btn-link_f d-flex align-items-center ps-0 js-open-aside"
-                onClick={openModalShopFilter}
-              >
-                <svg
-                  className="d-inline-block align-middle me-2"
-                  width="14"
-                  height="10"
-                  viewBox="0 0 14 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href="#icon_filter" />
-                </svg>
-                <span className="text-uppercase fw-medium d-inline-block align-middle">
-                  Filter
-                </span>
-              </button>
-            </div>
-            {/* <!-- /.col-size d-flex align-items-center ms-auto ms-md-3 --> */}
+            <label className="d-flex align-items-center gap-2 mb-0 text-uppercase fw-medium">
+              <input
+                type="checkbox"
+                checked={inStock}
+                onChange={(event) => setParam("stock", event.target.checked ? "1" : "")}
+              />
+              En stock
+            </label>
           </div>
           {/* <!-- /.shop-acs --> */}
         </div>
@@ -181,7 +178,7 @@ export default function Shop1() {
                       nextEl: ".next" + i,
                     }}
                   >
-                    {[elm.imgSrc, elm.imgSrc2].filter(Boolean).map((elm2, i) => (
+                    {(elm.images?.length ? elm.images : [elm.imgSrc, elm.imgSrc2]).filter(Boolean).map((elm2, i) => (
                       <SwiperSlide key={i} className="swiper-slide">
                         <Link to={`/product1_simple/${elm.id}`}>
                           <img
@@ -189,7 +186,7 @@ export default function Shop1() {
                             src={elm2}
                             width="330"
                             height="400"
-                            alt="Cropped Faux leather Jacket"
+                            alt={elm.title}
                             className="pc__img"
                           />
                         </Link>
@@ -290,7 +287,7 @@ export default function Shop1() {
                       isAddedtoWishlist(elm.id) ? "active" : ""
                     }`}
                     onClick={() => toggleWishlist(elm.id)}
-                    title="Add To Wishlist"
+                    title="Ajouter aux favoris"
                   >
                     <svg
                       width="16"
@@ -327,14 +324,11 @@ export default function Shop1() {
         </div>
         {/* <!-- /.products-grid row --> */}
 
-        <p className="mb-5 text-center fw-medium">SHOWING 36 of 497 items</p>
-        <Pagination1 />
-
-        <div className="text-center">
-          <a className="btn-link btn-link_lg text-uppercase fw-medium" href="#">
-            Show More
-          </a>
-        </div>
+        <p className="mb-5 text-center fw-medium">
+          {filtered.length
+            ? `${filtered.length} article${filtered.length > 1 ? "s" : ""}`
+            : "Aucun article ne correspond à votre recherche."}
+        </p>
       </section>
     </>
   );

@@ -3,13 +3,15 @@ import { currencyOptions, languageOptions } from "@/data/footer";
 import { socialLinks } from "@/data/socials";
 
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartLength from "./components/CartLength";
 import { openCart } from "@/utlis/openCart";
 import MobileNav from "./components/MobileNav";
 
 export default function MobileHeader() {
   const [scrollDirection, setScrollDirection] = useState("down");
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,7 +101,12 @@ export default function MobileHeader() {
       <nav className="header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto">
         <div className="container">
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const text = keyword.trim();
+              if (!text) return;
+              navigate(`/shop-1?q=${encodeURIComponent(text)}`);
+            }}
             className="search-field position-relative mt-4 mb-3"
           >
             <div className="position-relative">
@@ -108,6 +115,8 @@ export default function MobileHeader() {
                 type="text"
                 name="search-keyword"
                 placeholder="Rechercher un produit"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
               />
               <button
                 className="btn-icon search-popup__submit pb-0 me-2"
@@ -150,23 +159,7 @@ export default function MobileHeader() {
         {/* <!-- /.container --> */}
 
         <div className="border-top mt-auto pb-2">
-          <div className="customer-links container mt-4 mb-2 pb-1">
-            <svg
-              className="d-inline-block align-middle"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <use href="#icon_user" />
-            </svg>
-            <span className="d-inline-block ms-2 text-uppercase align-middle fw-medium">
-              Mon compte
-            </span>
-          </div>
-
-          <div className="container d-flex align-items-center">
+          <div className="container d-flex align-items-center mt-4">
             <label className="me-2 text-secondary">Langue</label>
             <select
               className="form-select form-select-sm bg-transparent border-0"

@@ -5,10 +5,12 @@ import Nav from "./components/Nav";
 import { openCart } from "@/utlis/openCart";
 import CartLength from "./components/CartLength";
 
-import User from "./components/User";
 import SearchPopup from "./components/SearchPopup";
+import { openModalUserlogin } from "@/utlis/aside";
+import { useContextElement } from "@/context/Context";
 
-export default function Header5() {
+export default function Header5({ solid = false }) {
+  const { customer } = useContextElement();
   const [scrollDirection, setScrollDirection] = useState("down");
 
   useEffect(() => {
@@ -44,8 +46,12 @@ export default function Header5() {
   return (
     <header
       id="header"
-      className={`header header_sticky header-transparent-bg header_sticky-bg_dark  header_sticky ${
-        scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
+      className={`header header_sticky ${
+        solid
+          ? "header_sticky-active"
+          : `header-transparent-bg header_sticky-bg_dark ${
+              scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
+            }`
       }`}
     >
       <div className="container">
@@ -53,7 +59,7 @@ export default function Header5() {
           <div className="logo">
             <Link to="/">
               <img
-                src="/assets/images/logo-tunishop-white.svg"
+                src={solid ? "/assets/images/logo-tunishop.svg" : "/assets/images/logo-tunishop-white.svg"}
                 width={112}
                 height={28}
                 alt="TuniShop"
@@ -72,13 +78,28 @@ export default function Header5() {
 
           <div className="header-tools d-flex align-items-center">
             <SearchPopup />
-            {/* <!-- /.header-tools__item hover-container --> */}
 
-            <div className="header-tools__item hover-container">
-              <a className="header-tools__item js-open-aside" href="#">
-                <User />
+            {customer ? (
+              <Link className="header-tools__item" to="/compte" title={customer.name}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <use href="#icon_user" />
+                </svg>
+              </Link>
+            ) : (
+              <a
+                className="header-tools__item js-open-aside"
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  openModalUserlogin();
+                }}
+                title="Connexion"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <use href="#icon_user" />
+                </svg>
               </a>
-            </div>
+            )}
 
             <Link className="header-tools__item" to="/account_wishlist">
               <svg

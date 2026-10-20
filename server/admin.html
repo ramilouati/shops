@@ -36,6 +36,8 @@
       .bar i { display: block; width: 100%; background: #e70013; border-radius: 6px 6px 0 0; min-height: 2px; }
       .split { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
       .warn { color: #e70013; }
+      .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: #eee; }
+      .span2 { grid-column: span 2; }
       .chat { display: grid; gap: 8px; }
       .bubble { background: #f6f4f2; border-radius: 8px; padding: 10px; white-space: pre-wrap; }
       .error { color: #e70013; }
@@ -55,11 +57,14 @@
     <nav>
       <button type="button" class="active" data-tab="analyse">Analyse</button>
       <button type="button" data-tab="produits">Produits</button>
+      <button type="button" data-tab="stock">Stock</button>
       <button type="button" data-tab="commandes">Commandes</button>
+      <button type="button" data-tab="utilisateurs">Utilisateurs</button>
       <button type="button" data-tab="reglages">Réglages</button>
       <button type="button" data-tab="assistant">Assistant</button>
+      <button type="button" id="logout-team" class="ghost" style="margin-left:auto">Déconnexion</button>
     </nav>
-    <main>
+    <main id="app">
       <div id="analyse" class="panel active">
         <div class="cards" id="cards"></div>
         <section>
@@ -89,17 +94,82 @@
             <tbody id="statuses"></tbody>
           </table>
         </section>
+        <section>
+          <h2>4 dernières semaines</h2>
+          <table>
+            <thead><tr><th>Période</th><th>Commandes</th><th>Chiffre</th></tr></thead>
+            <tbody id="weeks"></tbody>
+          </table>
+        </section>
+        <div class="split">
+          <section>
+            <h2>Ventes par catégorie</h2>
+            <table>
+              <thead><tr><th>Catégorie</th><th>Qté</th><th>Chiffre</th></tr></thead>
+              <tbody id="by-category"></tbody>
+            </table>
+          </section>
+          <section>
+            <h2>Ventes par ville</h2>
+            <table>
+              <thead><tr><th>Ville</th><th>Commandes</th><th>Chiffre</th></tr></thead>
+              <tbody id="by-city"></tbody>
+            </table>
+          </section>
+        </div>
+        <div class="split">
+          <section>
+            <h2>Paiement</h2>
+            <table>
+              <thead><tr><th>Mode</th><th>Commandes</th><th>Chiffre</th></tr></thead>
+              <tbody id="by-payment"></tbody>
+            </table>
+          </section>
+          <section>
+            <h2>Codes promo</h2>
+            <table>
+              <thead><tr><th>Code</th><th>Utilisations</th><th>Remise</th></tr></thead>
+              <tbody id="by-coupon"></tbody>
+            </table>
+          </section>
+        </div>
+        <section>
+          <h2>Stock par catégorie</h2>
+          <table>
+            <thead><tr><th>Catégorie</th><th>Articles</th><th>Pièces</th><th>Rupture</th><th>Valeur</th></tr></thead>
+            <tbody id="stock-category"></tbody>
+          </table>
+        </section>
+        <section>
+          <h2>Articles jamais vendus</h2>
+          <table>
+            <thead><tr><th>Article</th><th>Catégorie</th><th>Stock</th></tr></thead>
+            <tbody id="unsold"></tbody>
+          </table>
+        </section>
       </div>
 
       <div id="produits" class="panel">
+        <section>
+          <h2>Catégories</h2>
+          <form id="category-form" class="tools">
+            <input name="name" placeholder="Nouvelle catégorie" required maxlength="40" />
+            <button type="submit">Ajouter</button>
+          </form>
+          <p id="category-error" class="error"></p>
+          <table>
+            <thead><tr><th>Nom</th><th></th></tr></thead>
+            <tbody id="categories"></tbody>
+          </table>
+        </section>
         <section>
           <h2>Nouveau produit</h2>
           <form id="create">
             <label>Nom<input name="title" required /></label>
             <label>Prix TND<input name="price" type="number" min="1" step="0.001" required /></label>
             <label>Ancien prix<input name="priceOld" type="number" min="0" step="0.001" /></label>
-            <label>Stock<input name="stock" type="number" min="0" value="10" required /></label>
-            <label>Catégorie<input name="category" value="Vestes" required /></label>
+            <label>Stock initial<input name="stock" type="number" min="0" value="10" required /></label>
+            <label>Catégorie<select name="category" id="category-select" required></select></label>
             <label>Rayon
               <select name="section">
                 <option value="collection">Notre sélection</option>
@@ -114,7 +184,9 @@
                 <option>Mieux notés</option>
               </select>
             </label>
-            <label>Image<input name="imgSrc" value="/assets/images/home/demo5/product-0-1.jpg" /></label>
+            <label class="span2">Photos (1 à 4, JPG, PNG ou WebP)
+              <input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
+            </label>
             <button type="submit">Ajouter</button>
           </form>
           <p id="create-error" class="error"></p>
@@ -137,8 +209,33 @@
             <input id="product-search" type="search" placeholder="Rechercher un article" />
           </div>
           <table>
-            <thead><tr><th>Article</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Rayon</th><th></th></tr></thead>
+            <thead><tr><th></th><th>Article</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Rayon</th><th></th></tr></thead>
             <tbody id="products"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="stock" class="panel">
+        <section>
+          <h2>Stock</h2>
+          <div class="tools">
+            <input id="stock-search" type="search" placeholder="Article ou catégorie" />
+            <select id="stock-filter">
+              <option value="">Tout le stock</option>
+              <option value="low">Stock faible (5 ou moins)</option>
+              <option value="out">Rupture</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr><th></th><th>Article</th><th>Catégorie</th><th>Stock</th><th>Mouvement</th></tr></thead>
+            <tbody id="stock-rows"></tbody>
+          </table>
+        </section>
+        <section>
+          <h2>Derniers mouvements</h2>
+          <table>
+            <thead><tr><th>Quand</th><th>Article</th><th>Mouvement</th><th>Après</th><th>Motif</th></tr></thead>
+            <tbody id="stock-moves"></tbody>
           </table>
         </section>
       </div>
@@ -161,6 +258,34 @@
           <table>
             <thead><tr><th>Commande</th><th>Client</th><th>Adresse</th><th>Total</th><th>Statut</th></tr></thead>
             <tbody id="orders"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="utilisateurs" class="panel">
+        <section>
+          <h2>Nouvel utilisateur</h2>
+          <form id="user-form">
+            <label>Nom<input name="name" required /></label>
+            <label>E-mail<input name="email" type="email" required /></label>
+            <label>Téléphone<input name="phone" /></label>
+            <label>Mot de passe<input name="password" type="password" minlength="6" required /></label>
+            <label>Rôle
+              <select name="role">
+                <option value="staff">Équipe</option>
+                <option value="admin">Administrateur</option>
+                <option value="customer">Client</option>
+              </select>
+            </label>
+            <button type="submit">Créer</button>
+          </form>
+          <p id="user-error" class="error"></p>
+        </section>
+        <section>
+          <h2>Comptes</h2>
+          <table>
+            <thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actif</th><th></th></tr></thead>
+            <tbody id="users"></tbody>
           </table>
         </section>
       </div>
@@ -211,6 +336,16 @@
         </section>
       </div>
     </main>
+    <section id="gate" hidden style="max-width:420px;margin:40px auto;">
+      <h2>Accès équipe</h2>
+      <p>Comptes démo : admin@tunishop.tn / admin123</p>
+      <form id="login-form" class="row">
+        <label>E-mail<input name="email" type="email" value="admin@tunishop.tn" required /></label>
+        <label>Mot de passe<input name="password" type="password" value="admin123" required /></label>
+        <button type="submit">Entrer</button>
+      </form>
+      <p id="login-error" class="error"></p>
+    </section>
     <script>
       const money = (value) => new Intl.NumberFormat("fr-TN", { style: "currency", currency: "TND", currencyDisplay: "code", minimumFractionDigits: 0, maximumFractionDigits: 3 }).format(Number(value) || 0);
       const sections = { collection: "Sélection", bestseller: "Meilleures ventes", deal: "Offres" };
@@ -218,6 +353,11 @@
       const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
       let products = [];
       let orders = [];
+      let categories = [];
+      let stockData = { products: [], moves: [] };
+      let users = [];
+      let me = null;
+      const roleLabel = { admin: "Administrateur", staff: "Équipe", customer: "Client" };
 
       document.querySelectorAll("nav button").forEach((button) => {
         button.addEventListener("click", () => {
@@ -228,15 +368,46 @@
         });
       });
 
+      function showApp(open) {
+        document.getElementById("gate").hidden = open;
+        document.querySelector("nav").hidden = !open;
+        document.getElementById("app").hidden = !open;
+        const usersTab = document.querySelector('[data-tab="utilisateurs"]');
+        if (usersTab) usersTab.hidden = !(me && me.role === "admin");
+      }
+
       async function loadStats() {
-        const stats = await fetch("/api/stats").then((response) => response.json());
+        const response = await fetch("/api/stats");
+        if (response.status === 401) {
+          me = null;
+          showApp(false);
+          return;
+        }
+        showApp(true);
+        const stats = await response.json();
         const max = Math.max(...stats.days.map((day) => day.revenue), 1);
+        const cancelRate = stats.orders ? Math.round((stats.cancelled / stats.orders) * 100) : 0;
+        const payments = { cod: "Paiement à la livraison", whatsapp: "WhatsApp" };
+        const weekLabel = (weeksAgo) => weeksAgo === 0 ? "Cette semaine" : weeksAgo === 1 ? "Semaine dernière" : `Il y a ${weeksAgo} semaines`;
+        const weekRows = [0, 1, 2, 3].map((weeksAgo) => {
+          const row = (stats.weeks || []).find((item) => item.weeksAgo === weeksAgo);
+          return { weeksAgo, orders: row?.orders || 0, revenue: row?.revenue || 0 };
+        });
+        const emptyRow = (cols, text) => `<tr><td colspan="${cols}">${text}</td></tr>`;
         document.getElementById("cards").innerHTML = [
           ["Chiffre d'affaires", money(stats.revenue)],
           ["Panier moyen", money(stats.average)],
+          ["Pièces vendues", stats.itemsSold || 0],
           ["Commandes actives", stats.activeOrders],
+          ["Annulations", `${stats.cancelled || 0} · ${cancelRate} %`],
           ["Clients", stats.customers],
+          ["Clients fidèles", stats.repeatCustomers || 0],
+          ["Remises", money(stats.discounts?.discount)],
+          ["Livraison encaissée", money(stats.discounts?.shipping)],
+          ["Livraisons offertes", stats.discounts?.freeDeliveries || 0],
           ["Valeur du stock", money(stats.catalog.stockValue)],
+          ["Pièces en stock", stats.catalog.units || 0],
+          ["Ruptures", stats.catalog.outOfStock || 0],
           ["Articles", stats.catalog.products],
         ].map(([label, value]) => `<div class="card"><span>${label}</span><strong>${value}</strong></div>`).join("");
         document.getElementById("bars").innerHTML = stats.days.map((day) => `
@@ -253,7 +424,44 @@
           : `<tr><td colspan="3">Aucun article sous 5 pièces.</td></tr>`;
         document.getElementById("statuses").innerHTML = stats.byStatus.length
           ? stats.byStatus.map((row) => `<tr><td>${esc(row.status)}</td><td>${row.count}</td><td>${money(row.total)}</td></tr>`).join("")
-          : `<tr><td colspan="3">Aucune commande.</td></tr>`;
+          : emptyRow(3, "Aucune commande.");
+        document.getElementById("weeks").innerHTML = weekRows.map((row) => `<tr><td>${weekLabel(row.weeksAgo)}</td><td>${row.orders}</td><td>${money(row.revenue)}</td></tr>`).join("");
+        document.getElementById("by-category").innerHTML = stats.byCategory.length
+          ? stats.byCategory.map((row) => `<tr><td>${esc(row.category)}</td><td>${row.quantity}</td><td>${money(row.revenue)}</td></tr>`).join("")
+          : emptyRow(3, "Pas encore de vente.");
+        document.getElementById("by-city").innerHTML = stats.byCity.length
+          ? stats.byCity.map((row) => `<tr><td>${esc(row.city)}</td><td>${row.orders}</td><td>${money(row.revenue)}</td></tr>`).join("")
+          : emptyRow(3, "Pas encore de vente.");
+        document.getElementById("by-payment").innerHTML = stats.byPayment.length
+          ? stats.byPayment.map((row) => `<tr><td>${esc(payments[row.payment] || row.payment)}</td><td>${row.orders}</td><td>${money(row.revenue)}</td></tr>`).join("")
+          : emptyRow(3, "Pas encore de vente.");
+        document.getElementById("by-coupon").innerHTML = stats.byCoupon.length
+          ? stats.byCoupon.map((row) => `<tr><td>${esc(row.coupon)}</td><td>${row.orders}</td><td>${money(row.discount)}</td></tr>`).join("")
+          : emptyRow(3, "Aucun code utilisé.");
+        document.getElementById("stock-category").innerHTML = stats.stockByCategory.length
+          ? stats.stockByCategory.map((row) => `<tr><td>${esc(row.category)}</td><td>${row.products}</td><td>${row.units}</td><td class="${row.outOfStock ? "warn" : ""}">${row.outOfStock}</td><td>${money(row.value)}</td></tr>`).join("")
+          : emptyRow(5, "Aucune catégorie.");
+        document.getElementById("unsold").innerHTML = stats.unsold.length
+          ? stats.unsold.map((row) => `<tr><td>${esc(row.title)}</td><td>${esc(row.category)}</td><td class="${row.stock <= 5 ? "warn" : ""}">${row.stock}</td></tr>`).join("")
+          : emptyRow(3, "Tous les articles ont déjà été vendus.");
+      }
+
+      function categoryOptions(selected) {
+        const names = categories.map((category) => category.name);
+        if (selected && !names.includes(selected)) names.push(selected);
+        return names.map((name) => `<option ${name === selected ? "selected" : ""}>${esc(name)}</option>`).join("");
+      }
+
+      function renderCategories() {
+        document.getElementById("categories").innerHTML = categories.length ? categories.map((category) => `
+          <tr>
+            <td><input data-cat="${category.id}" value="${esc(category.name)}" /></td>
+            <td>
+              <button type="button" class="ghost" data-rename="${category.id}">Renommer</button>
+              <button type="button" class="ghost" data-remove-cat="${category.id}">Supprimer</button>
+            </td>
+          </tr>`).join("") : `<tr><td colspan="2">Aucune catégorie.</td></tr>`;
+        document.getElementById("category-select").innerHTML = categoryOptions("");
       }
 
       function renderProducts() {
@@ -261,16 +469,49 @@
         const visible = products.filter((product) => `${product.title} ${product.category}`.toLowerCase().includes(query));
         document.getElementById("products").innerHTML = visible.map((product) => `
           <tr>
+            <td>${product.imgSrc ? `<img class="thumb" src="${esc(product.imgSrc)}" alt="" />` : ""}</td>
             <td><input data-id="${product.id}" data-field="title" value="${esc(product.title)}" /></td>
-            <td><input data-id="${product.id}" data-field="category" value="${esc(product.category)}" /></td>
+            <td><select data-id="${product.id}" data-field="category">${categoryOptions(product.category)}</select></td>
             <td><input data-id="${product.id}" data-field="price" type="number" value="${product.price}" /></td>
-            <td><input data-id="${product.id}" data-field="stock" type="number" value="${product.stock}" /></td>
+            <td class="${product.stock <= 5 ? "warn" : ""}">${product.stock}</td>
             <td>${sections[product.section] || esc(product.section)}</td>
             <td>
+              <label>Remplacer les photos<input data-photos="${product.id}" type="file" accept="image/jpeg,image/png,image/webp" multiple /></label>
               <button class="ghost" data-save="${product.id}">Sauver</button>
               <button class="ghost" data-delete="${product.id}">Supprimer</button>
             </td>
-          </tr>`).join("") || `<tr><td colspan="6">Aucun article.</td></tr>`;
+          </tr>`).join("") || `<tr><td colspan="7">Aucun article.</td></tr>`;
+      }
+
+      function renderStock() {
+        const query = document.getElementById("stock-search").value.trim().toLowerCase();
+        const filter = document.getElementById("stock-filter").value;
+        const visible = stockData.products.filter((product) => {
+          const matches = `${product.title} ${product.category}`.toLowerCase().includes(query);
+          if (filter === "low") return matches && product.stock > 0 && product.stock <= 5;
+          if (filter === "out") return matches && product.stock === 0;
+          return matches;
+        });
+        document.getElementById("stock-rows").innerHTML = visible.map((product) => `
+          <tr>
+            <td>${product.imgSrc ? `<img class="thumb" src="${esc(product.imgSrc)}" alt="" />` : ""}</td>
+            <td>${esc(product.title)}</td>
+            <td>${esc(product.category)}</td>
+            <td class="${product.stock <= 5 ? "warn" : ""}">${product.stock}</td>
+            <td>
+              <input data-delta="${product.id}" type="number" value="1" style="width:80px" title="Positif : entrée. Négatif : sortie." />
+              <select data-reason="${product.id}">
+                <option value="réception">Réception</option>
+                <option value="casse">Casse</option>
+                <option value="correction">Correction</option>
+                <option value="inventaire">Inventaire</option>
+              </select>
+              <button type="button" class="ghost" data-move="${product.id}">Appliquer</button>
+            </td>
+          </tr>`).join("") || `<tr><td colspan="5">Aucun article.</td></tr>`;
+        document.getElementById("stock-moves").innerHTML = stockData.moves.length
+          ? stockData.moves.map((move) => `<tr><td>${esc(String(move.createdAt).slice(0, 16).replace("T", " "))}</td><td>${esc(move.title)}</td><td>${move.delta > 0 ? "+" : ""}${move.delta}</td><td>${move.stockAfter}</td><td>${esc(move.reason)}${move.note ? `<br><small>${esc(move.note)}</small>` : ""}</td></tr>`).join("")
+          : `<tr><td colspan="5">Aucun mouvement.</td></tr>`;
       }
 
       function renderOrders() {
@@ -300,8 +541,77 @@
         renderProducts();
       }
 
+      async function loadCategories() {
+        categories = await fetch("/api/categories").then((response) => response.json());
+        renderCategories();
+        renderProducts();
+      }
+
+      async function loadStock() {
+        const response = await fetch("/api/stock");
+        if (!response.ok) return;
+        stockData = await response.json();
+        renderStock();
+      }
+
+      function renderUsers() {
+        document.getElementById("users").innerHTML = users.length
+          ? users.map((user) => `
+            <tr>
+              <td><input data-uid="${user.id}" data-field="name" value="${esc(user.name)}" /></td>
+              <td>${esc(user.email)}<br><small>${esc(user.phone || "")}</small></td>
+              <td>
+                <select data-uid="${user.id}" data-field="role">
+                  ${["admin", "staff", "customer"].map((role) => `<option value="${role}" ${user.role === role ? "selected" : ""}>${roleLabel[role]}</option>`).join("")}
+                </select>
+              </td>
+              <td><input data-uid="${user.id}" data-field="active" type="checkbox" ${user.active ? "checked" : ""} /></td>
+              <td>
+                <input data-uid="${user.id}" data-field="password" type="password" placeholder="Nouveau mot de passe" />
+                <button type="button" class="ghost" data-save-user="${user.id}">Sauver</button>
+                <button type="button" class="ghost" data-delete-user="${user.id}">Supprimer</button>
+              </td>
+            </tr>`).join("")
+          : `<tr><td colspan="5">Aucun compte.</td></tr>`;
+      }
+
+      async function loadUsers() {
+        if (!me || me.role !== "admin") return;
+        const response = await fetch("/api/users");
+        if (!response.ok) return;
+        users = await response.json();
+        renderUsers();
+      }
+
+      async function loadMe() {
+        const response = await fetch("/api/me");
+        if (!response.ok) {
+          me = null;
+          showApp(false);
+          return false;
+        }
+        me = (await response.json()).user;
+        showApp(true);
+        return true;
+      }
+
+      const readPhotos = (input) => new Promise((resolve, reject) => {
+        const files = [...(input?.files || [])];
+        if (!files.length) return resolve([]);
+        if (files.length > 4) return reject(new Error("4 photos maximum."));
+        if (files.some((file) => file.size > 2_000_000)) return reject(new Error("Chaque photo doit faire moins de 2 Mo."));
+        Promise.all(files.map((file) => new Promise((ok, fail) => {
+          const reader = new FileReader();
+          reader.onload = () => ok(reader.result);
+          reader.onerror = () => fail(new Error("Lecture de la photo impossible."));
+          reader.readAsDataURL(file);
+        }))).then(resolve, reject);
+      });
+
       async function loadOrders() {
-        orders = await fetch("/api/orders").then((response) => response.json());
+        const response = await fetch("/api/orders");
+        if (!response.ok) return;
+        orders = await response.json();
         renderOrders();
       }
 
@@ -311,13 +621,54 @@
 
       document.getElementById("create").addEventListener("submit", async (event) => {
         event.preventDefault();
-        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const form = event.currentTarget;
+        const data = Object.fromEntries(new FormData(form));
+        const error = document.getElementById("create-error");
+        try {
+          data.images = await readPhotos(form.photos);
+          if (data.images.length < 1) throw new Error("Ajoutez au moins une photo.");
+          delete data.photos;
+        } catch (err) {
+          error.textContent = err.message;
+          return;
+        }
         const response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
         const body = await response.json();
-        document.getElementById("create-error").textContent = response.ok ? "" : body.error;
+        error.textContent = response.ok ? "" : body.error;
+        if (response.ok) {
+          form.reset();
+          await Promise.all([loadProducts(), loadStats(), loadStock()]);
+        }
+      });
+
+      document.getElementById("category-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const name = new FormData(event.currentTarget).get("name");
+        const response = await fetch("/api/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
+        const body = await response.json();
+        document.getElementById("category-error").textContent = response.ok ? "" : body.error;
         if (response.ok) {
           event.currentTarget.reset();
-          await Promise.all([loadProducts(), loadStats()]);
+          await loadCategories();
+        }
+      });
+
+      document.getElementById("categories").addEventListener("click", async (event) => {
+        const renameId = event.target.dataset.rename;
+        const removeId = event.target.dataset.removeCat;
+        const error = document.getElementById("category-error");
+        if (renameId) {
+          const name = document.querySelector(`[data-cat="${renameId}"]`).value;
+          const response = await fetch(`/api/categories/${renameId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
+          const body = await response.json();
+          error.textContent = response.ok ? "" : body.error;
+          if (response.ok) await Promise.all([loadCategories(), loadProducts(), loadStock()]);
+        }
+        if (removeId && confirm("Supprimer cette catégorie ?")) {
+          const response = await fetch(`/api/categories/${removeId}`, { method: "DELETE" });
+          const body = await response.json();
+          error.textContent = response.ok ? "" : body.error;
+          if (response.ok) await loadCategories();
         }
       });
 
@@ -327,12 +678,22 @@
         if (saveId) {
           const fields = {};
           document.querySelectorAll(`[data-id="${saveId}"]`).forEach((input) => { fields[input.dataset.field] = input.value; });
-          await fetch(`/api/products/${saveId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) });
-          await Promise.all([loadProducts(), loadStats()]);
+          const photos = document.querySelector(`[data-photos="${saveId}"]`);
+          try {
+            const images = await readPhotos(photos);
+            if (images.length) fields.images = images;
+          } catch (err) {
+            document.getElementById("create-error").textContent = err.message;
+            return;
+          }
+          const response = await fetch(`/api/products/${saveId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) });
+          const body = await response.json();
+          document.getElementById("create-error").textContent = response.ok ? "" : body.error;
+          if (response.ok) await Promise.all([loadProducts(), loadStats(), loadStock()]);
         }
         if (deleteId && confirm("Supprimer ce produit ?")) {
           await fetch(`/api/products/${deleteId}`, { method: "DELETE" });
-          await Promise.all([loadProducts(), loadStats()]);
+          await Promise.all([loadProducts(), loadStats(), loadStock()]);
         }
       });
 
@@ -405,9 +766,8 @@
       document.getElementById("low").addEventListener("click", async (event) => {
         const id = event.target.dataset.restock;
         if (!id) return;
-        const stock = Number(event.target.dataset.stock) + 10;
-        await fetch(`/api/products/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ stock }) });
-        await Promise.all([loadProducts(), loadStats()]);
+        await fetch(`/api/stock/${id}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ delta: 10, reason: "réception", note: "Réassort rapide" }) });
+        await Promise.all([loadProducts(), loadStats(), loadStock()]);
       });
 
       document.getElementById("csv-file").addEventListener("change", async (event) => {
@@ -443,7 +803,7 @@
         result.className = "";
         result.textContent = `${body.created} ajouté(s), ${body.updated} mis à jour.${problems}`;
         document.getElementById("csv").value = "";
-        await Promise.all([loadProducts(), loadStats()]);
+        await Promise.all([loadProducts(), loadStats(), loadCategories(), loadStock()]);
       });
 
       document.getElementById("export-orders").addEventListener("click", () => {
@@ -455,10 +815,104 @@
         downloadCsv("commandes-tunishop.csv", lines);
       });
 
-      loadStats();
-      loadProducts();
-      loadOrders();
-      loadSettings();
+      document.getElementById("login-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const body = await response.json();
+        if (!response.ok) {
+          document.getElementById("login-error").textContent = body.error || "Identifiants incorrects.";
+          return;
+        }
+        me = body.user;
+        document.getElementById("login-error").textContent = "";
+        showApp(true);
+        loadStats();
+        loadProducts();
+        loadCategories();
+        loadStock();
+        loadOrders();
+        loadSettings();
+        loadUsers();
+      });
+
+      document.getElementById("logout-team").addEventListener("click", async () => {
+        await fetch("/api/logout", { method: "POST" });
+        me = null;
+        showApp(false);
+      });
+
+      document.getElementById("user-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const response = await fetch("/api/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const body = await response.json();
+        document.getElementById("user-error").textContent = response.ok ? "" : body.error;
+        if (response.ok) {
+          event.currentTarget.reset();
+          await loadUsers();
+        }
+      });
+
+      document.getElementById("users").addEventListener("click", async (event) => {
+        const saveId = event.target.dataset.saveUser;
+        const deleteId = event.target.dataset.deleteUser;
+        if (saveId) {
+          const fields = { active: false };
+          document.querySelectorAll(`[data-uid="${saveId}"]`).forEach((input) => {
+            if (input.dataset.field === "active") fields.active = input.checked;
+            else if (input.dataset.field === "password") {
+              if (input.value) fields.password = input.value;
+            } else fields[input.dataset.field] = input.value;
+          });
+          const response = await fetch(`/api/users/${saveId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) });
+          const body = await response.json();
+          document.getElementById("user-error").textContent = response.ok ? "" : body.error;
+          if (response.ok) await loadUsers();
+        }
+        if (deleteId && confirm("Supprimer ce compte ?")) {
+          const response = await fetch(`/api/users/${deleteId}`, { method: "DELETE" });
+          const body = await response.json();
+          document.getElementById("user-error").textContent = response.ok ? "" : body.error;
+          if (response.ok) await loadUsers();
+        }
+      });
+
+      document.getElementById("stock-search").addEventListener("input", renderStock);
+      document.getElementById("stock-filter").addEventListener("change", renderStock);
+      document.getElementById("stock-rows").addEventListener("click", async (event) => {
+        const id = event.target.dataset.move;
+        if (!id) return;
+        const delta = Number(document.querySelector(`[data-delta="${id}"]`).value);
+        const reason = document.querySelector(`[data-reason="${id}"]`).value;
+        const response = await fetch(`/api/stock/${id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ delta, reason }),
+        });
+        const body = await response.json();
+        if (!response.ok) {
+          alert(body.error);
+          return;
+        }
+        await Promise.all([loadStock(), loadProducts(), loadStats()]);
+      });
+
+      (async () => {
+        if (await loadMe()) {
+          loadStats();
+          loadCategories();
+          loadProducts();
+          loadStock();
+          loadOrders();
+          loadSettings();
+          loadUsers();
+        }
+      })();
     </script>
   </body>
 </html>

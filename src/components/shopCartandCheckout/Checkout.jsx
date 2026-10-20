@@ -1,7 +1,7 @@
 const countries = ["Tunisie"];
 import { useContextElement } from "@/context/Context";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiUrl } from "@/utlis/api";
 import { formatPrice } from "@/utlis/formatPrice";
 import { whatsappOrderUrl } from "@/utlis/whatsapp";
@@ -63,6 +63,7 @@ export default function Checkout() {
       const response = await fetch(apiUrl("/api/orders"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           firstName: data.get("firstName"),
           lastName: data.get("lastName"),
@@ -113,7 +114,7 @@ export default function Checkout() {
     <form onSubmit={placeOrder}>
       <div className="checkout-form">
         <div className="billing-info__wrapper">
-          <h4>BILLING DETAILS</h4>
+          <h4>COORDONNÉES</h4>
           <div className="row">
             <div className="col-md-6">
               <div className="form-floating my-3">
@@ -123,9 +124,9 @@ export default function Checkout() {
                   id="checkout_first_name"
                   name="firstName"
                   required
-                  placeholder="First Name"
+                  placeholder="Prénom"
                 />
-                <label htmlFor="checkout_first_name">First Name</label>
+                <label htmlFor="checkout_first_name">Prénom</label>
               </div>
             </div>
             <div className="col-md-6">
@@ -136,9 +137,9 @@ export default function Checkout() {
                   id="checkout_last_name"
                   name="lastName"
                   required
-                  placeholder="Last Name"
+                  placeholder="Nom"
                 />
-                <label htmlFor="checkout_last_name">Last Name</label>
+                <label htmlFor="checkout_last_name">Nom</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -147,10 +148,10 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_company_name"
-                  placeholder="Company Name (optional)"
+                  placeholder="Société (facultatif)"
                 />
                 <label htmlFor="checkout_company_name">
-                  Company Name (optional)
+                  Société (facultatif)
                 </label>
               </div>
             </div>
@@ -162,7 +163,7 @@ export default function Checkout() {
                   }`}
                 >
                   <label htmlFor="search-dropdown" className="form-label">
-                    Country / Region*
+                    Pays *
                   </label>
                   <div className="js-hover__open">
                     <input
@@ -172,7 +173,7 @@ export default function Checkout() {
                       name="search-keyword"
                       value={selectedRegion}
                       readOnly
-                      placeholder="Choose a location..."
+                      placeholder="Choisir"
                       onClick={() => setIdDDActive((pre) => !pre)}
                     />
                   </div>
@@ -181,7 +182,7 @@ export default function Checkout() {
                       <input
                         type="text"
                         className="search-field__input form-control form-control-sm bg-lighter border-lighter"
-                        placeholder="Search"
+                        placeholder="Rechercher"
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
                         }}
@@ -217,9 +218,9 @@ export default function Checkout() {
                   id="checkout_street_address"
                   name="address"
                   required
-                  placeholder="Street Address *"
+                  placeholder="Adresse *"
                 />
-                <label htmlFor="checkout_company_name">Street Address *</label>
+                <label htmlFor="checkout_street_address">Adresse *</label>
               </div>
               <div className="form-floating mt-3 mb-3">
                 <input
@@ -237,9 +238,9 @@ export default function Checkout() {
                   id="checkout_city"
                   name="city"
                   required
-                  placeholder="Town / City *"
+                  placeholder="Ville *"
                 />
-                <label htmlFor="checkout_city">Town / City *</label>
+                <label htmlFor="checkout_city">Ville *</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -248,9 +249,9 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_zipcode"
-                  placeholder="Postcode / ZIP *"
+                  placeholder="Code postal"
                 />
-                <label htmlFor="checkout_zipcode">Postcode / ZIP *</label>
+                <label htmlFor="checkout_zipcode">Code postal</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -259,9 +260,9 @@ export default function Checkout() {
                   type="text"
                   className="form-control"
                   id="checkout_province"
-                  placeholder="Province *"
+                  placeholder="Gouvernorat"
                 />
-                <label htmlFor="checkout_province">Province *</label>
+                <label htmlFor="checkout_province">Gouvernorat</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -272,9 +273,9 @@ export default function Checkout() {
                   id="checkout_phone"
                   name="phone"
                   required
-                  placeholder="Phone *"
+                  placeholder="Téléphone *"
                 />
-                <label htmlFor="checkout_phone">Phone *</label>
+                <label htmlFor="checkout_phone">Téléphone *</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -284,9 +285,9 @@ export default function Checkout() {
                   className="form-control"
                   id="checkout_email"
                   name="email"
-                  placeholder="Your Mail *"
+                  placeholder="E-mail"
                 />
-                <label htmlFor="checkout_email">Your Mail *</label>
+                <label htmlFor="checkout_email">E-mail</label>
               </div>
             </div>
             <div className="col-md-12">
@@ -298,7 +299,7 @@ export default function Checkout() {
                   id="create_account"
                 />
                 <label className="form-check-label" htmlFor="create_account">
-                  CREATE AN ACCOUNT?
+                  CRÉER UN COMPTE ?
                 </label>
               </div>
               <div className="form-check mb-3">
@@ -312,7 +313,7 @@ export default function Checkout() {
                   className="form-check-label"
                   htmlFor="ship_different_address"
                 >
-                  SHIP TO A DIFFERENT ADDRESS?
+                  LIVRER À UNE AUTRE ADRESSE ?
                 </label>
               </div>
             </div>
@@ -322,7 +323,7 @@ export default function Checkout() {
               <textarea
                 className="form-control form-control_gray"
                 name="notes"
-                placeholder="Order Notes (optional)"
+                placeholder="Note pour la commande (facultatif)"
                 cols="30"
                 rows="8"
               ></textarea>
@@ -332,12 +333,12 @@ export default function Checkout() {
         <div className="checkout__totals-wrapper">
           <div className="sticky-content">
             <div className="checkout__totals">
-              <h3>Your Order</h3>
+              <h3>Votre commande</h3>
               <table className="checkout-cart-items">
                 <thead>
                   <tr>
-                    <th>PRODUCT</th>
-                    <th>SUBTOTAL</th>
+                    <th>ARTICLE</th>
+                    <th>MONTANT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -396,47 +397,6 @@ export default function Checkout() {
                   className="form-check-input form-check-input_fill"
                   type="radio"
                   name="payment"
-                  id="checkout_payment_method_1"
-                  value="bank"
-                />
-                <label
-                  className="form-check-label"
-                  htmlFor="checkout_payment_method_1"
-                >
-                  Direct bank transfer
-                  <span className="option-detail d-block">
-                    Make your payment directly into our bank account. Please use
-                    your Order ID as the payment reference.Your order will not
-                    be shipped until the funds have cleared in our account.
-                  </span>
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input form-check-input_fill"
-                  type="radio"
-                  name="payment"
-                  id="checkout_payment_method_2"
-                  value="bank"
-                />
-                <label
-                  className="form-check-label"
-                  htmlFor="checkout_payment_method_2"
-                >
-                  Check payments
-                  <span className="option-detail d-block">
-                    Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
-                    elementum gravida nec dui. Aenean aliquam varius ipsum, non
-                    ultricies tellus sodales eu. Donec dignissim viverra nunc,
-                    ut aliquet magna posuere eget.
-                  </span>
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input form-check-input_fill"
-                  type="radio"
-                  name="payment"
                   id="checkout_payment_method_3"
                   value="cod"
                   defaultChecked
@@ -447,42 +407,12 @@ export default function Checkout() {
                 >
                   Paiement à la livraison
                   <span className="option-detail d-block">
-                    Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
-                    elementum gravida nec dui. Aenean aliquam varius ipsum, non
-                    ultricies tellus sodales eu. Donec dignissim viverra nunc,
-                    ut aliquet magna posuere eget.
-                  </span>
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input form-check-input_fill"
-                  type="radio"
-                  name="payment"
-                  id="checkout_payment_method_4"
-                  value="bank"
-                />
-                <label
-                  className="form-check-label"
-                  htmlFor="checkout_payment_method_4"
-                >
-                  Paypal
-                  <span className="option-detail d-block">
-                    Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
-                    elementum gravida nec dui. Aenean aliquam varius ipsum, non
-                    ultricies tellus sodales eu. Donec dignissim viverra nunc,
-                    ut aliquet magna posuere eget.
+                    Vous payez le livreur à la réception. Le paiement par carte n’est pas encore disponible.
                   </span>
                 </label>
               </div>
               <div className="policy-text">
-                Your personal data will be used to process your order, support
-                your experience throughout this website, and for other purposes
-                described in our
-                <Link to="/terms" target="_blank">
-                  privacy policy
-                </Link>
-                .
+                Vos informations servent à préparer la livraison.
               </div>
             </div>
             {error && <p className="text-danger mt-3">{error}</p>}

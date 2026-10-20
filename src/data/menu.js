@@ -215,8 +215,7 @@ export const mainMenuItems = [
   { id: 1, title: "Accueil", href: "/" },
   { id: 2, title: "Boutique", href: "/shop-1" },
   { id: 3, title: "Nouveautés", href: "/shop-2" },
-  { id: 4, title: "Lookbook", href: "/lookbook" },
-  { id: 5, title: "Blog", href: "/blog_list1" },
-  { id: 6, title: "À propos", href: "/about" },
-  { id: 7, title: "Contact", href: "/contact" },
+  { id: 4, title: "Mon compte", href: "/compte" },
+  { id: 5, title: "À propos", href: "/about" },
+  { id: 6, title: "Contact", href: "/contact" },
 ];

@@ -1,12 +1,12 @@
 import { useContextElement } from "@/context/Context";
-import { products51 } from "@/data/products/fashion";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { formatPrice } from "@/utlis/formatPrice";
 export default function RelatedSlider() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { id } = useParams();
+  const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
@@ -14,7 +14,7 @@ export default function RelatedSlider() {
     slidesPerView: 4,
     slidesPerGroup: 4,
     effect: "none",
-    loop: true,
+    loop: false,
     modules: [Pagination, Navigation],
     pagination: {
       el: "#related_products .products-pagination",
@@ -46,7 +46,7 @@ export default function RelatedSlider() {
   return (
     <section className="products-carousel container">
       <h2 className="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4">
-        Related <strong>Products</strong>
+        Articles <strong>similaires</strong>
       </h2>
 
       <div id="related_products" className="position-relative">
@@ -55,7 +55,7 @@ export default function RelatedSlider() {
           className="swiper-container js-swiper-slider"
           data-settings=""
         >
-          {products51.map((elm, i) => (
+          {(catalog.filter((product) => product.id != id).slice(0, 8)).map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide product-card">
               <div className="pc__img-wrapper">
                 <Link to={`/product1_simple/${elm.id}`}>
@@ -64,7 +64,7 @@ export default function RelatedSlider() {
                     src={elm.imgSrc}
                     width="330"
                     height="400"
-                    alt="Cropped Faux leather Jacket"
+                    alt={elm.title}
                     className="pc__img"
                   />
                   <img
@@ -72,7 +72,7 @@ export default function RelatedSlider() {
                     src={elm.imgSrc2}
                     width="330"
                     height="400"
-                    alt="Cropped Faux leather Jacket"
+                    alt={elm.title}
                     className="pc__img pc__img-second"
                   />
                 </Link>
@@ -104,7 +104,7 @@ export default function RelatedSlider() {
                   className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
                     isAddedtoWishlist(elm.id) ? "active" : ""
                   }`}
-                  title="Add To Wishlist"
+                  title="Ajouter aux favoris"
                   onClick={() => toggleWishlist(elm.id)}
                 >
                   <svg

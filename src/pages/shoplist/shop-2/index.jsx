@@ -1,24 +1,24 @@
-import Footer1 from "@/components/footers/Footer1";
-
-import Header1 from "@/components/headers/Header1";
-
-import Shop2 from "@/components/shoplist/Shop2";
-
+import Footer5 from "@/components/footers/Footer5";
+import Header5 from "@/components/headers/Header5";
+import Shop1 from "@/components/shoplist/Shop1";
 import MetaComponent from "@/components/common/MetaComponent";
+
 const metadata = {
-  title: "Shop 2 || TuniShop",
+  title: "Nouveautés || TuniShop",
   description: "TuniShop",
 };
+
 export default function ShopPage2() {
   return (
     <>
       <MetaComponent meta={metadata} />
-      <Header1 />
+      <Header5 solid />
       <main className="page-wrapper">
-        <Shop2 />
+        <div className="pt-5 mt-4"></div>
+        <Shop1 title="Nouveautés" section="collection" />
       </main>
       <div className="mb-5 pb-xl-5"></div>
-      <Footer1 />
+      <Footer5 parentClass="footer footer_type_2 dark" />
     </>
   );
 }

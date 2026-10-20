@@ -7,22 +7,22 @@ const steps = [
     id: 1,
     href: "/shop_cart",
     number: "01",
-    title: "Shopping Bag",
-    description: "Manage Your Items List",
+    title: "Panier",
+    description: "Vérifiez vos articles",
   },
   {
     id: 2,
     href: "/shop_checkout",
     number: "02",
-    title: "Shipping and Checkout",
-    description: "Checkout Your Items List",
+    title: "Livraison",
+    description: "Adresse et paiement",
   },
   {
     id: 3,
     href: "/shop_order_complete",
     number: "03",
     title: "Confirmation",
-    description: "Review And Submit Your Order",
+    description: "Commande envoyée",
   },
 ];
 export default function ChectoutSteps() {

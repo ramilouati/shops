@@ -1,9 +1,15 @@
-import { categories } from "@/data/home5";
+import { useContextElement } from "@/context/Context";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
 
 export default function Categories() {
+  const { catalog } = useContextElement();
+  const categories = [...new Map(
+    catalog
+      .filter((product) => product.category)
+      .map((product) => [product.category, product])
+  ).values()];
   const swiperOptions = {
     autoplay: {
       delay: 5000,
@@ -12,7 +18,7 @@ export default function Categories() {
     slidesPerView: 8,
     slidesPerGroup: 1,
     effect: "none",
-    loop: true,
+    loop: false,
     breakpoints: {
       320: {
         slidesPerView: 2,
@@ -49,19 +55,19 @@ export default function Categories() {
           className="swiper-container js-swiper-slider"
           {...swiperOptions}
         >
-          {categories.map((elm, i) => (
-            <SwiperSlide key={i} className="swiper-slide">
+          {categories.map((elm) => (
+            <SwiperSlide key={elm.category} className="swiper-slide">
               <img
                 loading="lazy"
                 className="w-100 mb-3 h-auto"
                 src={elm.imgSrc}
                 width="124"
                 height="124"
-                alt={elm.name}
+                alt={elm.category}
               />
               <div className="text-center">
-                <Link to="/shop-1" className="menu-link fw-medium">
-                  {elm.name}
+                <Link to={`/shop-1?category=${encodeURIComponent(elm.category)}`} className="menu-link fw-medium">
+                  {elm.category}
                 </Link>
               </div>
             </SwiperSlide>

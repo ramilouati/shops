@@ -1,5 +1,4 @@
 import { useContextElement } from "@/context/Context";
-import { weekDealProducts as staticWeekDeals } from "@/data/home5";
 import { formatPrice } from "@/utlis/formatPrice";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -9,8 +8,7 @@ import CountDownComponent from "@/components/common/CountDownComponent";
 
 export default function WeekDeals() {
   const { toggleWishlist, isAddedtoWishlist, catalog } = useContextElement();
-  const fromCatalog = catalog.filter((product) => product.section === "deal");
-  const weekDealProducts = fromCatalog.length ? fromCatalog : staticWeekDeals;
+  const weekDealProducts = catalog.filter((product) => product.section === "deal");
   const { setQuickViewItem } = useContextElement();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   const swiperOptions = {
